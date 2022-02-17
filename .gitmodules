@@ -1,0 +1,3 @@
+[submodule "UnityClient/Assets/vbl-core"]
+	path = UnityClient/Assets/vbl-core
+	url = https://github.com/dbirman/vbl-core
