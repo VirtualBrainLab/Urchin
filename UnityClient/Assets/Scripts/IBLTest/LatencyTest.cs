@@ -50,7 +50,7 @@ public class LatencyTest : MonoBehaviour
         modelControl.SetBeryl(true);
         modelControl.LateStart(false);
 
-        List<Dictionary<string, object>> data = CSVReader.Read("Datasets/ibl_results/latencies");
+        List<Dictionary<string, object>> data = CSVReader.ReadFromResources("Datasets/ibl_results/latencies");
 
         for (int i = 0; i < data.Count; i++)
         {

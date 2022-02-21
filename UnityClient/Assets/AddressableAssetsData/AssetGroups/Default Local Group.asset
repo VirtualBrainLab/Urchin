@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Default Local Group
+  m_EditorClassIdentifier: 
+  m_GroupName: Default Local Group
+  m_Data:
+    m_SerializedData: []
+  m_GUID: dd3e91c2fb312f94f9e91cb930333f25
+  m_SerializeEntries:
+  - m_GUID: e569275163d050c4e98a09ec5aa7502d
+    m_Address: Assets/AddressableAssets/3D/mouseSkull_lowPoly.obj
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 523f4b2aa92687c4ca463a70e7e8fdd2
+    m_Address: Assets/AddressableAssets/AllenCCF/ontology_structure_minimal.csv
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 581325d2abf8e154fa325f391e893c68, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 68ac89500e950d048b5f107cccb30268, type: 2}
+    - {fileID: 11400000, guid: 16912c00b1b7ace49a1ddfe39d2f142a, type: 2}

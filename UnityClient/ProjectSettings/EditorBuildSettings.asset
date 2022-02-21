@@ -15,9 +15,10 @@ EditorBuildSettings:
     path: Assets/Scenes/TrajectoryPlanner.unity
     guid: 01742bb73d3a1b644bfc1c77e581b6bc
   - enabled: 0
-    path: Assets/Scenes/IBL_RendererScene.unity
+    path: Assets/Scenes/UnityMouseRenderer.unity
     guid: bd25d770bb1b833459c855e1d961223f
   - enabled: 0
     path: Assets/Scenes/IBLTest_Latency.unity
     guid: 97e48f0112ac6c141a472c093b6d7ce1
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: bddae2c99875b74449e08828b6f729ad, type: 2}
