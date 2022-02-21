@@ -30,8 +30,9 @@ public class UM_Client : MonoBehaviour
     void Start()
     {
 
-        Debug.Log("Attempting to connect");
-        manager = localhost ? new SocketManager(new Uri("http://localhost:5000")) : new SocketManager(new Uri("https://um-comms.virtualbrainlab.org/"));
+        string url = localhost ? "http://localhost:5000" : "https://um-commserver.herokuapp.com/";
+        Debug.Log("Attempting to connect: " + url);
+        manager = localhost ? new SocketManager(new Uri(url)) : new SocketManager(new Uri(url));
 
         manager.Socket.On("connect", Connected);
         manager.Socket.On<Dictionary<string, bool>>("SetVolumeVisibility", UpdateVisibility);

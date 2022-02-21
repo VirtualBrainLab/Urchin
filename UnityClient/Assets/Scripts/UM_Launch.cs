@@ -7,6 +7,7 @@ using UnityEngine;
 public class UM_Launch : MonoBehaviour
 {
     [SerializeField] private CCFModelControl modelControl;
+    [SerializeField] private UM_CameraController cameraController;
     [SerializeField] private float maxExplosion = 10f;
     [SerializeField] private List<Shader> shaderOptions;
     [SerializeField] private List<string> shaderNames;
@@ -19,78 +20,50 @@ public class UM_Launch : MonoBehaviour
     private float prevPerc = 0f;
 
     private Dictionary<int, float> accuracy;
-    private List<CCFTreeNode> nodes;
 
     private Vector3 center = new Vector3(5.7f, 4f, -6.6f);
 
     private Vector3 teal = new Vector3(0f, 1f, 1f);
     private Vector3 magenta = new Vector3(1f, 0f, 1f);
 
+    private int[] cosmos = { 315, 698, 1089, 703, 623, 549, 1097, 313, 1065, 512 };
+    private Dictionary<int, Vector3> cosmosMeshCenters;
+    private Dictionary<int, Vector3> originalTransformPositions;
+    private Dictionary<int, Vector3> nodeMeshCenters;
+    
+    private Dictionary<int, CCFTreeNode> visibleNodes;
+
     // Start is called before the first frame update
     void Start()
     {
 
         accuracy = new Dictionary<int, float>();
-        nodes = new List<CCFTreeNode>();
+        visibleNodes = new Dictionary<int, CCFTreeNode>();
 
         modelControl.SetBeryl(true);
         modelControl.LateStart(false);
 
-        //List<Dictionary<string, object>> data = CSVReader.Read("Datasets/lda_acc/lda");
-        //Dictionary<int, List<float>> accData = new Dictionary<int, List<float>>();
-
-        //for (int i = 0 ; i < data.Count; i++)
-        //{
-        //    Dictionary<string, object> row = data[i];
-
-        //    string acronym = (string)row["region"];
-        //    int nClu = (int)row["n_clus"];
-        //    float acc = (float)row["ac"];
-        //    int ID = modelControl.Acronym2ID(acronym);
-        //    if (!accData.ContainsKey(ID))
-        //        accData[ID] = new List<float>();
-        //    accData[ID].Add(acc);
-        //}
-
-        //foreach (KeyValuePair<int, List<float>> pair in accData)
-        //{
-        //    accuracy.Add(pair.Key, pair.Value.Average());
-        //}
-
-        //StartCoroutine(DelayedColorChange(1f));
+        // save the cosmos transform positions
+        foreach (int cosmosID in cosmos)
+        {
+            GameObject cosmosGO = GameObject.Find(cosmosID + "L");
+            cosmosMeshCenters.Add(cosmosID, cosmosGO.GetComponentInChildren<Renderer>().bounds.center);
+            cosmosGO.SetActive(false);
+        }
     }
-
-    //IEnumerator DelayedColorChange(float delayTime)
-    //{
-    //    yield return new WaitForSeconds(delayTime);
-    //    // now change the color of the nodes
-
-    //    foreach (KeyValuePair<int, float> pair in accuracy)
-    //    {
-    //        CCFTreeNode node = modelControl.tree.findNode(pair.Key);
-    //        if (node != null)
-    //        {
-    //            float intensity = (pair.Value - 0.5f) * 4f;
-    //            node.loadNodeModel(true);
-    //            node.SetColor(Cool(intensity));
-
-    //            nodes.Add(node);
-    //        }
-    //    }
-    //}
 
     // Update is called once per frame
     void Update()
     {
         // Check if we need to make an update
-        if (prevPerc != percentageExploded)
-        {
-            prevPerc = percentageExploded;
+        //if (prevPerc != percentageExploded)
+        //{
+        //    prevPerc = percentageExploded;
 
-            // for each tree node, move it's model away from the 0,0,0 point
-            foreach (CCFTreeNode node in nodes)
-                node.ExplodeModel(Vector3.zero, maxExplosion * percentageExploded);
-        }
+        //    // for each tree node, move it's model away from the 0,0,0 point
+        //    foreach (CCFTreeNode node in visibleNodes)
+        //        node.ExplodeModel(Vector3.zero, maxExplosion * percentageExploded);
+        //}
 
         // Check for key down events
         if (Input.GetKeyDown(KeyCode.C))
@@ -109,6 +82,18 @@ public class UM_Launch : MonoBehaviour
     public void Log(string text)
     {
         // Todo: deal with log running off the screen
+        Debug.Log(text);
         consoleText.text += "\n" + text;
+    }
+    public void UpdateExploded(float newPerc)
+    {
+        cameraController.BlockDragging();
+        //foreach (CCFTreeNode node in nodes.Values)
+        //{
+        //    int cosmos = modelControl.GetCosmosID(node.ID);
+        //    Transform nodeT = node.GetNodeTransform();
+        //    nodeT.position = originalTransformPositions[node.ID] +
+        //        (cosmosMeshCenters[cosmos] - nodeMeshCenters[node.ID]) * newPerc;
+        //}
     }
 }
