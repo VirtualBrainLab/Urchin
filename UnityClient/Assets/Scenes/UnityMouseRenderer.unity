@@ -1820,9 +1820,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   modelControl: {fileID: 1595768702}
+  cameraController: {fileID: 1861690900}
   maxExplosion: 3
-  shaderOptions: []
-  shaderNames: []
   consolePanel: {fileID: 971937620}
   consoleText: {fileID: 1782345597}
   percentageExploded: 0
@@ -1920,8 +1919,17 @@ MonoBehaviour:
   main: {fileID: 1595768701}
   idPanel: {fileID: 1875325468}
   idInput: {fileID: 280012555}
-  probePrefab: {fileID: 0}
   localhost: 0
+  neuronPrefab: {fileID: 7973822280577014711, guid: f3a0350e123573d41a17b28587350ada, type: 3}
+  neuronMeshList:
+  - {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  - {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  neuronMeshNames:
+  - sphere
+  - cube
+  neuronParent: {fileID: 1010559012}
+  probePrefab: {fileID: 0}
+  probeLinePrefab: {fileID: 0}
 --- !u!1 &1690469967
 GameObject:
   m_ObjectHideFlags: 0
@@ -2288,7 +2296,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1859087903
 Transform:
   m_ObjectHideFlags: 0
@@ -2618,7 +2626,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -5304457597003473624, guid: 29e154cdc4333644089fccd61fe4987a, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -5304457597003473624, guid: 29e154cdc4333644089fccd61fe4987a, type: 3}
       propertyPath: m_TagString

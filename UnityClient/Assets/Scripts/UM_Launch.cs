@@ -9,17 +9,12 @@ public class UM_Launch : MonoBehaviour
     [SerializeField] private CCFModelControl modelControl;
     [SerializeField] private UM_CameraController cameraController;
     [SerializeField] private float maxExplosion = 10f;
-    [SerializeField] private List<Shader> shaderOptions;
-    [SerializeField] private List<string> shaderNames;
 
     [SerializeField] private GameObject consolePanel;
     [SerializeField] private TextMeshProUGUI consoleText;
 
     [Range(0,1), SerializeField] private float percentageExploded = 0f;
-
     private float prevPerc = 0f;
-
-    private Dictionary<int, float> accuracy;
 
     private Vector3 center = new Vector3(5.7f, 4f, -6.6f);
 
@@ -36,8 +31,10 @@ public class UM_Launch : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        cosmosMeshCenters = new Dictionary<int, Vector3>();
+        originalTransformPositions = new Dictionary<int, Vector3>();
+        nodeMeshCenters = new Dictionary<int, Vector3>();
 
-        accuracy = new Dictionary<int, float>();
         visibleNodes = new Dictionary<int, CCFTreeNode>();
 
         modelControl.SetBeryl(true);
@@ -55,21 +52,27 @@ public class UM_Launch : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Check if we need to make an update
-        //if (prevPerc != percentageExploded)
-        //{
-        //    prevPerc = percentageExploded;
+        //Check if we need to make an update
+        if (prevPerc != percentageExploded)
+        {
+            prevPerc = percentageExploded;
 
-        //    // for each tree node, move it's model away from the 0,0,0 point
-        //    foreach (CCFTreeNode node in visibleNodes)
-        //        node.ExplodeModel(Vector3.zero, maxExplosion * percentageExploded);
-        //}
+            // for each tree node, move it's model away from the 0,0,0 point
+            UpdateExploded(percentageExploded);
+        }
 
         // Check for key down events
         if (Input.GetKeyDown(KeyCode.C))
         {
             consolePanel.SetActive(!consolePanel.activeSelf);
         }
+    }
+
+    public void RegisterNode(CCFTreeNode node)
+    {
+        originalTransformPositions.Add(node.ID, node.GetNodeTransform().position);
+        nodeMeshCenters.Add(node.ID, node.GetMeshCenter());
+        visibleNodes.Add(node.ID,node);
     }
 
     // [TODO] Refactor colormaps into their own class
@@ -88,12 +91,13 @@ public class UM_Launch : MonoBehaviour
     public void UpdateExploded(float newPerc)
     {
         cameraController.BlockDragging();
-        //foreach (CCFTreeNode node in nodes.Values)
-        //{
-        //    int cosmos = modelControl.GetCosmosID(node.ID);
-        //    Transform nodeT = node.GetNodeTransform();
-        //    nodeT.position = originalTransformPositions[node.ID] +
-        //        (cosmosMeshCenters[cosmos] - nodeMeshCenters[node.ID]) * newPerc;
-        //}
+        foreach (CCFTreeNode node in visibleNodes.Values)
+        {
+            Debug.Log(node.ID);
+            int cosmos = modelControl.GetCosmosID(node.ID);
+            Transform nodeT = node.GetNodeTransform();
+            nodeT.position = originalTransformPositions[node.ID] +
+                (cosmosMeshCenters[cosmos] - nodeMeshCenters[node.ID]) * newPerc;
+        }
     }
 }

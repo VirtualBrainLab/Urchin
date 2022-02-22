@@ -118,14 +118,14 @@ public class LatencyTest : MonoBehaviour
         }
 
         // Check if we need to make an update
-        if (prevPerc != percentageExploded)
-        {
-            prevPerc = percentageExploded;
+        //if (prevPerc != percentageExploded)
+        //{
+        //    prevPerc = percentageExploded;
 
-            // for each tree node, move it's model away from the 0,0,0 point
-            foreach (CCFTreeNode node in nodes.Values)
-                node.ExplodeModel(Vector3.zero, maxExplosion * percentageExploded);
-        }
+        //    // for each tree node, move it's model away from the 0,0,0 point
+        //    foreach (CCFTreeNode node in nodes.Values)
+        //        node.ExplodeModel(Vector3.zero, maxExplosion * percentageExploded);
+        //}
     }
 
     public void UpdateElapsedTime(float newElapsedTime)

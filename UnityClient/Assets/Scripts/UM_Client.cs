@@ -15,17 +15,30 @@ public class UM_Client : MonoBehaviour
     [SerializeField] private GameObject idPanel;
     [SerializeField] private TextMeshProUGUI idInput;
 
-    [SerializeField] private GameObject probePrefab;
 
     [SerializeField] private bool localhost;
 
     // NEURONS
-    private Dictionary<int, Entity> neurons;
+    [SerializeField] private GameObject neuronPrefab;
+    [SerializeField] private List<Mesh> neuronMeshList;
+    [SerializeField] private List<string> neuronMeshNames;
+    [SerializeField] private Transform neuronParent;
+    private Dictionary<string, GameObject> neurons;
+
+    // PROBES
+    [SerializeField] private GameObject probePrefab;
+    [SerializeField] private GameObject probeLinePrefab;
+    private Dictionary<string, GameObject> probes;
 
     private string ID;
 
     SocketManager manager;
 
+    private void Awake()
+    {
+        neurons = new Dictionary<string, GameObject>();
+        probes = new Dictionary<string, GameObject>();
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -46,6 +59,7 @@ public class UM_Client : MonoBehaviour
         manager.Socket.On<Dictionary<string, List<float>>>("SetNeuronPos", UpdateNeuronPos);
         manager.Socket.On<Dictionary<string, float>>("SetNeuronSize", UpdateIntensity);
         manager.Socket.On<Dictionary<string, string>>("SetNeuronShape", UpdateNeuronShape);
+        manager.Socket.On<Dictionary<string, string>>("SetNeuronColor", UpdateNeuronColor);
         manager.Socket.On<List<float>>("SliceVolume", SetVolumeSlice);
         manager.Socket.On<Dictionary<string, string>>("SetSliceColor", SetVolumeAnnotationColor);
         manager.Socket.On<List<string>>("CreateProbes", CreateProbes);
@@ -93,19 +107,47 @@ public class UM_Client : MonoBehaviour
         main.Log("Not implemented");
     }
 
-    private void UpdateNeuronShape(Dictionary<string, string> obj)
+    private void UpdateNeuronColor(Dictionary<string, string> data)
     {
-        main.Log("Not implemented");
+        foreach (KeyValuePair<string, string> kvp in data)
+        {
+            if (neuronMeshNames.Contains(kvp.Value))
+                neurons[kvp.Key].GetComponent<MeshFilter>().mesh = neuronMeshList[neuronMeshNames.IndexOf(kvp.Value)];
+            else
+                main.Log("Mesh type: " + kvp.Value + " does not exist");
+        }
     }
 
-    private void UpdateNeuronPos(Dictionary<string, List<float>> obj)
+    private void UpdateNeuronShape(Dictionary<string, string> data)
     {
-        main.Log("Not implemented");
+        foreach (KeyValuePair<string, string> kvp in data)
+        {
+
+            Color newColor;
+            if (neurons.ContainsKey(kvp.Key) && ColorUtility.TryParseHtmlString(kvp.Value, out newColor))
+            {
+                neurons[kvp.Key].GetComponent<Renderer>().material.color = newColor;
+            }
+            else
+                main.Log("Failed to set neuron color to: " + kvp.Value);
+        }
     }
 
-    private void CreateNeurons(List<string> obj)
+    // Takes coordinates in ML AP DV in um units
+    private void UpdateNeuronPos(Dictionary<string, List<float>> data)
     {
-        main.Log("Not implemented");
+        foreach (KeyValuePair<string, List<float>> kvp in data)
+        {
+            neurons[kvp.Key].transform.position = new Vector3(-kvp.Value[0]/1000f, -kvp.Value[2]/1000f, kvp.Value[1]/1000f);
+        }
+    }
+
+    private void CreateNeurons(List<string> data)
+    {
+        foreach (string id in data)
+        {
+            neurons.Add(id, Instantiate(neuronPrefab, neuronParent));
+        }
     }
 
     private void UpdateVolumeMaterial(Dictionary<string, string> data)
