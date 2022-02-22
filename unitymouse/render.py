@@ -22,6 +22,9 @@ def close():
 def set_volume_visibility(areaData):
 	"""Set visibility of CCF volume regions
 
+	NOTE: this must be called before setting color/intensity/etc
+	in addition, this is an *asynchronous* call
+
 	Inputs:
 	areaData -- dictionary of area ID or acronym and bool values {'root':True} or {8:True}
 	"""
@@ -47,7 +50,7 @@ def set_volume_colormap(colormap_name):
 	"""Set colormap name
 
 	Options are:
-		tm (default, teal 0 -> magenta 1)
+		cool (default, teal 0 -> magenta 1)
 
 	Inputs:
 	colormap_name -- string
@@ -91,6 +94,8 @@ def set_volume_shader(areaData):
 
 def create_neurons(neuronList):
 	"""Create neuron objects
+
+	NOTE: This must be called before setting positions/size/color/shape
 
 	Inputs:
 	probeList -- list of neuron names as strings ['n1','n2','n3']
@@ -152,14 +157,8 @@ def set_slice_annotation_color(annotationData):
 def create_probes(probeList):
 	"""Create probe objects
 
-	Style options are:
-		"line"
-		"probe-tip"
-		"probe-silicon"
-		"probe"
-
 	Inputs:
-	probeList -- dictionary of probe names and string {'p1':'line'}
+	probeList -- list of probe names ['p1','p2']
 	"""
 	sio.emit('CreateProbes', probeList)
 

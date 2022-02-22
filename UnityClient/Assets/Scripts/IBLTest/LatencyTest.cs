@@ -68,7 +68,7 @@ public class LatencyTest : MonoBehaviour
             CCFTreeNode node = modelControl.tree.findNode(pair.Key);
             if (node != null)
             {
-                node.loadNodeModel(true);
+                node.loadNodeModel(true, handle => { });
                 node.SetNodeModelVisibility(false,false);
                 GameObject nodeGO = node.LeftGameObject();
                 nodeGO.AddComponent<MeshCollider>();

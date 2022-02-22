@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using TMPro;
 using Unity.Entities;
+using System.Threading.Tasks;
 
 public class UM_Client : MonoBehaviour
 {
@@ -28,7 +29,12 @@ public class UM_Client : MonoBehaviour
     // PROBES
     [SerializeField] private GameObject probePrefab;
     [SerializeField] private GameObject probeLinePrefab;
+    [SerializeField] private Transform probeParent;
     private Dictionary<string, GameObject> probes;
+    private Dictionary<string, Vector3[]> probeCoordinates;
+
+    // POSITIONING
+    private Vector3 center = new Vector3(5.7f, 4f, -6.6f);
 
     private string ID;
 
@@ -38,6 +44,8 @@ public class UM_Client : MonoBehaviour
     {
         neurons = new Dictionary<string, GameObject>();
         probes = new Dictionary<string, GameObject>();
+        nodeTasks = new Dictionary<int, Task>();
+        probeCoordinates = new Dictionary<string, Vector3[]>();
     }
     // Start is called before the first frame update
     void Start()
@@ -57,7 +65,7 @@ public class UM_Client : MonoBehaviour
         manager.Socket.On<Dictionary<string, string>>("SetVolumeShader", UpdateVolumeMaterial);
         manager.Socket.On<List<string>>("CreateNeurons", CreateNeurons);
         manager.Socket.On<Dictionary<string, List<float>>>("SetNeuronPos", UpdateNeuronPos);
-        manager.Socket.On<Dictionary<string, float>>("SetNeuronSize", UpdateIntensity);
+        manager.Socket.On<Dictionary<string, float>>("SetNeuronSize", UpdateNeuronScale);
         manager.Socket.On<Dictionary<string, string>>("SetNeuronShape", UpdateNeuronShape);
         manager.Socket.On<Dictionary<string, string>>("SetNeuronColor", UpdateNeuronColor);
         manager.Socket.On<List<float>>("SliceVolume", SetVolumeSlice);
@@ -72,32 +80,84 @@ public class UM_Client : MonoBehaviour
         idInput.text = ID;
     }
 
-    private void UpdateProbeStyle(Dictionary<string, string> obj)
+    // Update is called once per frame
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            idPanel.SetActive(!idPanel.activeSelf);
+        }
+    }
+
+    private void UpdateProbeStyle(Dictionary<string, string> data)
     {
         main.Log("Not implemented");
     }
 
-    private void UpdateProbeAngles(Dictionary<string, List<float>> obj)
+    private void UpdateProbeAngles(Dictionary<string, List<float>> data)
+    {
+        foreach (KeyValuePair<string, List<float>> kvp in data)
+        {
+            if (probes.ContainsKey(kvp.Key))
+            {
+                // store coordinates in mlapdv       
+                probeCoordinates[kvp.Key][1] = new Vector3(kvp.Value[0], kvp.Value[1], kvp.Value[2]);
+                SetProbePositionAndAngles(kvp.Key);
+            }
+        }
+    }
+
+    private void UpdateProbePos(Dictionary<string, List<float>> data)
+    {
+        foreach (KeyValuePair<string, List<float>> kvp in data)
+        {
+            if (probes.ContainsKey(kvp.Key))
+            {
+                // store coordinates in mlapdv       
+                probeCoordinates[kvp.Key][0] = new Vector3(kvp.Value[0], kvp.Value[1], kvp.Value[2]);
+                SetProbePositionAndAngles(kvp.Key);
+            }
+        }
+    }
+
+    private void SetProbePositionAndAngles(string probeName)
+    {
+        Vector3 pos = probeCoordinates[probeName][0];
+        Vector3 angles = probeCoordinates[probeName][1];
+        Transform probeT = probes[probeName].transform;
+
+        // reset position and angles
+        probeT.transform.localPosition = Vector3.zero;
+        probeT.localRotation = Quaternion.identity;
+
+        // then translate
+        probeT.Translate(new Vector3(-pos.x / 1000f, -pos.z / 1000f, pos.y / 1000f));
+        // rotate around azimuth first
+        probeT.RotateAround(probeT.position, Vector3.up, -angles.x -90f);
+        // then elevation
+        probeT.RotateAround(probeT.position, probeT.right, angles.y);
+        // then spin
+        probeT.RotateAround(probeT.position, probeT.up, angles.z);
+
+    }
+
+    private void UpdateProbeColors(Dictionary<string, string> data)
     {
         main.Log("Not implemented");
     }
 
-    private void UpdateProbePos(Dictionary<string, List<float>> obj)
+    private void CreateProbes(List<string> data)
     {
-        main.Log("Not implemented");
+        foreach (string probeName in data)
+        {
+            GameObject newProbe = Instantiate(probeLinePrefab, probeParent);
+            probes.Add(probeName, newProbe);
+            probeCoordinates.Add(probeName, new Vector3[2]);
+            SetProbePositionAndAngles(probeName);
+        }
     }
 
-    private void UpdateProbeColors(Dictionary<string, string> obj)
-    {
-        main.Log("Not implemented");
-    }
-
-    private void CreateProbes(List<string> obj)
-    {
-        main.Log("Not implemented");
-    }
-
-    private void SetVolumeAnnotationColor(Dictionary<string, string> obj)
+    private void SetVolumeAnnotationColor(Dictionary<string, string> data)
     {
         main.Log("Not implemented");
     }
@@ -107,8 +167,16 @@ public class UM_Client : MonoBehaviour
         main.Log("Not implemented");
     }
 
-    private void UpdateNeuronColor(Dictionary<string, string> data)
+    private void UpdateNeuronScale(Dictionary<string, float> data)
     {
+        main.Log("Updating neuron scale");
+        foreach (KeyValuePair<string, float> kvp in data)
+            neurons[kvp.Key].transform.localScale = Vector3.one * kvp.Value;
+    }
+
+    private void UpdateNeuronShape(Dictionary<string, string> data)
+    {
+        main.Log("Updating neuron shapes");
         foreach (KeyValuePair<string, string> kvp in data)
         {
             if (neuronMeshNames.Contains(kvp.Value))
@@ -118,8 +186,9 @@ public class UM_Client : MonoBehaviour
         }
     }
 
-    private void UpdateNeuronShape(Dictionary<string, string> data)
+    private void UpdateNeuronColor(Dictionary<string, string> data)
     {
+        main.Log("Updating neuron color");
         foreach (KeyValuePair<string, string> kvp in data)
         {
 
@@ -136,6 +205,7 @@ public class UM_Client : MonoBehaviour
     // Takes coordinates in ML AP DV in um units
     private void UpdateNeuronPos(Dictionary<string, List<float>> data)
     {
+        main.Log("Updating neuron positions");
         foreach (KeyValuePair<string, List<float>> kvp in data)
         {
             neurons[kvp.Key].transform.position = new Vector3(-kvp.Value[0]/1000f, -kvp.Value[2]/1000f, kvp.Value[1]/1000f);
@@ -154,13 +224,22 @@ public class UM_Client : MonoBehaviour
     {
         foreach (KeyValuePair<string, string> kvp in data)
         {
-            modelControl.ChangeMaterial(int.Parse(kvp.Key), kvp.Value);
+            modelControl.ChangeMaterial(GetID(kvp.Key), kvp.Value);
         }
     }
 
-    private void UpdateVolumeStyle(Dictionary<string, string> obj)
+    private void UpdateVolumeStyle(Dictionary<string, string> data)
     {
-        main.Log("Not implemented");
+        foreach (KeyValuePair<string, string> kvp in data)
+        {
+            CCFTreeNode node = modelControl.tree.findNode(GetID(kvp.Key));
+            if (kvp.Value.ToLower().Equals("whole"))
+                node.SetNodeModelVisibility(true, true);
+            if (kvp.Value.ToLower().Equals("left"))
+                node.SetNodeModelVisibility(true, false);
+            if (kvp.Value.ToLower().Equals("right"))
+                node.SetNodeModelVisibility(false,true);
+        }
     }
 
     private void UpdateVolumeColormap(string obj)
@@ -168,15 +247,100 @@ public class UM_Client : MonoBehaviour
         main.Log("Not implemented");
     }
 
-    // Update is called once per frame
-    void Update()
+    private int GetID(string idOrAcronym)
     {
-        if (Input.GetKeyDown(KeyCode.I))
+        if (idOrAcronym.ToLower().Equals("root") || idOrAcronym.ToLower().Equals("void"))
+            return -1;
+        if (modelControl.IsAcronym(idOrAcronym))
+            return modelControl.Acronym2ID(idOrAcronym);
+        else
         {
-            idPanel.SetActive(!idPanel.activeSelf);
+            int ret;
+            if (int.TryParse(idOrAcronym, out ret))
+                return ret;
+        }
+        return -1;
+    }
+
+    ////
+    //// VOLUME FUNCTIONS
+    /// Note that these are asynchronous calls, because we can't guarantee that the volumes are loaded until the call to setVisibility evaluates fully
+    ////
+
+    Dictionary<int, Task> nodeTasks;
+
+    private async void UpdateColors(Dictionary<string, string> data)
+    {
+        foreach (KeyValuePair<string, string> kvp in data)
+        {
+            CCFTreeNode node = modelControl.tree.findNode(GetID(kvp.Key));
+
+            if (WaitingOnTask(node.ID))
+                await nodeTasks[node.ID];
+
+            Color newColor;
+            if (node != null && ColorUtility.TryParseHtmlString(kvp.Value, out newColor))
+                node.SetColor(newColor);
+            else
+                main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
         }
     }
 
+    private void UpdateVisibility(Dictionary<string, bool> data)
+    {
+        foreach (KeyValuePair<string, bool> kvp in data)
+        {
+            CCFTreeNode node = modelControl.tree.findNode(GetID(kvp.Key));
+
+            if (node != null)
+            {
+                if (!node.IsLoaded())
+                {
+                    Task nodeTask = node.loadNodeModel(true, handle =>
+                    {node.SetNodeModelVisibility(kvp.Value); Debug.Log(kvp.Key + " fully loaded"); });
+                    nodeTasks.Add(node.ID, nodeTask);
+                }
+            }
+            else
+                main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+        }
+    }
+
+    private async void UpdateIntensity(Dictionary<string, float> data)
+    {
+
+        foreach (KeyValuePair<string, float> kvp in data)
+        {
+            CCFTreeNode node = modelControl.tree.findNode(GetID(kvp.Key));
+
+            if (WaitingOnTask(node.ID))
+                await nodeTasks[node.ID];
+
+            if (node != null)
+                node.SetColor(main.Cool(kvp.Value));
+            else
+                main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+        }
+    }
+
+    private bool WaitingOnTask(int id)
+    {
+        if (nodeTasks.ContainsKey(id))
+        {
+            if (nodeTasks[id].IsCompleted || nodeTasks[id].IsFaulted || nodeTasks[id].IsCanceled)
+            {
+                nodeTasks.Remove(id);
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+
+    ////
+    //// SOCKET FUNCTIONS
+    ////
     public void UpdateID(string newID)
     {
         manager.Socket.Emit("ID", newID);
@@ -191,75 +355,6 @@ public class UM_Client : MonoBehaviour
     {
         main.Log("connected! Login with ID: " + ID);
         manager.Socket.Emit("ID", ID);
-    }
-
-    private async void UpdateColors(Dictionary<string, string> data)
-    {
-        foreach (KeyValuePair<string, string> kvp in data)
-        {
-            CCFTreeNode node = modelControl.tree.findNode(GetID(kvp.Key));
-
-            Color newColor;
-            if (node != null && ColorUtility.TryParseHtmlString(kvp.Value, out newColor))
-            {
-                if (!node.IsLoaded())
-                    await node.loadNodeModel(true);
-                node.SetColor(newColor);
-            }
-            else
-                main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
-        }
-    }
-
-    private int GetID(string idOrAcronym)
-    {
-        Debug.Log(idOrAcronym);
-        if (idOrAcronym.ToLower().Equals("root") || idOrAcronym.ToLower().Equals("void"))
-            return -1;
-        if (modelControl.IsAcronym(idOrAcronym))
-            return modelControl.Acronym2ID(idOrAcronym);
-        else
-        {
-            int ret;
-            if (int.TryParse(idOrAcronym, out ret))
-                return ret;
-        }
-        return -1;
-    }
-
-    private async void UpdateVisibility(Dictionary<string, bool> data)
-    {
-        foreach (KeyValuePair<string, bool> kvp in data)
-        {
-            CCFTreeNode node = modelControl.tree.findNode(GetID(kvp.Key));
-
-            if (node != null)
-            {
-                if (!node.IsLoaded())
-                    await node.loadNodeModel(true);
-                node.SetNodeModelVisibility(kvp.Value);
-            }
-            else
-                main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
-        }
-    }
-
-    private async void UpdateIntensity(Dictionary<string, float> data)
-    {
-
-        foreach (KeyValuePair<string, float> kvp in data)
-        {
-            CCFTreeNode node = modelControl.tree.findNode(GetID(kvp.Key));
-
-            if (node != null)
-            {
-                if (!node.IsLoaded())
-                    await node.loadNodeModel(true);
-                node.SetColor(main.Cool(kvp.Value));
-            }
-            else
-                main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
-        }
     }
 
 }
