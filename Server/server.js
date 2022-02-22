@@ -85,6 +85,9 @@ io.on("connection", function (socket) {
   socket.on('SetNeuronShape', function(data) {
     emitToAll(socket.id, 'SetNeuronShape', data);
   });
+  socket.on('SetNeuronColor', function(data) {
+    emitToAll(socket.id, 'SetNeuronColor', data);
+  });
   socket.on('SliceVolume', function(data) {
     emitToAll(socket.id, 'SliceVolume', data);
   });
