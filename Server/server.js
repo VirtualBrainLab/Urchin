@@ -109,6 +109,9 @@ io.on("connection", function (socket) {
   socket.on('SetProbeStyle', function(data) {
     emitToAll(socket.id, 'SetProbeStyle', data);
   });
+  socket.on('SetProbeSize', function(data) {
+    emitToAll(socket.id, 'SetProbeSize', data);
+  });
 });
 
 function emitToAll(id, event, data) {

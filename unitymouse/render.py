@@ -201,3 +201,13 @@ def set_probe_style(probeData):
 	probeData -- dictionary of probe names and string {'p1':'line'}
 	"""
 	sio.emit('SetProbeStyle', probeData)
+
+def set_probe_size(probeData):
+	"""Set probe rendering style
+
+	By default probes are scaled to their real size (70um wide x 20um deep x 3.84 mm tall)
+
+	Inputs:
+	probeData -- dictionary of probe names and float3 {'p1':[0.07, 3.84, 0.02]}
+	"""
+	sio.emit('SetProbeSize', probeData)

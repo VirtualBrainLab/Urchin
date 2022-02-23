@@ -75,6 +75,7 @@ public class UM_Client : MonoBehaviour
         manager.Socket.On<Dictionary<string, List<float>>>("SetProbePos", UpdateProbePos);
         manager.Socket.On<Dictionary<string, List<float>>>("SetProbeAngles", UpdateProbeAngles);
         manager.Socket.On<Dictionary<string, string>>("SetProbeStyle", UpdateProbeStyle);
+        manager.Socket.On<Dictionary<string, List<float>>>("SetProbeSize", UpdateProbeScale);
 
         ID = Environment.UserName;
         idInput.text = ID;
@@ -148,6 +149,20 @@ public class UM_Client : MonoBehaviour
     private void UpdateProbeColors(Dictionary<string, string> data)
     {
         main.Log("Not implemented");
+    }
+
+    private void UpdateProbeScale(Dictionary<string, List<float>> data)
+    {
+        foreach (KeyValuePair<string, List<float>> kvp in data)
+        {
+            if (probes.ContainsKey(kvp.Key))
+            {
+                // store coordinates in mlapdv       
+                probes[kvp.Key].transform.GetChild(0).localScale = new Vector3(kvp.Value[0], kvp.Value[1], kvp.Value[2]);
+            }
+            else
+                main.Log("Probe " + kvp.Key + " not found");
+        }
     }
 
     private void CreateProbes(List<string> data)
