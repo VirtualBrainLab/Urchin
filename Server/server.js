@@ -115,6 +115,9 @@ io.on("connection", function (socket) {
   socket.on('SetProbeSize', function(data) {
     emitToAll(socket.id, 'SetProbeSize', data);
   });
+  socket.on('ClearAll', function(data) {
+    emitToAll(socket.id, 'ClearAll', data);
+  });
 });
 
 function emitToAll(id, event, data) {

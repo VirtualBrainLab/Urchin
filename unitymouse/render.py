@@ -211,3 +211,6 @@ def set_probe_size(probeData):
 	probeData -- dictionary of probe names and float3 {'p1':[0.07, 3.84, 0.02]}
 	"""
 	sio.emit('SetProbeSize', probeData)
+
+def clear():
+	sio.emit('ClearAll')

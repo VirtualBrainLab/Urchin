@@ -46,7 +46,10 @@ for traj in traj_rep:
 
         ins = atlas.Insertion.from_dict(temp_traj[0])
 
+        entry_coords = ba.xyz2ccf(ins.entry)
         tip_coords = ba.xyz2ccf(ins.tip)
+        recording_size = np.sqrt(np.sum(np.power(entry_coords-tip_coords,2)))
+        print(recording_size)
         tip_angles = [ins.phi, ins.theta, ins.beta]
 
         probename = 'p'+str(count)
@@ -54,13 +57,8 @@ for traj in traj_rep:
         umr.create_probes([probename])
         umr.set_probe_positions({probename:tip_coords.tolist()})
         umr.set_probe_angles({probename:tip_angles})
+        umr.set_probe_size({probename:[0.07,recording_size/1000,0.02]})
 
-
-'''
-Display structure meshes within the brain volume
-You can download the mesh object for each brain structure here:
-http://download.alleninstitute.org/informatics-archive/current-release/mouse_ccf/annotation/ccf_2017/structure_meshes/
-'''
 br = BrainRegions()
 
 data = {'VISa': True, 'CA1': True, 'DG': True, 'LP': True, 'PO': True}
