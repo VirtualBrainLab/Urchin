@@ -104,6 +104,8 @@ public class UM_Client : MonoBehaviour
                 probeCoordinates[kvp.Key][1] = new Vector3(kvp.Value[0], kvp.Value[1], kvp.Value[2]);
                 SetProbePositionAndAngles(kvp.Key);
             }
+            else
+                main.Log("Probe " + kvp.Key + " not found");
         }
     }
 
@@ -117,6 +119,8 @@ public class UM_Client : MonoBehaviour
                 probeCoordinates[kvp.Key][0] = new Vector3(kvp.Value[0], kvp.Value[1], kvp.Value[2]);
                 SetProbePositionAndAngles(kvp.Key);
             }
+            else
+                main.Log("Probe " + kvp.Key + " not found");
         }
     }
 
@@ -154,6 +158,7 @@ public class UM_Client : MonoBehaviour
             probes.Add(probeName, newProbe);
             probeCoordinates.Add(probeName, new Vector3[2]);
             SetProbePositionAndAngles(probeName);
+            main.Log("Created probe: " + probeName);
         }
     }
 
@@ -220,19 +225,26 @@ public class UM_Client : MonoBehaviour
         }
     }
 
-    private void UpdateVolumeMaterial(Dictionary<string, string> data)
+    private async void UpdateVolumeMaterial(Dictionary<string, string> data)
     {
         foreach (KeyValuePair<string, string> kvp in data)
         {
+            if (WaitingOnTask(GetID(kvp.Key)))
+                await nodeTasks[GetID(kvp.Key)];
+
             modelControl.ChangeMaterial(GetID(kvp.Key), kvp.Value);
         }
     }
 
-    private void UpdateVolumeStyle(Dictionary<string, string> data)
+    private async void UpdateVolumeStyle(Dictionary<string, string> data)
     {
         foreach (KeyValuePair<string, string> kvp in data)
         {
             CCFTreeNode node = modelControl.tree.findNode(GetID(kvp.Key));
+
+            if (WaitingOnTask(node.ID))
+                await nodeTasks[node.ID];
+
             if (kvp.Value.ToLower().Equals("whole"))
                 node.SetNodeModelVisibility(true, true);
             if (kvp.Value.ToLower().Equals("left"))
