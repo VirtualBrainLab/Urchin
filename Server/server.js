@@ -98,7 +98,7 @@ io.on("connection", function (socket) {
     emitToAll(socket.id, 'CreateProbes', data);
   });
   socket.on('SetProbeColors', function(data) {
-    emitToAll(socket.id, 'SetProbeColor', data);
+    emitToAll(socket.id, 'SetProbeColors', data);
   });
   socket.on('SetProbePos', function(data) {
     emitToAll(socket.id, 'SetProbePos', data);
