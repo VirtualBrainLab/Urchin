@@ -56,6 +56,7 @@ for traj in traj_rep:
         count+=1
         umr.create_probes([probename])
         umr.set_probe_positions({probename:tip_coords.tolist()})
+        umr.set_probe_colors({probename:'#F28C28'})
         umr.set_probe_angles({probename:tip_angles})
         umr.set_probe_size({probename:[0.07,recording_size/1000,0.02]})
 

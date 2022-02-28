@@ -33,6 +33,9 @@ public class UM_Client : MonoBehaviour
     private Dictionary<string, GameObject> probes;
     private Dictionary<string, Vector3[]> probeCoordinates;
 
+    // NODES
+    private List<CCFTreeNode> visibleNodes;
+
     // POSITIONING
     private Vector3 center = new Vector3(5.7f, 4f, -6.6f);
 
@@ -46,6 +49,7 @@ public class UM_Client : MonoBehaviour
         probes = new Dictionary<string, GameObject>();
         nodeTasks = new Dictionary<int, Task>();
         probeCoordinates = new Dictionary<string, Vector3[]>();
+        visibleNodes = new List<CCFTreeNode>();
     }
     // Start is called before the first frame update
     void Start()
@@ -61,7 +65,7 @@ public class UM_Client : MonoBehaviour
         manager.Socket.On<Dictionary<string, float>>("SetVolumeIntensity", UpdateIntensity);
         manager.Socket.On<string>("SetVolumeColormap", UpdateVolumeColormap);
         manager.Socket.On<Dictionary<string, string>>("SetVolumeStyle", UpdateVolumeStyle);
-        manager.Socket.On<Dictionary<string, float>>("SetVolumeAlpha", UpdateIntensity);
+        manager.Socket.On<Dictionary<string, float>>("SetVolumeAlpha", UpdateAlpha);
         manager.Socket.On<Dictionary<string, string>>("SetVolumeShader", UpdateVolumeMaterial);
         manager.Socket.On<List<string>>("CreateNeurons", CreateNeurons);
         manager.Socket.On<Dictionary<string, List<float>>>("SetNeuronPos", UpdateNeuronPos);
@@ -76,6 +80,7 @@ public class UM_Client : MonoBehaviour
         manager.Socket.On<Dictionary<string, List<float>>>("SetProbeAngles", UpdateProbeAngles);
         manager.Socket.On<Dictionary<string, string>>("SetProbeStyle", UpdateProbeStyle);
         manager.Socket.On<Dictionary<string, List<float>>>("SetProbeSize", UpdateProbeScale);
+        manager.Socket.On<string>("ClearAll", ClearAll);
 
         ID = Environment.UserName;
         idInput.text = ID;
@@ -88,6 +93,20 @@ public class UM_Client : MonoBehaviour
         {
             idPanel.SetActive(!idPanel.activeSelf);
         }
+    }
+
+    private void ClearAll(string val)
+    {
+        foreach (GameObject neuron in neurons.Values)
+            Destroy(neuron);
+        foreach (GameObject probe in probes.Values)
+            Destroy(probe);
+        neurons = new Dictionary<string, GameObject>();
+        probes = new Dictionary<string, GameObject>();
+        probeCoordinates = new Dictionary<string, Vector3[]>();
+        foreach (CCFTreeNode node in visibleNodes)
+            node.SetNodeModelVisibility(false, false);
+        visibleNodes = new List<CCFTreeNode>();
     }
 
     private void UpdateProbeStyle(Dictionary<string, string> data)
@@ -148,7 +167,20 @@ public class UM_Client : MonoBehaviour
 
     private void UpdateProbeColors(Dictionary<string, string> data)
     {
-        main.Log("Not implemented");
+        foreach (KeyValuePair<string, string> kvp in data)
+        {
+            if (probes.ContainsKey(kvp.Key))
+            {
+                Color newColor;
+                if (ColorUtility.TryParseHtmlString(kvp.Value, out newColor))
+                {
+                    Debug.Log("Setting " + kvp.Key + " to " + kvp.Value);
+                    probes[kvp.Key].GetComponentInChildren<Renderer>().material.color = newColor;
+                }
+            }
+            else
+                main.Log("Probe " + kvp.Key + " not found");
+        }
     }
 
     private void UpdateProbeScale(Dictionary<string, List<float>> data)
@@ -228,7 +260,7 @@ public class UM_Client : MonoBehaviour
         main.Log("Updating neuron positions");
         foreach (KeyValuePair<string, List<float>> kvp in data)
         {
-            neurons[kvp.Key].transform.position = new Vector3(-kvp.Value[0]/1000f, -kvp.Value[2]/1000f, kvp.Value[1]/1000f);
+            neurons[kvp.Key].transform.localPosition = new Vector3(-kvp.Value[0]/1000f, -kvp.Value[2]/1000f, kvp.Value[1]/1000f);
         }
     }
 
@@ -324,7 +356,12 @@ public class UM_Client : MonoBehaviour
                 if (!node.IsLoaded())
                 {
                     Task nodeTask = node.loadNodeModel(true, handle =>
-                    {node.SetNodeModelVisibility(kvp.Value); Debug.Log(kvp.Key + " fully loaded"); });
+                    {
+                        node.SetNodeModelVisibility(kvp.Value);
+                        Debug.Log(kvp.Key + " fully loaded");
+                        visibleNodes.Add(node);
+                        main.RegisterNode(node);
+                    });
                     nodeTasks.Add(node.ID, nodeTask);
                 }
             }
@@ -333,6 +370,22 @@ public class UM_Client : MonoBehaviour
         }
     }
 
+    private async void UpdateAlpha(Dictionary<string, float> data)
+    {
+
+        foreach (KeyValuePair<string, float> kvp in data)
+        {
+            CCFTreeNode node = modelControl.tree.findNode(GetID(kvp.Key));
+
+            if (WaitingOnTask(node.ID))
+                await nodeTasks[node.ID];
+
+            if (node != null)
+                node.SetShaderProperty("_Alpha", kvp.Value);
+            else
+                main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+        }
+    }
     private async void UpdateIntensity(Dictionary<string, float> data)
     {
 

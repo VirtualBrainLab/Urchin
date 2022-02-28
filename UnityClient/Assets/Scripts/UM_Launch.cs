@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 
@@ -12,6 +13,8 @@ public class UM_Launch : MonoBehaviour
 
     [SerializeField] private GameObject consolePanel;
     [SerializeField] private TextMeshProUGUI consoleText;
+
+    [SerializeField] private bool loadDefaults;
 
     [Range(0,1), SerializeField] private float percentageExploded = 0f;
     private float prevPerc = 0f;
@@ -25,40 +28,84 @@ public class UM_Launch : MonoBehaviour
     private Dictionary<int, Vector3> cosmosMeshCenters;
     private Dictionary<int, Vector3> originalTransformPositions;
     private Dictionary<int, Vector3> nodeMeshCenters;
+    private Dictionary<int, Vector3> cosmosVectors;
     
     private Dictionary<int, CCFTreeNode> visibleNodes;
+
+    // COSMOS
+    [SerializeField] private List<GameObject> cosmosParentObjects;
+    private int cosmosParentIdx = 0;
+
+    private bool ccfLoaded;
 
     // Start is called before the first frame update
     void Start()
     {
-        cosmosMeshCenters = new Dictionary<int, Vector3>();
         originalTransformPositions = new Dictionary<int, Vector3>();
         nodeMeshCenters = new Dictionary<int, Vector3>();
 
         visibleNodes = new Dictionary<int, CCFTreeNode>();
 
         modelControl.SetBeryl(true);
-        modelControl.LateStart(false);
+        modelControl.LateStart(loadDefaults);
+
+        if (loadDefaults)
+            DelayedStart();
+
+        RecomputeCosmosCenters();
+    }
+
+    private async void DelayedStart()
+    {
+        await modelControl.GetDefaultLoaded();
+        ccfLoaded = true;
+
+        foreach (CCFTreeNode node in modelControl.GetDefaultLoadedNodes())
+        {
+            RegisterNode(node);
+            node.SetNodeModelVisibility(true, true);
+        }
+    }
+
+    public void ChangeCosmosIdx(int newIdx)
+    {
+        cosmosParentIdx = newIdx;
+        RecomputeCosmosCenters();
+        UpdateExploded(percentageExploded);
+    }
+
+    private void RecomputeCosmosCenters()
+    {
+        GameObject parentGO = cosmosParentObjects[cosmosParentIdx];
+        parentGO.SetActive(true);
+
+        cosmosMeshCenters = new Dictionary<int, Vector3>();
+        cosmosVectors = new Dictionary<int, Vector3>();
 
         // save the cosmos transform positions
         foreach (int cosmosID in cosmos)
         {
-            GameObject cosmosGO = GameObject.Find(cosmosID + "L");
+            GameObject cosmosGO = parentGO.transform.Find(cosmosID + "L").gameObject;
             cosmosMeshCenters.Add(cosmosID, cosmosGO.GetComponentInChildren<Renderer>().bounds.center);
             cosmosGO.SetActive(false);
+
+            cosmosVectors.Add(cosmosID, cosmosGO.transform.localPosition);
         }
+
+        parentGO.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
+
         //Check if we need to make an update
         if (prevPerc != percentageExploded)
         {
             prevPerc = percentageExploded;
 
             // for each tree node, move it's model away from the 0,0,0 point
-            UpdateExploded(percentageExploded);
+            _UpdateExploded();
         }
 
         // Check for key down events
@@ -70,7 +117,7 @@ public class UM_Launch : MonoBehaviour
 
     public void RegisterNode(CCFTreeNode node)
     {
-        originalTransformPositions.Add(node.ID, node.GetNodeTransform().position);
+        originalTransformPositions.Add(node.ID, node.GetNodeTransform().localPosition);
         nodeMeshCenters.Add(node.ID, node.GetMeshCenter());
         visibleNodes.Add(node.ID,node);
     }
@@ -88,16 +135,36 @@ public class UM_Launch : MonoBehaviour
         Debug.Log(text);
         consoleText.text += "\n" + text;
     }
-    public void UpdateExploded(float newPerc)
+
+    public void UpdateExploded(float newPercExploded)
+    {
+        percentageExploded = newPercExploded;
+        _UpdateExploded();
+    }
+
+    private void _UpdateExploded()
     {
         cameraController.BlockDragging();
         foreach (CCFTreeNode node in visibleNodes.Values)
         {
-            Debug.Log(node.ID);
             int cosmos = modelControl.GetCosmosID(node.ID);
             Transform nodeT = node.GetNodeTransform();
-            nodeT.position = originalTransformPositions[node.ID] +
-                (cosmosMeshCenters[cosmos] - nodeMeshCenters[node.ID]) * newPerc;
+
+            if (!cosmosVectors.ContainsKey(cosmos))
+            {
+                Debug.Log(node.ID);
+                Debug.Log(cosmos);
+            }
+            nodeT.localPosition = originalTransformPositions[node.ID] +
+                cosmosVectors[cosmos] * percentageExploded;
+
+            //nodeT.localPosition = originalTransformPositions[node.ID] +
+            //    (cosmosMeshCenters[cosmos] - nodeMeshCenters[node.ID]) * newPerc;
         }
+    }
+
+    public void UpdateDataIndex(float newIdx)
+    {
+        Debug.Log(newIdx);
     }
 }

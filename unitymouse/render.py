@@ -4,26 +4,51 @@ import os
 sio = socketio.Client()
 @sio.event
 def connect():
-    print("UnityMouse Renderer connected to server")
+	print("UnityMouse Renderer connected to server")
+	ID = os.getlogin()
+	sio.emit('ID',ID)
+	print("Login sent with ID: " + ID)
+
 @sio.event
 def disconnect():
     print("UnityMouse Renderer disconnected from server")
 
 def setup():
 	"""Connect to the heroku server and provide a login ID"""
-	sio.connect('https://um-commserver.herokuapp.com/')
-	ID = os.getlogin()
-	sio.emit('ID',ID)
+	# sio.connect('https://um-commserver.herokuapp.com/')
+	sio.connect('http://localhost:5000')
 
 def close():
 	"""Disconnect from the heroku server"""
 	sio.disconnect()
 
+def load_beryl_areas():
+	"""Load all beryl areas and set visibility to True
+
+	NOTE: One of the load functions OR set_volume_visibility must be called
+	before you set the color/alpha/etc of brain regions.
+
+	Inputs:
+	areaData -- dictionary of area ID or acronym and bool values {'root':True} or {8:True}
+	"""
+	sio.emit('LoadDefaultAreas', 'beryl')
+
+def load_cosmos_areas():
+	"""Load all cosmos areas and set visibility to True
+
+	NOTE: One of the load functions OR set_volume_visibility must be called
+	before you set the color/alpha/etc of brain regions.
+
+	Inputs:
+	areaData -- dictionary of area ID or acronym and bool values {'root':True} or {8:True}
+	"""
+	sio.emit('LoadDefaultAreas', 'cosmos')
+
 def set_volume_visibility(areaData):
 	"""Set visibility of CCF volume regions
 
-	NOTE: this must be called before setting color/intensity/etc
-	in addition, this is an *asynchronous* call
+	NOTE: One of the load functions OR set_volume_visibility must be called
+	before you set the color/alpha/etc of brain regions.
 
 	Inputs:
 	areaData -- dictionary of area ID or acronym and bool values {'root':True} or {8:True}
@@ -57,6 +82,8 @@ def set_volume_colormap(colormap_name):
 	"""
 	sio.emit('SetVolumeColormap', colormap_name)
 
+# def set_volume_explode_style
+
 def set_volume_style(areaData):
 	"""Set the object style of the volumes
 
@@ -82,15 +109,26 @@ def set_volume_shader(areaData):
 	"""Set shader of CCF volume regions
 
 	Shader options are:
-		"opaque-unlit"
-		"opaque-unlit-outline"
+		"default"
 		"toon"
 		"toon-outline"
+		"transparent-lit"
+		"transparent-unlit"
 
 	Inputs:
 	areaData -- dictionary of area ID or acronym and string {'root':0.5} or {8:0.5}
 	"""
 	sio.emit('SetVolumeShader', areaData)
+
+def set_volume_data(areaData):
+	"""Set data values for volumes (0->1). These are interpreted in the same way that the
+	set_volume_intensity function works, but there is a slider in the settings that
+	lets you move through the index position of the values.
+
+	Inputs:
+	areaData -- dictionary of area ID or acronym and list of floats {'root':[0,0.5,1.0]}
+	"""
+	sio.emit('SetVolumeData', areaData)
 
 def create_neurons(neuronList):
 	"""Create neuron objects
@@ -213,4 +251,4 @@ def set_probe_size(probeData):
 	sio.emit('SetProbeSize', probeData)
 
 def clear():
-	sio.emit('ClearAll')
+	sio.emit('ClearAll', 'clear')

@@ -118,6 +118,9 @@ io.on("connection", function (socket) {
   socket.on('ClearAll', function(data) {
     emitToAll(socket.id, 'ClearAll', data);
   });
+  socket.on('LoadDefaultAreas', function(data) {
+    emitToAll(socket.id, 'LoadDefaultAreas', data);
+  });
 });
 
 function emitToAll(id, event, data) {
