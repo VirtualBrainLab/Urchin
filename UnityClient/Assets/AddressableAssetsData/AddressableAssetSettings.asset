@@ -59,7 +59,7 @@ MonoBehaviour:
       - m_Id: b9d4fe275d80b0344937b8b64a14c8fd
         m_Value: ServerData/[BuildTarget]
       - m_Id: c16203141b668414d8c81a01bd538046
-        m_Value: https://dbirman.github.io/vbl-resources/UMData/[BuildTarget]
+        m_Value: http://data.virtualbrainlab.org/UMData/[BuildTarget]
     m_ProfileEntryNames:
     - m_Id: 4998b8120ba3361479a2497e97ffab5e
       m_Name: BuildTarget
