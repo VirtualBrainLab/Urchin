@@ -301,9 +301,9 @@ public class UM_Client : MonoBehaviour
         }
     }
 
-    private void UpdateVolumeColormap(string obj)
+    private void UpdateVolumeColormap(string data)
     {
-        main.Log("Not implemented");
+        main.ChangeColormap(data);
     }
 
     private int GetID(string idOrAcronym)

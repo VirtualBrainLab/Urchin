@@ -4623,11 +4623,14 @@ MonoBehaviour:
   maxExplosion: 3
   consolePanel: {fileID: 971937620}
   consoleText: {fileID: 1782345597}
-  loadDefaults: 1
+  loadDefaults: 0
   percentageExploded: 0
+  colormapOptions:
+  - cool
+  - gray
   cosmosParentObjects:
-  - {fileID: 211372986}
   - {fileID: 2138639683}
+  - {fileID: 211372986}
 --- !u!114 &1595768702
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5685,7 +5688,7 @@ MonoBehaviour:
   brainCamera: {fileID: 1080459452}
   brainCameraRotator: {fileID: 1861690898}
   brain: {fileID: 1690469967}
-  minFoV: 15
+  minFoV: 5
   maxFoV: 120
   fovDelta: 15
   orthoDelta: 5

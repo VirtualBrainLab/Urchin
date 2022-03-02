@@ -78,6 +78,7 @@ def set_volume_colormap(colormap_name):
 
 	Options are:
 		cool (default, teal 0 -> magenta 1)
+		gray (black 0 -> white 1)
 
 	Inputs:
 	colormap_name -- string

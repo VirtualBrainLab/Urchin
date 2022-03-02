@@ -21,6 +21,10 @@ public class UM_Launch : MonoBehaviour
 
     private Vector3 center = new Vector3(5.7f, 4f, -6.6f);
 
+    // Colormaps
+    private List<Converter<float, Color>> colormaps;
+    [SerializeField] private List<string> colormapOptions;
+    private Converter<float, Color> activeColormap;
     private Vector3 teal = new Vector3(0f, 1f, 1f);
     private Vector3 magenta = new Vector3(1f, 0f, 1f);
 
@@ -41,6 +45,9 @@ public class UM_Launch : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        colormaps.Add(Cool);
+        colormaps.Add(Gray);
+        activeColormap = Cool;
 
         originalTransformPositions = new Dictionary<int, Vector3>();
         nodeMeshCenters = new Dictionary<int, Vector3>();
@@ -123,10 +130,29 @@ public class UM_Launch : MonoBehaviour
         visibleNodes.Add(node.ID,node);
     }
 
+    public Color GetColormapColor(float perc)
+    {
+        return activeColormap(perc);
+    }
+
+    public void ChangeColormap(string newColormap)
+    {
+        if (colormapOptions.Contains(newColormap))
+            activeColormap = colormaps[colormapOptions.IndexOf(newColormap)];
+        else
+            Log("Colormap " + newColormap + " not an available option");
+    }
+
     // [TODO] Refactor colormaps into their own class
     public Color Cool(float perc)
     {
         Vector3 colorVector = Vector3.Lerp(teal, magenta, perc);
+        return new Color(colorVector.x, colorVector.y, colorVector.z, 1f);
+    }
+
+    public Color Gray(float perc)
+    {
+        Vector3 colorVector = Vector3.Lerp(Vector3.zero, Vector3.one, perc);
         return new Color(colorVector.x, colorVector.y, colorVector.z, 1f);
     }
 
@@ -149,15 +175,18 @@ public class UM_Launch : MonoBehaviour
         foreach (CCFTreeNode node in visibleNodes.Values)
         {
             int cosmos = modelControl.GetCosmosID(node.ID);
-            Transform nodeT = node.GetNodeTransform();
+            Transform nodeTLeft = node.LeftGameObject().transform;
+            Transform nodeTright = node.RightGameObject().transform;
 
             if (!cosmosVectors.ContainsKey(cosmos))
             {
                 Debug.Log(node.ID);
                 Debug.Log(cosmos);
             }
-            nodeT.localPosition = originalTransformPositions[node.ID] +
+            nodeTLeft.localPosition = originalTransformPositions[node.ID] +
                 cosmosVectors[cosmos] * percentageExploded;
+            nodeTright.localPosition = originalTransformPositions[node.ID] +
+                Vector3.Scale(cosmosVectors[cosmos],-Vector3.left) * percentageExploded;
 
             //nodeT.localPosition = originalTransformPositions[node.ID] +
             //    (cosmosMeshCenters[cosmos] - nodeMeshCenters[node.ID]) * newPerc;
