@@ -29,9 +29,6 @@ def load_beryl_areas():
 
 	NOTE: One of the load functions OR set_volume_visibility must be called
 	before you set the color/alpha/etc of brain regions.
-
-	Inputs:
-	areaData -- dictionary of area ID or acronym and bool values {'root':True} or {8:True}
 	"""
 	sio.emit('LoadDefaultAreas', 'beryl')
 
@@ -40,9 +37,6 @@ def load_cosmos_areas():
 
 	NOTE: One of the load functions OR set_volume_visibility must be called
 	before you set the color/alpha/etc of brain regions.
-
-	Inputs:
-	areaData -- dictionary of area ID or acronym and bool values {'root':True} or {8:True}
 	"""
 	sio.emit('LoadDefaultAreas', 'cosmos')
 
@@ -179,21 +173,21 @@ def set_neuron_shape(neuronData):
 	"""
 	sio.emit('SetNeuronShape', neuronData)
 
-def slice_volume(slicePosition):
-	"""Sets the slice plane position and normal vector direction. The brain will be sliced in FRONT of the plane.
+# def slice_volume(slicePosition):
+# 	"""Sets the slice plane position and normal vector direction. The brain will be sliced in FRONT of the plane.
 
-	Inputs:
-	slicePosition -- float6 (x0,y0,z0,xn,yn,zn)
-	"""
-	sio.emit('SliceVolume', slicePosition)
+# 	Inputs:
+# 	slicePosition -- float6 (x0,y0,z0,xn,yn,zn)
+# 	"""
+# 	sio.emit('SliceVolume', slicePosition)
 
-def set_slice_annotation_color(annotationData):
-	"""Set the color of the annotation dataset areas on the slice
+# def set_slice_annotation_color(annotationData):
+# 	"""Set the color of the annotation dataset areas on the slice
 
-	Inputs:
-	annotationData -- dictionary of acronyms/IDs and hex color codes {'root':'#FFFFFF'}
-	"""
-	sio.emit('SetSliceColor', annotationData)
+# 	Inputs:
+# 	annotationData -- dictionary of acronyms/IDs and hex color codes {'root':'#FFFFFF'}
+# 	"""
+# 	sio.emit('SetSliceColor', annotationData)
 
 def create_probes(probeList):
 	"""Create probe objects
@@ -229,19 +223,19 @@ def set_probe_angles(probeData):
 	"""
 	sio.emit('SetProbeAngles', probeData)
 
-def set_probe_style(probeData):
-	"""Set probe rendering style
+# def set_probe_style(probeData):
+# 	"""Set probe rendering style
 
-	Style options are:
-		"line"
-		"probe-tip"
-		"probe-silicon"
-		"probe"
+# 	Style options are:
+# 		"line"
+# 		"probe-tip"
+# 		"probe-silicon"
+# 		"probe"
 
-	Inputs:
-	probeData -- dictionary of probe names and string {'p1':'line'}
-	"""
-	sio.emit('SetProbeStyle', probeData)
+# 	Inputs:
+# 	probeData -- dictionary of probe names and string {'p1':'line'}
+# 	"""
+# 	sio.emit('SetProbeStyle', probeData)
 
 def set_probe_size(probeData):
 	"""Set probe rendering style
