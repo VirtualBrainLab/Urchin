@@ -1,5 +1,6 @@
 const express = require("express");
 const socket = require("socket.io");
+const cors = require('cors');
 
 // App setup
 const port = process.env.PORT || 5000
@@ -10,6 +11,7 @@ const server = app.listen(port, function () {
 
 // Static files
 app.use(express.static("public"));
+app.use(cors());
 
 // Socket setup
 const io = socket(server);
