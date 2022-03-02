@@ -261,7 +261,7 @@ public class UM_Client : MonoBehaviour
         foreach (KeyValuePair<string, List<float>> kvp in data)
         {
             neurons[kvp.Key].transform.localPosition = new Vector3(-kvp.Value[0]/1000f, -kvp.Value[2]/1000f, kvp.Value[1]/1000f);
-        }
+        } 
     }
 
     private void CreateNeurons(List<string> data)

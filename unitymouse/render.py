@@ -13,10 +13,12 @@ def connect():
 def disconnect():
     print("UnityMouse Renderer disconnected from server")
 
-def setup():
+def setup(localhost = False):
 	"""Connect to the heroku server and provide a login ID"""
-	# sio.connect('https://um-commserver.herokuapp.com/')
-	sio.connect('http://localhost:5000')
+	if localhost:
+		sio.connect('http://localhost:5000')
+	else:
+		sio.connect('https://um-commserver.herokuapp.com/')
 
 def close():
 	"""Disconnect from the heroku server"""

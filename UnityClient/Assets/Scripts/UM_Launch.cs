@@ -41,6 +41,7 @@ public class UM_Launch : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
         originalTransformPositions = new Dictionary<int, Vector3>();
         nodeMeshCenters = new Dictionary<int, Vector3>();
 

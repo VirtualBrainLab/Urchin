@@ -61,5 +61,6 @@ crashlytics-build.properties
 **/Assets/Resources/*
 **/Assets/AddressableAssets/*
 **/ServerData/*
+**/ServerData.zip
 
 **/Server/node_modules/
