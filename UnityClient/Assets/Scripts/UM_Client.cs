@@ -339,7 +339,10 @@ public class UM_Client : MonoBehaviour
 
             Color newColor;
             if (node != null && ColorUtility.TryParseHtmlString(kvp.Value, out newColor))
-                node.SetColor(newColor);
+                if (main.GetLeftColorOnly())
+                    node.SetColorOneSided(newColor, true);
+                else
+                    node.SetColor(newColor);
             else
                 main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
         }
@@ -353,16 +356,30 @@ public class UM_Client : MonoBehaviour
 
             if (node != null)
             {
+                // Check if we already loaded this and whether 
                 if (!node.IsLoaded())
                 {
-                    Task nodeTask = node.loadNodeModel(true, handle =>
+                    if (nodeTasks.ContainsKey(node.ID))
                     {
-                        node.SetNodeModelVisibility(kvp.Value);
-                        Debug.Log(kvp.Key + " fully loaded");
-                        visibleNodes.Add(node);
-                        main.RegisterNode(node);
-                    });
-                    nodeTasks.Add(node.ID, nodeTask);
+                        main.Log("Node " + node.ID + " is already being loaded, did you send duplicate instructions?");
+                    }
+                    else
+                    {
+                        Task nodeTask = node.loadNodeModel(true, handle =>
+                        {
+                            node.SetNodeModelVisibility(kvp.Value);
+                            visibleNodes.Add(node);
+                            // There is a bug somewhere that forces us to have to do this, if it gets tracked down this can be removed...
+                            main.FixNodeTransformPosition(node);
+                            // Make sure to fix position before registering!
+                            main.RegisterNode(node);
+                        });
+                        nodeTasks.Add(node.ID, nodeTask);
+                    }
+                }
+                else
+                {
+                    node.SetNodeModelVisibility(kvp.Value);
                 }
             }
             else
@@ -397,7 +414,12 @@ public class UM_Client : MonoBehaviour
                 await nodeTasks[node.ID];
 
             if (node != null)
-                node.SetColor(main.Cool(kvp.Value));
+                if (main.GetLeftColorOnly())
+                {
+                    node.SetColorOneSided(main.GetColormapColor(kvp.Value), true);
+                }
+                else
+                    node.SetColor(main.GetColormapColor(kvp.Value));
             else
                 main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
         }

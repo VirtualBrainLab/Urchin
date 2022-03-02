@@ -16,8 +16,11 @@ public class UM_Launch : MonoBehaviour
 
     [SerializeField] private bool loadDefaults;
 
+    // Exploding
     [Range(0,1), SerializeField] private float percentageExploded = 0f;
     private float prevPerc = 0f;
+    private bool explodeLeftOnly;
+    private bool colorLeftOnly;
 
     private Vector3 center = new Vector3(5.7f, 4f, -6.6f);
 
@@ -30,7 +33,8 @@ public class UM_Launch : MonoBehaviour
 
     private int[] cosmos = { 315, 698, 1089, 703, 623, 549, 1097, 313, 1065, 512 };
     private Dictionary<int, Vector3> cosmosMeshCenters;
-    private Dictionary<int, Vector3> originalTransformPositions;
+    private Dictionary<int, Vector3> originalTransformPositionsLeft;
+    private Dictionary<int, Vector3> originalTransformPositionsRight;
     private Dictionary<int, Vector3> nodeMeshCenters;
     private Dictionary<int, Vector3> cosmosVectors;
     
@@ -45,11 +49,13 @@ public class UM_Launch : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        colormaps = new List<Converter<float, Color>>();
         colormaps.Add(Cool);
         colormaps.Add(Gray);
         activeColormap = Cool;
 
-        originalTransformPositions = new Dictionary<int, Vector3>();
+        originalTransformPositionsLeft = new Dictionary<int, Vector3>();
+        originalTransformPositionsRight = new Dictionary<int, Vector3>();
         nodeMeshCenters = new Dictionary<int, Vector3>();
 
         visibleNodes = new Dictionary<int, CCFTreeNode>();
@@ -70,9 +76,19 @@ public class UM_Launch : MonoBehaviour
 
         foreach (CCFTreeNode node in modelControl.GetDefaultLoadedNodes())
         {
+            FixNodeTransformPosition(node);
+
             RegisterNode(node);
             node.SetNodeModelVisibility(true, true);
         }
+    }
+
+    public void FixNodeTransformPosition(CCFTreeNode node)
+    {
+        // I don't know why we have to do this? For some reason when we load the node models their positions are all offset in space in a weird way... 
+        node.GetNodeTransform().localPosition = Vector3.zero;
+        node.GetNodeTransform().localRotation = Quaternion.identity;
+        node.RightGameObject().transform.localPosition = Vector3.forward * 11.4f;
     }
 
     public void ChangeCosmosIdx(int newIdx)
@@ -125,7 +141,8 @@ public class UM_Launch : MonoBehaviour
 
     public void RegisterNode(CCFTreeNode node)
     {
-        originalTransformPositions.Add(node.ID, node.GetNodeTransform().localPosition);
+        originalTransformPositionsLeft.Add(node.ID, node.LeftGameObject().transform.localPosition);
+        originalTransformPositionsRight.Add(node.ID, node.RightGameObject().transform.localPosition);
         nodeMeshCenters.Add(node.ID, node.GetMeshCenter());
         visibleNodes.Add(node.ID,node);
     }
@@ -163,6 +180,40 @@ public class UM_Launch : MonoBehaviour
         consoleText.text += "\n" + text;
     }
 
+    public void SetLeftExplodeOnly(bool state)
+    {
+        explodeLeftOnly = state;
+        _UpdateExploded();
+    }
+
+    public void SetLeftColorOnly(bool state)
+    {
+        colorLeftOnly = state;
+        if (colorLeftOnly)
+        {
+            Debug.Log("Doing the thing");
+            foreach (CCFTreeNode node in visibleNodes.Values)
+            {
+                Debug.Log(node.GetColor());
+                Debug.Log(node.GetDefaultColor());
+                node.SetColorOneSided(node.GetColor(), true);
+            }
+        }
+        else
+        {
+            Debug.Log("Reversing the thing");
+            foreach (CCFTreeNode node in visibleNodes.Values)
+            {
+                node.SetColor(node.GetColor());
+            }
+        }
+    }
+
+    public bool GetLeftColorOnly()
+    {
+        return colorLeftOnly;
+    }
+
     public void UpdateExploded(float newPercExploded)
     {
         percentageExploded = newPercExploded;
@@ -172,24 +223,27 @@ public class UM_Launch : MonoBehaviour
     private void _UpdateExploded()
     {
         cameraController.BlockDragging();
+
+        Vector3 flipVector = new Vector3(1f, 1f, -1f);
+
         foreach (CCFTreeNode node in visibleNodes.Values)
         {
             int cosmos = modelControl.GetCosmosID(node.ID);
             Transform nodeTLeft = node.LeftGameObject().transform;
             Transform nodeTright = node.RightGameObject().transform;
 
-            if (!cosmosVectors.ContainsKey(cosmos))
-            {
-                Debug.Log(node.ID);
-                Debug.Log(cosmos);
-            }
-            nodeTLeft.localPosition = originalTransformPositions[node.ID] +
+            nodeTLeft.localPosition = originalTransformPositionsLeft[node.ID] +
                 cosmosVectors[cosmos] * percentageExploded;
-            nodeTright.localPosition = originalTransformPositions[node.ID] +
-                Vector3.Scale(cosmosVectors[cosmos],-Vector3.left) * percentageExploded;
 
-            //nodeT.localPosition = originalTransformPositions[node.ID] +
-            //    (cosmosMeshCenters[cosmos] - nodeMeshCenters[node.ID]) * newPerc;
+            if (!explodeLeftOnly)
+            {
+                nodeTright.localPosition = originalTransformPositionsRight[node.ID] +
+                    Vector3.Scale(cosmosVectors[cosmos], flipVector) * percentageExploded;
+            }
+            else
+            {
+                nodeTright.localPosition = originalTransformPositionsRight[node.ID];
+            }
         }
     }
 
