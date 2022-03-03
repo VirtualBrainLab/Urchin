@@ -96,15 +96,31 @@ The index slider is not implemented.
 
 ## Adding new functionality
 
-[todo]
+To add a new function you need to add three parts:
+
+ 1. Update `unitymouse/render.py` to include the new function and add documentation
+ 2. Add the `socket.io` call to the set of EmitAll calls in `Server/server.js`
+ 3. Add the new functionality to the UnityClient in `UM_Client.cs`
+
+Before deploying you should add a new test script in `Examples` which runs your new functionality and makes sure that it works. See `example_script.py`.
+
+## Deploying the client
+
+The client is accessed by users in two ways: either through the web server at `data.virtualbrainlab.org` or through a standalone desktop app which we include in each minor version release. To deploy a new client you need to take a few steps. Note that you need access to the server to do this.
+
+ 1. If you changed the Addressable assets or updated to a new version of Unity you need to re-build the assets. Do this for each build target separately. Then copy the `UnityClient/ServerData` folder to the `htdocs/UMData` subfolder in the on the server.
+ 2. Build the WebGL target build, then copy this to the `htdocs/UMRenderer` subfolder on the server.
+ 3. Build the Windows target build, compress to zip, and attach this to the next release version. Or, if you are hotfixing a previous release, update the hotfix version number and swap the new build for the previous one.
 
 ## Deploying the server
 
 ### For local testing
 
+To run a local copy of the server you need to install Node.js and then run the command `node server.js` in the Server folder. This will start the server on `localhost:5000`. You then need to redirect both the python client and UnityClient to access the local server. Do this by running `umr.setup(localhost=True)` and by checking the `localhost` option in the `main` GameObject.
+
 ### On Heroku
 
-The node.js server `Server/server.js` handles client/renderer connections and passing messages between them. It is deployed automatically on Heroku when the github app builds. 
+Every time the github repository is pushed the Heroku server will re-build. You will get back a 503 server response if there are errors in the code running on Heroku. 
 
 # Citing
 
