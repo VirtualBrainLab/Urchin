@@ -105,3 +105,7 @@ The index slider is not implemented.
 ### On Heroku
 
 The node.js server `Server/server.js` handles client/renderer connections and passing messages between them. It is deployed automatically on Heroku when the github app builds. 
+
+# Citing
+
+If you use this to make figures for a publication you should cite this repo, email me (dbirman@uw.edu) and I can generate a DOI
