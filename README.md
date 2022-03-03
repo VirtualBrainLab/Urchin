@@ -1,8 +1,8 @@
 # Unity Mouse Brain Renderer
 
 <p float="left">
- <img src="https://github.com/dbirman/UMRenderer/raw/main/Examples/gallery/flatmap_layout.png" width="350"> 
- <img src="https://github.com/dbirman/UMRenderer/raw/main/Examples/gallery/RS_fig1.png " width="500">
+ <img src="https://github.com/dbirman/UMRenderer/raw/main/Examples/gallery/flatmap_layout.png" width="300"> 
+ <img src="https://github.com/dbirman/UMRenderer/raw/main/Examples/gallery/RS_fig1.png " width="425">
 </p>
 
 This project allows you to connect your Python scripts to a standalone "mouse brain renderer" program, to create graphics like the ones above. As a user, you only need to read the first set of instructions below (install + instructions).
