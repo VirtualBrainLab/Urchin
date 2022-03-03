@@ -445,6 +445,7 @@ public class UM_Client : MonoBehaviour
     ////
     public void UpdateID(string newID)
     {
+        main.Log("Updating ID to : " + newID);
         manager.Socket.Emit("ID", newID);
     }
 
