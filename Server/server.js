@@ -6,8 +6,6 @@ const cors = require("cors");
 const port = process.env.PORT || 5000
 const app = express();
 
-// Static files
-app.use(express.static("public"));
 app.use(cors());
 
 const server = app.listen(port, function () {
@@ -15,7 +13,15 @@ const server = app.listen(port, function () {
 });
 
 // Socket setup
-const io = socket(server);
+const io = require("socket.io")(server, {
+  cors:
+  {
+    "origin": "*",
+    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+    "preflightContinue": false,
+    "optionsSuccessStatus": 204
+  } 
+});
 
 idDict = {}; // keeps track of all sockets with the same ID
 clientIDdict = {}; // keeps track of the ID of each socket
