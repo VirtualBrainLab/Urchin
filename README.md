@@ -31,7 +31,7 @@ import unitymouse.render as umr
 umr.setup()
 ```
 
-If you want to be a good citizen you can also call `umr.close()` to close your connection.
+Once you are done using the renderer you can call `umr.close()` to close your connection.
 
 ### Interaction
 
