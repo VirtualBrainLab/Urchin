@@ -1,0 +1,873 @@
+{
+  "channel_0": {
+    "x": 187.69700274531297,
+    "y": -2049.9999999999995,
+    "z": -4302.954495882031,
+    "axial": -15.0,
+    "lateral": -32.0,
+    "brain_region_id": 609,
+    "brain_region": "SPA"
+  },
+  "channel_1": {
+    "x": 196.01750568869153,
+    "y": -2049.9999999999995,
+    "z": -4290.473741466963,
+    "axial": 0.0,
+    "lateral": -32.0,
+    "brain_region_id": 609,
+    "brain_region": "SPA"
+  },
+  "channel_2": {
+    "x": 204.3380086320701,
+    "y": -2049.9999999999995,
+    "z": -4277.992987051895,
+    "axial": 15.0,
+    "lateral": -32.0,
+    "brain_region_id": 609,
+    "brain_region": "SPA"
+  },
+  "channel_3": {
+    "x": 211.00000000000026,
+    "y": -2049.9999999999995,
+    "z": -4265.010075736886,
+    "axial": 30.0,
+    "lateral": -32.0,
+    "brain_region_id": 609,
+    "brain_region": "SPA"
+  },
+  "channel_4": {
+    "x": 211.00000000000026,
+    "y": -2049.9999999999995,
+    "z": -4250.0100757368855,
+    "axial": 45.0,
+    "lateral": -32.0,
+    "brain_region_id": 609,
+    "brain_region": "SPA"
+  },
+  "channel_5": {
+    "x": 211.00000000000026,
+    "y": -2049.9999999999995,
+    "z": -4235.0100757368855,
+    "axial": 60.0,
+    "lateral": -32.0,
+    "brain_region_id": 609,
+    "brain_region": "SPA"
+  },
+  "channel_6": {
+    "x": 211.00000000000026,
+    "y": -2049.9999999999995,
+    "z": -4220.0100757368855,
+    "axial": 75.0,
+    "lateral": -32.0,
+    "brain_region_id": 609,
+    "brain_region": "SPA"
+  },
+  "channel_7": {
+    "x": 211.00000000000026,
+    "y": -2049.9999999999995,
+    "z": -4205.0100757368855,
+    "axial": 90.0,
+    "lateral": -32.0,
+    "brain_region_id": 609,
+    "brain_region": "SPA"
+  },
+  "channel_8": {
+    "x": 211.00000000000026,
+    "y": -2049.9999999999995,
+    "z": -4190.0100757368855,
+    "axial": 105.0,
+    "lateral": -32.0,
+    "brain_region_id": 609,
+    "brain_region": "SPA"
+  },
+  "channel_9": {
+    "x": 211.00000000000026,
+    "y": -2049.9999999999995,
+    "z": -4175.0100757368855,
+    "axial": 120.0,
+    "lateral": -32.0,
+    "brain_region_id": 609,
+    "brain_region": "SPA"
+  },
+  "channel_10": {
+    "x": 215.43201255657422,
+    "y": -2049.9999999999995,
+    "z": -4161.351981165139,
+    "axial": 135.0,
+    "lateral": -32.0,
+    "brain_region_id": 609,
+    "brain_region": "SPA"
+  },
+  "channel_11": {
+    "x": 223.75251549995272,
+    "y": -2049.9999999999995,
+    "z": -4148.871226750071,
+    "axial": 150.0,
+    "lateral": -32.0,
+    "brain_region_id": 741,
+    "brain_region": "VPMpc"
+  },
+  "channel_12": {
+    "x": 232.07301844333128,
+    "y": -2049.9999999999995,
+    "z": -4136.390472335003,
+    "axial": 165.0,
+    "lateral": -32.0,
+    "brain_region_id": 741,
+    "brain_region": "VPMpc"
+  },
+  "channel_13": {
+    "x": 240.3935213867093,
+    "y": -2049.9999999999995,
+    "z": -4123.909717919935,
+    "axial": 180.0,
+    "lateral": -32.0,
+    "brain_region_id": 741,
+    "brain_region": "VPMpc"
+  },
+  "channel_14": {
+    "x": 248.71402433008782,
+    "y": -2049.9999999999995,
+    "z": -4111.428963504868,
+    "axial": 195.0,
+    "lateral": -32.0,
+    "brain_region_id": 741,
+    "brain_region": "VPMpc"
+  },
+  "channel_15": {
+    "x": 257.0345272734664,
+    "y": -2049.9999999999995,
+    "z": -4098.9482090898,
+    "axial": 210.0,
+    "lateral": -32.0,
+    "brain_region_id": 741,
+    "brain_region": "VPMpc"
+  },
+  "channel_16": {
+    "x": 263.4827492144054,
+    "y": -2049.9999999999995,
+    "z": -4085.5517523567833,
+    "axial": 225.0,
+    "lateral": -32.0,
+    "brain_region_id": 741,
+    "brain_region": "VPMpc"
+  },
+  "channel_17": {
+    "x": 267.9847138903066,
+    "y": -2049.9999999999995,
+    "z": -4072.0458583290797,
+    "axial": 240.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_18": {
+    "x": 272.44859202385936,
+    "y": -2049.9999999999995,
+    "z": -4058.654223928421,
+    "axial": 255.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_19": {
+    "x": 276.9124701574118,
+    "y": -2049.9999999999995,
+    "z": -4045.2625895277642,
+    "axial": 270.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_20": {
+    "x": 281.37634829096436,
+    "y": -2049.9999999999995,
+    "z": -4031.870955127106,
+    "axial": 285.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_21": {
+    "x": 285.84022642451697,
+    "y": -2049.9999999999995,
+    "z": -4018.4793207264483,
+    "axial": 300.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_22": {
+    "x": 285.9999999999998,
+    "y": -2049.9999999999995,
+    "z": -4004.389226308986,
+    "axial": 315.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_23": {
+    "x": 285.9999999999998,
+    "y": -2049.9999999999995,
+    "z": -3990.273204209539,
+    "axial": 330.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_24": {
+    "x": 285.9999999999998,
+    "y": -2049.9999999999995,
+    "z": -3976.157182110092,
+    "axial": 345.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_25": {
+    "x": 285.9999999999998,
+    "y": -2049.9999999999995,
+    "z": -3962.041160010645,
+    "axial": 360.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_26": {
+    "x": 285.9999999999998,
+    "y": -2049.9999999999995,
+    "z": -3947.925137911196,
+    "axial": 375.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_27": {
+    "x": 285.9999999999998,
+    "y": -2049.9999999999995,
+    "z": -3933.809115811749,
+    "axial": 390.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_28": {
+    "x": 285.9999999999998,
+    "y": -2049.9999999999995,
+    "z": -3919.693093712302,
+    "axial": 405.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_29": {
+    "x": 291.55570247065356,
+    "y": -2049.9999999999995,
+    "z": -3906.8885950586923,
+    "axial": 420.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_30": {
+    "x": 297.8685794679046,
+    "y": -2049.9999999999995,
+    "z": -3894.2628410641905,
+    "axial": 435.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_31": {
+    "x": 304.1814564651553,
+    "y": -2049.9999999999995,
+    "z": -3881.637087069689,
+    "axial": 450.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_32": {
+    "x": 310.4943334624063,
+    "y": -2049.9999999999995,
+    "z": -3869.0113330751874,
+    "axial": 465.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_33": {
+    "x": 316.807210459657,
+    "y": -2049.9999999999995,
+    "z": -3856.385579080686,
+    "axial": 480.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_34": {
+    "x": 323.1200874569081,
+    "y": -2049.9999999999995,
+    "z": -3843.7598250861843,
+    "axial": 495.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_35": {
+    "x": 329.4329644541587,
+    "y": -2049.9999999999995,
+    "z": -3831.1340710916834,
+    "axial": 510.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_36": {
+    "x": 335.7458414514098,
+    "y": -2049.9999999999995,
+    "z": -3818.5083170971816,
+    "axial": 525.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_37": {
+    "x": 338.6072572945581,
+    "y": -2047.392742705442,
+    "z": -3804.9637135272114,
+    "axial": 540.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_38": {
+    "x": 341.3238870142257,
+    "y": -2044.6761129857744,
+    "z": -3791.3805649288734,
+    "axial": 555.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_39": {
+    "x": 344.04051673389324,
+    "y": -2041.9594832661066,
+    "z": -3777.7974163305353,
+    "axial": 570.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_40": {
+    "x": 346.7571464535609,
+    "y": -2039.2428535464394,
+    "z": -3764.214267732197,
+    "axial": 585.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_41": {
+    "x": 349.4737761732283,
+    "y": -2036.5262238267717,
+    "z": -3750.63111913386,
+    "axial": 600.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_42": {
+    "x": 352.19040589289597,
+    "y": -2033.809594107104,
+    "z": -3737.0479705355215,
+    "axial": 615.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_43": {
+    "x": 354.90703561256345,
+    "y": -2031.0929643874367,
+    "z": -3723.4648219371843,
+    "axial": 630.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_44": {
+    "x": 357.6236653322311,
+    "y": -2028.3763346677688,
+    "z": -3709.881673338846,
+    "axial": 645.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_45": {
+    "x": 360.3402950518986,
+    "y": -2025.6597049481015,
+    "z": -3696.298524740508,
+    "axial": 660.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_46": {
+    "x": 363.59224371277116,
+    "y": -2025.0,
+    "z": -3682.6310251489163,
+    "axial": 675.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_47": {
+    "x": 367.0158819556872,
+    "y": -2025.0,
+    "z": -3668.9364721772517,
+    "axial": 690.0,
+    "lateral": -32.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_48": {
+    "x": 370.4395201986035,
+    "y": -2025.0,
+    "z": -3655.241919205587,
+    "axial": 705.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_49": {
+    "x": 373.8631584415195,
+    "y": -2025.0,
+    "z": -3641.5473662339223,
+    "axial": 720.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_50": {
+    "x": 377.2867966844358,
+    "y": -2025.0,
+    "z": -3627.8528132622573,
+    "axial": 735.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_51": {
+    "x": 380.7104349273518,
+    "y": -2025.0,
+    "z": -3614.158260290593,
+    "axial": 750.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_52": {
+    "x": 384.26041152222723,
+    "y": -2025.0,
+    "z": -3599.9583539110913,
+    "axial": 765.0,
+    "lateral": 0.0,
+    "brain_region_id": 595,
+    "brain_region": "fr"
+  },
+  "channel_53": {
+    "x": 387.53509766733964,
+    "y": -2025.0,
+    "z": -3585.324511663302,
+    "axial": 780.0,
+    "lateral": 0.0,
+    "brain_region_id": 595,
+    "brain_region": "fr"
+  },
+  "channel_54": {
+    "x": 390.4768396944124,
+    "y": -2025.0,
+    "z": -3570.6158015279384,
+    "axial": 795.0,
+    "lateral": 0.0,
+    "brain_region_id": 595,
+    "brain_region": "fr"
+  },
+  "channel_55": {
+    "x": 393.41858172148505,
+    "y": -2025.0,
+    "z": -3555.907091392575,
+    "axial": 810.0,
+    "lateral": 0.0,
+    "brain_region_id": 595,
+    "brain_region": "fr"
+  },
+  "channel_56": {
+    "x": 396.36032374855785,
+    "y": -2025.0,
+    "z": -3541.1983812572103,
+    "axial": 825.0,
+    "lateral": 0.0,
+    "brain_region_id": 595,
+    "brain_region": "fr"
+  },
+  "channel_57": {
+    "x": 399.3020657756305,
+    "y": -2025.0,
+    "z": -3526.4896711218466,
+    "axial": 840.0,
+    "lateral": 0.0,
+    "brain_region_id": 595,
+    "brain_region": "fr"
+  },
+  "channel_58": {
+    "x": 402.24380780270326,
+    "y": -2025.0,
+    "z": -3511.7809609864835,
+    "axial": 855.0,
+    "lateral": 0.0,
+    "brain_region_id": 595,
+    "brain_region": "fr"
+  },
+  "channel_59": {
+    "x": 405.185549829776,
+    "y": -2025.0,
+    "z": -3497.0722508511194,
+    "axial": 870.0,
+    "lateral": 0.0,
+    "brain_region_id": 595,
+    "brain_region": "fr"
+  },
+  "channel_60": {
+    "x": 408.12729185684884,
+    "y": -2025.0,
+    "z": -3482.3635407157553,
+    "axial": 885.0,
+    "lateral": 0.0,
+    "brain_region_id": 595,
+    "brain_region": "fr"
+  },
+  "channel_61": {
+    "x": 411.17849917552877,
+    "y": -2024.9405002748235,
+    "z": -3467.7025013741186,
+    "axial": 900.0,
+    "lateral": 0.0,
+    "brain_region_id": 595,
+    "brain_region": "fr"
+  },
+  "channel_62": {
+    "x": 418.78488746808534,
+    "y": -2022.4050375106378,
+    "z": -3455.025187553191,
+    "axial": 915.0,
+    "lateral": 0.0,
+    "brain_region_id": 595,
+    "brain_region": "fr"
+  },
+  "channel_63": {
+    "x": 426.3912757606422,
+    "y": -2019.8695747464524,
+    "z": -3442.347873732263,
+    "axial": 930.0,
+    "lateral": 0.0,
+    "brain_region_id": 595,
+    "brain_region": "fr"
+  },
+  "channel_64": {
+    "x": 433.99766405319883,
+    "y": -2017.3341119822671,
+    "z": -3429.670559911335,
+    "axial": 945.0,
+    "lateral": 0.0,
+    "brain_region_id": 595,
+    "brain_region": "fr"
+  },
+  "channel_65": {
+    "x": 441.6040523457554,
+    "y": -2014.7986492180817,
+    "z": -3416.993246090408,
+    "axial": 960.0,
+    "lateral": 0.0,
+    "brain_region_id": 595,
+    "brain_region": "fr"
+  },
+  "channel_66": {
+    "x": 449.2104406383122,
+    "y": -2012.263186453896,
+    "z": -3404.3159322694796,
+    "axial": 975.0,
+    "lateral": 0.0,
+    "brain_region_id": 595,
+    "brain_region": "fr"
+  },
+  "channel_67": {
+    "x": 456.8168289308688,
+    "y": -2009.7277236897103,
+    "z": -3391.6386184485523,
+    "axial": 990.0,
+    "lateral": 0.0,
+    "brain_region_id": 595,
+    "brain_region": "fr"
+  },
+  "channel_68": {
+    "x": 464.4232172234256,
+    "y": -2007.1922609255248,
+    "z": -3378.961304627624,
+    "axial": 1005.0,
+    "lateral": 0.0,
+    "brain_region_id": 595,
+    "brain_region": "fr"
+  },
+  "channel_69": {
+    "x": 472.02960551598227,
+    "y": -2004.656798161339,
+    "z": -3366.2839908066967,
+    "axial": 1020.0,
+    "lateral": 0.0,
+    "brain_region_id": 595,
+    "brain_region": "fr"
+  },
+  "channel_70": {
+    "x": 479.63599380853884,
+    "y": -2002.121335397154,
+    "z": -3353.606676985769,
+    "axial": 1035.0,
+    "lateral": 0.0,
+    "brain_region_id": 595,
+    "brain_region": "fr"
+  },
+  "channel_71": {
+    "x": 487.35902132935837,
+    "y": -2000.0,
+    "z": -3340.961468005963,
+    "axial": 1050.0,
+    "lateral": 0.0,
+    "brain_region_id": 595,
+    "brain_region": "fr"
+  },
+  "channel_72": {
+    "x": 495.6795242727367,
+    "y": -2000.0,
+    "z": -3328.480713590895,
+    "axial": 1065.0,
+    "lateral": 0.0,
+    "brain_region_id": 595,
+    "brain_region": "fr"
+  },
+  "channel_73": {
+    "x": 504.0000272161153,
+    "y": -2000.0,
+    "z": -3315.9999591758274,
+    "axial": 1080.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_74": {
+    "x": 512.3205301594936,
+    "y": -2000.0,
+    "z": -3303.51920476076,
+    "axial": 1095.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_75": {
+    "x": 520.6410331028721,
+    "y": -2000.0,
+    "z": -3291.0384503456917,
+    "axial": 1110.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_76": {
+    "x": 528.9615360462506,
+    "y": -2000.0,
+    "z": -3278.5576959306245,
+    "axial": 1125.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_77": {
+    "x": 536.0,
+    "y": -2000.0,
+    "z": -3265.6887713428746,
+    "axial": 1140.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_78": {
+    "x": 536.0,
+    "y": -2000.0,
+    "z": -3250.688771342874,
+    "axial": 1155.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_79": {
+    "x": 536.0,
+    "y": -2000.0,
+    "z": -3235.6887713428746,
+    "axial": 1170.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_80": {
+    "x": 536.0,
+    "y": -2000.0,
+    "z": -3220.688771342874,
+    "axial": 1185.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_81": {
+    "x": 536.0,
+    "y": -2000.0,
+    "z": -3205.688771342874,
+    "axial": 1200.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_82": {
+    "x": 536.0,
+    "y": -2000.0,
+    "z": -3190.6887713428746,
+    "axial": 1215.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_83": {
+    "x": 536.0,
+    "y": -2000.0,
+    "z": -3175.6887713428746,
+    "axial": 1230.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_84": {
+    "x": 536.0,
+    "y": -2000.0,
+    "z": -3160.688771342874,
+    "axial": 1245.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_85": {
+    "x": 536.0,
+    "y": -2000.0,
+    "z": -3145.6887713428746,
+    "axial": 1260.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_86": {
+    "x": 536.0,
+    "y": -2000.0,
+    "z": -3130.6887713428746,
+    "axial": 1275.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_87": {
+    "x": 536.0,
+    "y": -2000.0,
+    "z": -3115.6887713428737,
+    "axial": 1290.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_88": {
+    "x": 536.0,
+    "y": -2000.0,
+    "z": -3100.6887713428746,
+    "axial": 1305.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_89": {
+    "x": 536.0,
+    "y": -2000.0,
+    "z": -3085.688771342874,
+    "axial": 1320.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_90": {
+    "x": 536.0,
+    "y": -2000.0,
+    "z": -3070.688771342874,
+    "axial": 1335.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_91": {
+    "x": 538.414430583038,
+    "y": -2000.0,
+    "z": -3055.9278470848108,
+    "axial": 1350.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_92": {
+    "x": 541.3561726101107,
+    "y": -2000.0,
+    "z": -3041.2191369494467,
+    "axial": 1365.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_93": {
+    "x": 544.2979146371835,
+    "y": -2000.0,
+    "z": -3026.510426814082,
+    "axial": 1380.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_94": {
+    "x": 547.2396566642561,
+    "y": -2000.0,
+    "z": -3011.801716678719,
+    "axial": 1395.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "channel_95": {
+    "x": 550.181398691329,
+    "y": -2000.0,
+    "z": -2997.0930065433545,
+    "axial": 1410.0,
+    "lateral": 0.0,
+    "brain_region_id": 930,
+    "brain_region": "PF"
+  },
+  "origin": {
+    "bregma": [
+      5739,
+      5400,
+      332
+    ]
+  }
+}
