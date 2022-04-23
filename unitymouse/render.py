@@ -146,7 +146,7 @@ def set_neuron_positions(neuronData):
 	sio.emit('SetNeuronPos', neuronData)
 
 def set_neuron_size(neuronData):
-	"""Set size of neurons in um units
+	"""Set size of neurons in mm units
 
 	Inputs:
 	neuronData -- dictionary of neuron names and floats {'n1': 20}
@@ -154,7 +154,7 @@ def set_neuron_size(neuronData):
 	sio.emit('SetNeuronSize', neuronData)
 
 def set_neuron_color(neuronData):
-	"""Set size of neurons in um units
+	"""Set color of neurons
 
 	Inputs:
 	neuronData -- dictionary of neuron names and hex colors {'n1': '#FFFFFF'}
