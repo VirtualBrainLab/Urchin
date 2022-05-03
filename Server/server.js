@@ -121,11 +121,14 @@ io.on("connection", function (socket) {
   socket.on('SetProbeSize', function(data) {
     emitToAll(socket.id, 'SetProbeSize', data);
   });
-  socket.on('SetProbeSize', function(data) {
-    emitToAll(socket.id, 'SetProbeSize', data);
+  socket.on('SetCameraTarget', function(data) {
+    emitToAll(socket.id, 'SetCameraTarget', data);
   });
-  socket.on('ClearAll', function(data) {
-    emitToAll(socket.id, 'ClearAll', data);
+  socket.on('SetCameraTargetArea', function(data) {
+    emitToAll(socket.id, 'SetCameraTargetArea', data);
+  });
+  socket.on('SetCameraYAngle', function(data) {
+    emitToAll(socket.id, 'SetCameraYAngle', data);
   });
   socket.on('LoadDefaultAreas', function(data) {
     emitToAll(socket.id, 'LoadDefaultAreas', data);

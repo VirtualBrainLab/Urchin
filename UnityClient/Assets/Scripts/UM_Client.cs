@@ -10,8 +10,9 @@ using System.Threading.Tasks;
 
 public class UM_Client : MonoBehaviour
 {
-    [SerializeField] CCFModelControl modelControl;
     [SerializeField] UM_Launch main;
+    [SerializeField] CCFModelControl modelControl;
+    [SerializeField] UM_CameraController cameraControl;
 
     [SerializeField] private GameObject idPanel;
     [SerializeField] private TextMeshProUGUI idInput;
@@ -80,11 +81,40 @@ public class UM_Client : MonoBehaviour
         manager.Socket.On<Dictionary<string, List<float>>>("SetProbeAngles", UpdateProbeAngles);
         manager.Socket.On<Dictionary<string, string>>("SetProbeStyle", UpdateProbeStyle);
         manager.Socket.On<Dictionary<string, List<float>>>("SetProbeSize", UpdateProbeScale);
+        manager.Socket.On<List<float>>("SetCameraTarget", SetCameraTarget);
+        manager.Socket.On<string>("SetCameraTargetArea", SetCameraTargetArea);
+        manager.Socket.On<float>("SetCameraYAngle", SetCameraYAngle);
         manager.Socket.On<string>("ClearAll", ClearAll);
 
         ID = Environment.UserName;
         idInput.text = ID;
     }
+
+    // CAMERA CONTROLS
+
+    private void SetCameraYAngle(float obj)
+    {
+        cameraControl.SetCameraY(obj);
+    }
+
+    private void SetCameraTargetArea(string obj)
+    {
+        CCFTreeNode node = modelControl.tree.findNode(GetID(obj));
+        if (node != null)
+        {
+            Vector3 center = node.GetMeshCenter();
+            cameraControl.SetCameraTarget(center);
+        }
+        else
+            main.Log("Failed to find node to set camera target: " + obj);
+    }
+
+    private void SetCameraTarget(List<float> obj)
+    {
+        cameraControl.SetCameraTarget(new Vector3(obj[0], obj[1], obj[2]));
+    }
+
+    // UPDATE
 
     // Update is called once per frame
     void Update()
@@ -94,6 +124,8 @@ public class UM_Client : MonoBehaviour
             idPanel.SetActive(!idPanel.activeSelf);
         }
     }
+
+    // CLEAR
 
     private void ClearAll(string val)
     {
@@ -108,6 +140,8 @@ public class UM_Client : MonoBehaviour
             node.SetNodeModelVisibility(false, false);
         visibleNodes = new List<CCFTreeNode>();
     }
+
+    // PROBE CONTROLS
 
     private void UpdateProbeStyle(Dictionary<string, string> data)
     {
@@ -308,10 +342,12 @@ public class UM_Client : MonoBehaviour
 
     private int GetID(string idOrAcronym)
     {
-        if (idOrAcronym.ToLower().Equals("root") || idOrAcronym.ToLower().Equals("void"))
+        string lower = idOrAcronym.ToLower();
+
+        if (lower.Equals("root") || lower.Equals("void"))
             return -1;
-        if (modelControl.IsAcronym(idOrAcronym))
-            return modelControl.Acronym2ID(idOrAcronym);
+        if (modelControl.IsAcronym(lower))
+            return modelControl.Acronym2ID(lower);
         else
         {
             int ret;

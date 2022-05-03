@@ -117,15 +117,15 @@ def set_volume_shader(areaData):
 	"""
 	sio.emit('SetVolumeShader', areaData)
 
-def set_volume_data(areaData):
-	"""Set data values for volumes (0->1). These are interpreted in the same way that the
-	set_volume_intensity function works, but there is a slider in the settings that
-	lets you move through the index position of the values.
+# def set_volume_data(areaData):
+# 	"""Set data values for volumes (0->1). These are interpreted in the same way that the
+# 	set_volume_intensity function works, but there is a slider in the settings that
+# 	lets you move through the index position of the values.
 
-	Inputs:
-	areaData -- dictionary of area ID or acronym and list of floats {'root':[0,0.5,1.0]}
-	"""
-	sio.emit('SetVolumeData', areaData)
+# 	Inputs:
+# 	areaData -- dictionary of area ID or acronym and list of floats {'root':[0,0.5,1.0]}
+# 	"""
+# 	sio.emit('SetVolumeData', areaData)
 
 def create_neurons(neuronList):
 	"""Create neuron objects
@@ -246,6 +246,39 @@ def set_probe_size(probeData):
 	probeData -- dictionary of probe names and float3 {'p1':[0.07, 3.84, 0.02]}
 	"""
 	sio.emit('SetProbeSize', probeData)
+
+def set_camera_target(cameraData):
+	"""Set camera angle around the Y (vertical) axis
+
+	By default the camera is centered at the center point of the CCF space
+
+	Inputs:
+	cameraData -- list containing the CCF coordinate in mm to target ap/dv/lr, default [5.7, 4, 6.6]
+	"""
+	sio.emit('SetCameraTarget', cameraData)
+
+def set_camera_target_area(cameraData):
+	"""Set camera angle around the Y (vertical) axis
+
+	By default the camera is centered at the center point of the CCF space. Append "-l" or "-r"
+	to target only the left hemisphere or right hemisphere areas. Note that area centers come from
+	the area mesh models, which for some areas (especially long/curved areas) will not be where
+	you think the center "should" be, so to speak. For those areas, calculate a center yourself
+	and use set_camera_target([ap,dv,lr])
+
+	Inputs:
+	cameraData -- string area name or acronym e.g. 'HIP' or 'HIP-l'
+	"""
+	sio.emit('SetCameraTargetArea', cameraData)
+
+def set_camera_y_angle(cameraData):
+	"""Set camera angle around the Y (vertical) axis
+
+	Inputs:
+	cameraData -- degree value to set the camera angle to, e.g. 0->360
+	"""
+	sio.emit('SetCameraYAngle', cameraData)
+
 
 def clear():
 	sio.emit('ClearAll', 'clear')

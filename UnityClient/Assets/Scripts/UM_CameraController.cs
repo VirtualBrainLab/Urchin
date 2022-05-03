@@ -32,33 +32,52 @@ public class UM_CameraController : MonoBehaviour
     private float totalPitch;
     private float totalSpin;
 
+    // auto-rotation
+    private bool autoRotate;
+    private float autoRotateSpeed = 10.0f;
+
+    // Targeting
+    private Vector3 cameraTarget;
+
     // Start is called before the first frame update
     void Start()
     {
         initialCameraRotatorPosition = brainCameraRotator.transform.position;
         lastLeftClick = Time.realtimeSinceStartup;
         lastRightClick = Time.realtimeSinceStartup;
+
+        cameraTarget = brain.transform.position;
+
+        autoRotate = false;
     }
 
     private void Update()
     {
+        bool anyEvent = false;
         // Check the scroll wheel and deal with the field of view
         float fov = brainCamera.orthographic ? brainCamera.orthographicSize : brainCamera.fieldOfView;
 
         float scroll = -Input.GetAxis("Mouse ScrollWheel");
-        fov += (brainCamera.orthographic ? orthoDelta : fovDelta) * scroll;
-        fov = Mathf.Clamp(fov, minFoV, maxFoV);
+        if (scroll != 0)
+        {
+            fov += (brainCamera.orthographic ? orthoDelta : fovDelta) * scroll;
+            fov = Mathf.Clamp(fov, minFoV, maxFoV);
 
-        if (brainCamera.orthographic)
-            brainCamera.orthographicSize = fov;
-        else
-            brainCamera.fieldOfView = fov;
+            if (brainCamera.orthographic)
+                brainCamera.orthographicSize = fov;
+            else
+                brainCamera.fieldOfView = fov;
+
+            anyEvent = true;
+        }
 
         // Now check if the mouse wheel is being held down
         if (Input.GetMouseButton(1))
         {
             mouseDownOverBrain = true;
             mouseButtonDown = 1;
+
+            anyEvent = true;
         }
 
         // Now deal with dragging
@@ -67,9 +86,21 @@ public class UM_CameraController : MonoBehaviour
             //BrainCameraDetectTargets();
             mouseDownOverBrain = true;
             mouseButtonDown = 0;
+
+            anyEvent = true;
         }
 
-        BrainCameraControl_noTarget();
+        if (anyEvent)
+            SetCameraContinuousRotation(false);
+
+        if (autoRotate)
+        {
+            Debug.Log("Rotating");
+            totalSpin += autoRotateSpeed * Time.deltaTime;
+            ApplyBrainCameraRotatorRotation();
+        }
+        else
+            BrainCameraControl_noTarget();
     }
 
     public void BlockDragging()
@@ -161,13 +192,40 @@ public class UM_CameraController : MonoBehaviour
     void ApplyBrainCameraRotatorRotation()
     {
         Quaternion curRotation = Quaternion.Euler(totalYaw, totalSpin, totalPitch);
-
         // Move the camera back to zero, perform rotation, then offset back
         brainCameraRotator.transform.position = initialCameraRotatorPosition;
-        brainCameraRotator.transform.LookAt(brain.transform, Vector3.back);
+        brainCameraRotator.transform.LookAt(cameraTarget, Vector3.back);
         brainCameraRotator.transform.position = curRotation * (brainCameraRotator.transform.position - brain.transform.position) + brain.transform.position;
         brainCameraRotator.transform.rotation = curRotation * brainCameraRotator.transform.rotation;
     }
+
+    public void SetCameraY(float newSpin)
+    {
+        // Set the camera position around the Y axis
+        totalSpin = newSpin;
+        ApplyBrainCameraRotatorRotation();
+    }
+
+    public void SetCameraTarget(Vector3 newTarget)
+    {
+        cameraTarget = newTarget;
+    }
+
+    private void SetCameraContinuousRotation(bool state)
+    {
+        Debug.Log(state);
+        autoRotate = state;
+    }
+
+    public void SetCameraRotationSpeed(float speed)
+    {
+        autoRotateSpeed = speed;
+    }
+    public void CameraContinuousRotationButton()
+    {
+        SetCameraContinuousRotation(true);
+    }
+
     void ClearMouseDown()
     {
         mouseDownOverBrain = false;
