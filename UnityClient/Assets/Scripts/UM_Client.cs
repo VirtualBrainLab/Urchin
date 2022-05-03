@@ -346,8 +346,8 @@ public class UM_Client : MonoBehaviour
 
         if (lower.Equals("root") || lower.Equals("void"))
             return -1;
-        if (modelControl.IsAcronym(lower))
-            return modelControl.Acronym2ID(lower);
+        if (modelControl.IsAcronym(idOrAcronym))
+            return modelControl.Acronym2ID(idOrAcronym);
         else
         {
             int ret;

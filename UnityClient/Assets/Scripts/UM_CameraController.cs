@@ -95,7 +95,6 @@ public class UM_CameraController : MonoBehaviour
 
         if (autoRotate)
         {
-            Debug.Log("Rotating");
             totalSpin += autoRotateSpeed * Time.deltaTime;
             ApplyBrainCameraRotatorRotation();
         }
@@ -195,7 +194,7 @@ public class UM_CameraController : MonoBehaviour
         // Move the camera back to zero, perform rotation, then offset back
         brainCameraRotator.transform.position = initialCameraRotatorPosition;
         brainCameraRotator.transform.LookAt(cameraTarget, Vector3.back);
-        brainCameraRotator.transform.position = curRotation * (brainCameraRotator.transform.position - brain.transform.position) + brain.transform.position;
+        brainCameraRotator.transform.position = curRotation * (brainCameraRotator.transform.position - cameraTarget) + cameraTarget;
         brainCameraRotator.transform.rotation = curRotation * brainCameraRotator.transform.rotation;
     }
 
@@ -208,12 +207,18 @@ public class UM_CameraController : MonoBehaviour
 
     public void SetCameraTarget(Vector3 newTarget)
     {
-        cameraTarget = newTarget;
+        Debug.Log("Setting camera target to: " + newTarget);
+
+        // Reset any panning 
+        brainCamera.transform.localPosition = Vector3.zero;
+
+        cameraTarget = new Vector3(5.7f - newTarget.z, 4f - newTarget.y, -6.6f + newTarget.x);
+
+        ApplyBrainCameraRotatorRotation();
     }
 
     private void SetCameraContinuousRotation(bool state)
     {
-        Debug.Log(state);
         autoRotate = state;
     }
 

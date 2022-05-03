@@ -257,19 +257,19 @@ def set_camera_target(cameraData):
 	"""
 	sio.emit('SetCameraTarget', cameraData)
 
-def set_camera_target_area(cameraData):
-	"""Set camera angle around the Y (vertical) axis
+# def set_camera_target_area(cameraData):
+# 	"""Set camera angle around the Y (vertical) axis
 
-	By default the camera is centered at the center point of the CCF space. Append "-l" or "-r"
-	to target only the left hemisphere or right hemisphere areas. Note that area centers come from
-	the area mesh models, which for some areas (especially long/curved areas) will not be where
-	you think the center "should" be, so to speak. For those areas, calculate a center yourself
-	and use set_camera_target([ap,dv,lr])
+# 	By default the camera is centered at the center point of the CCF space. Append "-l" or "-r"
+# 	to target only the left hemisphere or right hemisphere areas. Note that area centers come from
+# 	the area mesh models, which for some areas (especially long/curved areas) will not be where
+# 	you think the center "should" be, so to speak. For those areas, calculate a center yourself
+# 	and use set_camera_target([ap,dv,lr])
 
-	Inputs:
-	cameraData -- string area name or acronym e.g. 'HIP' or 'HIP-l'
-	"""
-	sio.emit('SetCameraTargetArea', cameraData)
+# 	Inputs:
+# 	cameraData -- string area name or acronym e.g. 'HIP' or 'HIP-l'
+# 	"""
+# 	sio.emit('SetCameraTargetArea', cameraData)
 
 def set_camera_y_angle(cameraData):
 	"""Set camera angle around the Y (vertical) axis
