@@ -91,11 +91,17 @@ Once you have imported `umr` you can use the following calls to display data. Re
 
 `umr.set_probe_size` - pass a dictionary of probe names and a list of 3 floats to set probe size in width / height / depth (default: [0.07, 3.84, 0.02])
 
+### Cameras
+
+`umr.set_camera_target` - pass the ap/dv/lr coordinates in mm
+
+`umr.set_camera_y_angle` - controls the rotation of the camera around the Y (up) axis
+
 ## Settings
 
 In the application settings (which are open by default) you can "explode" the brain using the slider option. You can explode all areas, or just the cortex and hippocampus "vertically" sort of like a nested doll. You can also switch from exploding all areas to just the left side, as well as set the colors to the defaults on the right side of the brain. 
 
-The index slider is not implemented.
+The camera rotation button continuously increments the `set_camera_y_angle` function to rotate the camera around the current camera target point. The speed is controlled by the slider.
 
 # Developer Instructions
 
