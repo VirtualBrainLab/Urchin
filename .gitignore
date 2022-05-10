@@ -64,3 +64,5 @@ crashlytics-build.properties
 **/ServerData.zip
 
 **/Server/node_modules/
+*.pyc
+Examples/.ipynb_checkpoints/*
