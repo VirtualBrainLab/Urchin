@@ -16,6 +16,8 @@ This project allows you to connect your Python scripts to a standalone "mouse br
 
 The fastest way to get running is to open http://data.virtualbrainlab.org/UMRenderer in a browser window.
 
+Your Python environment needs to have the package `python-socketio[client]` installed.
+
 You can also download the latest standalone desktop app for Windows from the [releases page](https://github.com/dbirman/UMRenderer/releases). Linux and Mac executables are available by request.
 
 # Instructions
