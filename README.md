@@ -1,4 +1,4 @@
-# Unity Mouse Brain Renderer
+# Brain Viewer
 
 <p float="left">
  <img src="https://github.com/dbirman/UMRenderer/raw/main/Examples/gallery/flatmap_layout.png" width="25%"> 
