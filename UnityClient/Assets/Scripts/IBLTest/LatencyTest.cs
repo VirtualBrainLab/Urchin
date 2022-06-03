@@ -10,7 +10,7 @@ public class LatencyTest : MonoBehaviour
     [SerializeField] private float maxExplosion = 10f;
 
     [SerializeField] private TextMeshProUGUI elapsedTimeText;
-    [SerializeField] private UM_CameraController cameraController;
+    [SerializeField] private BrainCameraController cameraController;
 
     [SerializeField] private GameObject tooltipPanelGO;
 
@@ -126,17 +126,18 @@ public class LatencyTest : MonoBehaviour
         //    foreach (CCFTreeNode node in nodes.Values)
         //        node.ExplodeModel(Vector3.zero, maxExplosion * percentageExploded);
         //}
+
     }
 
     public void UpdateElapsedTime(float newElapsedTime)
     {
-        cameraController.BlockDragging();
+        cameraController.SetControlBlock(true);
         elapsedTime = newElapsedTime;
     }
 
     public void UpdateExploded(float newPerc)
     {
-        cameraController.BlockDragging();
+        cameraController.SetControlBlock(true);
         foreach (CCFTreeNode node in nodes.Values)
         {
             int cosmos = modelControl.GetCosmosID(node.ID);

@@ -12,7 +12,7 @@ public class UM_Client : MonoBehaviour
 {
     [SerializeField] UM_Launch main;
     [SerializeField] CCFModelControl modelControl;
-    [SerializeField] UM_CameraController cameraControl;
+    [SerializeField] BrainCameraController cameraControl;
 
     [SerializeField] private GameObject idPanel;
     [SerializeField] private TextMeshProUGUI idInput;
@@ -94,7 +94,7 @@ public class UM_Client : MonoBehaviour
 
     private void SetCameraYAngle(float obj)
     {
-        cameraControl.SetCameraY(obj);
+        cameraControl.SetSpin(obj);
     }
 
     private void SetCameraTargetArea(string obj)
@@ -384,7 +384,7 @@ public class UM_Client : MonoBehaviour
         }
     }
 
-    private void UpdateVisibility(Dictionary<string, bool> data)
+    private async void UpdateVisibility(Dictionary<string, bool> data)
     {
         foreach (KeyValuePair<string, bool> kvp in data)
         {
@@ -401,16 +401,16 @@ public class UM_Client : MonoBehaviour
                     }
                     else
                     {
-                        Task nodeTask = node.loadNodeModel(true, handle =>
-                        {
-                            node.SetNodeModelVisibility(kvp.Value);
-                            visibleNodes.Add(node);
-                            // There is a bug somewhere that forces us to have to do this, if it gets tracked down this can be removed...
-                            main.FixNodeTransformPosition(node);
-                            // Make sure to fix position before registering!
-                            main.RegisterNode(node);
-                        });
+                        Task nodeTask = node.loadNodeModel(true);
                         nodeTasks.Add(node.ID, nodeTask);
+                        await nodeTask;
+                        
+                        node.SetNodeModelVisibility(kvp.Value);
+                        visibleNodes.Add(node);
+                        // There is a bug somewhere that forces us to have to do this, if it gets tracked down this can be removed...
+                        main.FixNodeTransformPosition(node);
+                        // Make sure to fix position before registering!
+                        main.RegisterNode(node);
                     }
                 }
                 else
@@ -430,11 +430,12 @@ public class UM_Client : MonoBehaviour
         {
             CCFTreeNode node = modelControl.tree.findNode(GetID(kvp.Key));
 
-            if (WaitingOnTask(node.ID))
-                await nodeTasks[node.ID];
-
             if (node != null)
+            {
+                if (WaitingOnTask(node.ID))
+                    await nodeTasks[node.ID];
                 node.SetShaderProperty("_Alpha", kvp.Value);
+            }
             else
                 main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
         }

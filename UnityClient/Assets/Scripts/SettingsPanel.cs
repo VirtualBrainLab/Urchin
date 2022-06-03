@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public class SettingsPanel : MonoBehaviour
 {
-    [SerializeField] private UM_CameraController cameraController;
+    [SerializeField] private BrainCameraController cameraController;
     [SerializeField] private GameObject settingsPanel;
     // Start is called before the first frame update
     void Start()
@@ -17,7 +17,10 @@ public class SettingsPanel : MonoBehaviour
     void Update()
     {
         if (Input.GetMouseButtonDown(0) && EventSystem.current.IsPointerOverGameObject())
-            cameraController.BlockDragging();
+            cameraController.SetControlBlock(true);
+
+        if (Input.GetMouseButtonUp(0))
+            cameraController.SetControlBlock(false);
 
         if (Input.GetKeyDown(KeyCode.S))
             settingsPanel.SetActive(settingsPanel.activeSelf);

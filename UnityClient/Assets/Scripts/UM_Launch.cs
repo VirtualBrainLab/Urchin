@@ -8,7 +8,7 @@ using UnityEngine;
 public class UM_Launch : MonoBehaviour
 {
     [SerializeField] private CCFModelControl modelControl;
-    [SerializeField] private UM_CameraController cameraController;
+    [SerializeField] private BrainCameraController cameraController;
     [SerializeField] private float maxExplosion = 10f;
 
     [SerializeField] private GameObject consolePanel;
@@ -222,7 +222,7 @@ public class UM_Launch : MonoBehaviour
 
     private void _UpdateExploded()
     {
-        cameraController.BlockDragging();
+        cameraController.SetControlBlock(true);
 
         Vector3 flipVector = new Vector3(1f, 1f, -1f);
 
