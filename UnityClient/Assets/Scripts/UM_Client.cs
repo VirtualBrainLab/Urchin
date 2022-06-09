@@ -23,7 +23,6 @@ public class UM_Client : MonoBehaviour
     // VOLUMES
     [SerializeField] private UM_VolumeRenderer volRenderer;
 
-
     // NEURONS
     [SerializeField] private GameObject neuronPrefab;
     [SerializeField] private List<Mesh> neuronMeshList;
@@ -106,7 +105,7 @@ public class UM_Client : MonoBehaviour
         manager.Socket.On<float>("SetCameraYAngle", SetCameraYAngle);
 
         // Misc
-        manager.Socket.On<string>("ClearAll", ClearAll);
+        manager.Socket.On<string>("Clear", Clear);
 
         // If we are building to WebGL or to Standalone, switch how you acquire the user's ID
 #if UNITY_WEBGL
@@ -181,19 +180,59 @@ public class UM_Client : MonoBehaviour
 
     // CLEAR
 
-    private void ClearAll(string val)
+    private void Clear(string val)
     {
+        switch (val)
+        {
+            case "all":
+                ClearNeurons();
+                ClearProbes();
+                ClearAreas();
+                ClearVolumes();
+                break;
+            case "neurons":
+                ClearNeurons();
+                break;
+            case "probes":
+                ClearProbes();
+                break;
+            case "areas":
+                ClearAreas();
+                break;
+            case "volumes":
+                ClearVolumes();
+                break;
+        }
+    }
+
+    private void ClearNeurons()
+    {
+        Debug.Log("(Client) Clearing neurons");
         foreach (GameObject neuron in neurons.Values)
             Destroy(neuron);
+        neurons = new Dictionary<string, GameObject>();
+    }
+
+    private void ClearProbes()
+    {
+        Debug.Log("(Client) Clearing probes");
         foreach (GameObject probe in probes.Values)
             Destroy(probe);
-        neurons = new Dictionary<string, GameObject>();
         probes = new Dictionary<string, GameObject>();
         probeCoordinates = new Dictionary<string, Vector3[]>();
+    }
+
+    private void ClearAreas()
+    {
+        Debug.Log("(Client) Clearing areas");
         foreach (CCFTreeNode node in visibleNodes)
             node.SetNodeModelVisibility(false, false);
         visibleNodes = new List<CCFTreeNode>();
+    }
 
+    private void ClearVolumes()
+    {
+        Debug.Log("(Client) Clearing volumes");
         volRenderer.Clear();
     }
 

@@ -69,6 +69,8 @@ io.on("connection", function (socket) {
   	console.log('All connected clients with ID: ' + ID2Socket[Socket2ID[socket.id]]);
   });
 
+  // The following is simply a list of all events that can be sent by a client and need to be re-emitted to the receivers
+  // no actual functionality is implemented by the echo server
   socket.on('SetAreaColors', function(data) {
   	emitToAll(socket.id, 'SetAreaColors', data);
   });
@@ -141,8 +143,8 @@ io.on("connection", function (socket) {
   socket.on('SetVolumeVisibility', function(data) {
     emitToAll(socket.id, 'SetVolumeVisibility', data);
   });
-  socket.on('ClearAll', function(data) {
-    emitToAll(socket.id, 'ClearAll', data);
+  socket.on('Clear', function(data) {
+    emitToAll(socket.id, 'Clear', data);
   });
 });
 

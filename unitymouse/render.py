@@ -115,7 +115,7 @@ def set_area_colormap(colormap_name):
 
 # def set_volume_explode_style
 
-def set_volume_alpha(areaData):
+def set_area_alpha(areaData):
 	"""Set alpha of CCF volume regions
 
 	Use "-l" and "-r" to set color of single-sided regions.
@@ -367,4 +367,16 @@ def set_allen_volume_visibility(allenVisibility):
 # 	sio.emit('SetSliceColor', annotationData)
 
 def clear():
-	sio.emit('ClearAll', 'clear')
+	sio.emit('Clear', 'all')
+
+def clear_neurons():
+	sio.emit('Clear', 'neurons')
+
+def clear_probes():
+	sio.emit('Clear', 'probes')
+
+def clear_areas():
+	sio.emit('Clear', 'areas')
+
+def clear_volumes():
+	sio.emit('Clear', 'volumes')
