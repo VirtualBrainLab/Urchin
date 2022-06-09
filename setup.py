@@ -9,9 +9,7 @@ setup(
     author_email='danbirman@gmail.com',
     license='GNU GPLv3',
     packages=['unitymouse'],
-    install_requires=['os',
-                      'socketio',                     
-                      ],
+    install_requires=['python-socketio[client]'],
 
     classifiers=[
         'License :: GNU GPLv3',  

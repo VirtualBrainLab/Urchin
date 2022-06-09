@@ -1,4 +1,5 @@
 import socketio
+import webbrowser
 import os
 
 sio = socketio.Client()
@@ -6,23 +7,45 @@ sio = socketio.Client()
 def connect():
 	print("UnityMouse Renderer connected to server")
 	ID = os.getlogin()
-	sio.emit('ID',ID)
-	print("Login sent with ID: " + ID)
+	change_id(ID)
 
 @sio.event
 def disconnect():
     print("UnityMouse Renderer disconnected from server")
 
-def setup(localhost = False):
-	"""Connect to the heroku server and provide a login ID"""
+def setup(localhost = False, standalone = False):
+	"""Connect the unitymouse Python API to the web-based (or standalone) viewer
+
+	Parameters
+	----------
+	localhost : bool, optional
+		connect to a local development server rather than the remote server, by default False
+	standalone : bool, optional
+		connect to a standalone Desktop build rather than the web-based Brain Viewer, by default False
+	"""
+	ID = os.getlogin()
+
 	if localhost:
 		sio.connect('http://localhost:5000')
 	else:
 		sio.connect('https://um-commserver.herokuapp.com/')
 
+	if not standalone:
+		url = "http://data.virtualbrainlab.org/UMRenderer/?ID=" + ID
+		webbrowser.open(url)
+
 def close():
 	"""Disconnect from the heroku server"""
 	sio.disconnect()
+
+def change_id(newID):
+	sio.emit('ID',[newID,"send"])
+	print("Login sent with ID: " + newID)
+
+
+#######################
+# ALLEN CCF 3D MODELS #
+#######################
 
 def load_beryl_areas():
 	"""Load all beryl areas and set visibility to True
@@ -43,16 +66,25 @@ def load_cosmos_areas():
 def set_volume_visibility(areaData):
 	"""Set visibility of CCF volume regions
 
-	NOTE: One of the load functions OR set_volume_visibility must be called
-	before you set the color/alpha/etc of brain regions.
+	Note: use "-l" or "-r" suffix to control visibility of one-sided models
 
-	Inputs:
-	areaData -- dictionary of area ID or acronym and bool values {'root':True} or {8:True}
+	Parameters
+	----------
+	areaData : dict {string : bool}
+		Dictionary of area IDs or acronyms and visibility values
+
+	Examples
+	--------
+	>>> umr.set_volume_visibility({"root":True})
+	>>> umr.set_volume_visibility({"8":True})
+	>>> umr.set_volume_visibility({"VISp-l":True})
 	"""
 	sio.emit('SetVolumeVisibility', areaData)
 
 def set_volume_color(areaData):
 	"""Set color of CCF volume regions
+
+	Use "-l" and "-r" to set color of single-sided regions.
 
 	Inputs:
 	areaData -- dictionary of area ID or acronym and hex colors {'root':"#FFFFFF"} or {8:"#FFFFFF"}
@@ -61,6 +93,8 @@ def set_volume_color(areaData):
 
 def set_volume_intensity(areaData):
 	"""Set color of CCF volume regions according to intensity along a color map
+
+	Use "-l" and "-r" to set color of single-sided regions.
 
 	Inputs:
 	areaData -- dictionary of area ID or acronym and hex colors {'root':"#FFFFFF"} or {8:"#FFFFFF"}
@@ -81,21 +115,10 @@ def set_volume_colormap(colormap_name):
 
 # def set_volume_explode_style
 
-def set_volume_style(areaData):
-	"""Set the object style of the volumes
-
-	Options are:
-		whole (default)
-		left
-		right
-
-	Inputs:
-	areaData -- dictionary of area ID/acronym and string {'root':'left'}
-	"""
-	sio.emit('SetVolumeStyle', areaData)
-
 def set_volume_alpha(areaData):
 	"""Set alpha of CCF volume regions
+
+	Use "-l" and "-r" to set color of single-sided regions.
 
 	Inputs:
 	areaData -- dictionary of area ID or acronym and float {'root':0.5} or {8:0.5}
@@ -104,6 +127,8 @@ def set_volume_alpha(areaData):
 
 def set_volume_shader(areaData):
 	"""Set shader of CCF volume regions
+
+	Use "-l" and "-r" to set color of single-sided regions.
 
 	Shader options are:
 		"default"
@@ -127,13 +152,24 @@ def set_volume_shader(areaData):
 # 	"""
 # 	sio.emit('SetVolumeData', areaData)
 
+
+###########
+# NEURONS #
+###########
+
 def create_neurons(neuronList):
 	"""Create neuron objects
 
-	NOTE: This must be called before setting positions/size/color/shape
+	Note: neurons must be created before setting other values
 
-	Inputs:
-	probeList -- list of neuron names as strings ['n1','n2','n3']
+	Parameters
+	----------
+	neuronList : List of strings
+		Names of the new neuron objects
+
+	Examples
+	--------
+	>>> umr.create_neurons(["n1","n2","n3"])
 	"""
 	sio.emit('CreateNeurons', neuronList)
 
@@ -172,22 +208,6 @@ def set_neuron_shape(neuronData):
 	neuronData -- dictionary of neuron names and strings {'n1':'sphere'}
 	"""
 	sio.emit('SetNeuronShape', neuronData)
-
-# def slice_volume(slicePosition):
-# 	"""Sets the slice plane position and normal vector direction. The brain will be sliced in FRONT of the plane.
-
-# 	Inputs:
-# 	slicePosition -- float6 (x0,y0,z0,xn,yn,zn)
-# 	"""
-# 	sio.emit('SliceVolume', slicePosition)
-
-# def set_slice_annotation_color(annotationData):
-# 	"""Set the color of the annotation dataset areas on the slice
-
-# 	Inputs:
-# 	annotationData -- dictionary of acronyms/IDs and hex color codes {'root':'#FFFFFF'}
-# 	"""
-# 	sio.emit('SetSliceColor', annotationData)
 
 def create_probes(probeList):
 	"""Create probe objects
@@ -247,6 +267,10 @@ def set_probe_size(probeData):
 	"""
 	sio.emit('SetProbeSize', probeData)
 
+##########
+# CAMERA #
+##########
+
 def set_camera_target(cameraData):
 	"""Set camera angle around the Y (vertical) axis
 
@@ -279,6 +303,68 @@ def set_camera_y_angle(cameraData):
 	"""
 	sio.emit('SetCameraYAngle', cameraData)
 
+###########
+# VOLUMES #
+###########
+
+def create_new_volume(volumeData):
+
+	# volumeData is [name, width, height, depth]
+	sio.emit('CreateVolume', volumeData)
+
+def set_volume_visibility(volumeVisibility):
+
+	# volumeVisibility is [string name, bool visibility]
+	sio.emit('SetVolumeVisibility', volumeVisibility)
+
+def set_volume_data(volumeData):
+	"""Set the data for a volume
+
+	Note: this function slices the data by depth and sends data slice-by-slice
+
+	Parameters
+	----------
+	volumeData : [string, numpy matrix]
+		Name of the volume and the volume itself
+	"""
+	name = volumeData[0]
+	for di in range(volumeData[1].size[2]):
+		set_volume_slice_data([name, di, volumeData[:,:,di]])
+
+def set_volume_slice_data(volumeData):
+	"""Set the data for a specific slice in a volume
+
+	Parameters
+	----------
+	volumeData : [string, int, numpy matrix]
+		
+	"""
+	# not sure yet what the data size limit is, but lets add one slice at a time for now
+	# volumeData is float array [name, depth, n floats where n = width * height]
+	sio.emit('SetVolumeData', volumeData)
+
+######################
+# VOLUMES: Allen CCF #
+######################
+
+# special case of the regular volume visibility function
+def set_allen_volume_visibility(allenVisibility):
+	"""_summary_
+
+	Parameters
+	----------
+	allenData : bool
+		new visibility setting for Allen CCF volume
+	"""
+	set_volume_visibility(['allen', allenVisibility])
+
+# def set_allen_annotation_color(annotationData):
+# 	"""Set the color of the annotation dataset areas on the slice
+
+# 	Inputs:
+# 	annotationData -- dictionary of acronyms/IDs and hex color codes {'root':'#FFFFFF'}
+# 	"""
+# 	sio.emit('SetSliceColor', annotationData)
 
 def clear():
 	sio.emit('ClearAll', 'clear')

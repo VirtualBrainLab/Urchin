@@ -7,6 +7,7 @@ using System.Linq;
 using TMPro;
 using Unity.Entities;
 using System.Threading.Tasks;
+using System.Collections.Specialized;
 
 public class UM_Client : MonoBehaviour
 {
@@ -44,6 +45,9 @@ public class UM_Client : MonoBehaviour
 
     SocketManager manager;
 
+    /// <summary>
+    /// Unity internal startup function, initializes internal variables and allocates memory
+    /// </summary>
     private void Awake()
     {
         neurons = new Dictionary<string, GameObject>();
@@ -52,7 +56,10 @@ public class UM_Client : MonoBehaviour
         probeCoordinates = new Dictionary<string, Vector3[]>();
         visibleNodes = new List<CCFTreeNode>();
     }
-    // Start is called before the first frame update
+
+    /// <summary>
+    /// Unity internal startup function, runs before the first frame Update()
+    /// </summary>
     void Start()
     {
 
@@ -61,33 +68,66 @@ public class UM_Client : MonoBehaviour
         manager = localhost ? new SocketManager(new Uri(url)) : new SocketManager(new Uri(url));
 
         manager.Socket.On("connect", Connected);
+
+        // CCF Areas
         manager.Socket.On<Dictionary<string, bool>>("SetVolumeVisibility", UpdateVisibility);
         manager.Socket.On<Dictionary<string, string>>("SetVolumeColors", UpdateColors);
         manager.Socket.On<Dictionary<string, float>>("SetVolumeIntensity", UpdateIntensity);
         manager.Socket.On<string>("SetVolumeColormap", UpdateVolumeColormap);
-        manager.Socket.On<Dictionary<string, string>>("SetVolumeStyle", UpdateVolumeStyle);
         manager.Socket.On<Dictionary<string, float>>("SetVolumeAlpha", UpdateAlpha);
         manager.Socket.On<Dictionary<string, string>>("SetVolumeShader", UpdateVolumeMaterial);
+
+        // 3D Volumes
+        //manager.Socket.On<List<float>>("SliceVolume", SetVolumeSlice);
+        //manager.Socket.On<Dictionary<string, string>>("SetSliceColor", SetVolumeAnnotationColor);
+
+        // Neurons
         manager.Socket.On<List<string>>("CreateNeurons", CreateNeurons);
         manager.Socket.On<Dictionary<string, List<float>>>("SetNeuronPos", UpdateNeuronPos);
         manager.Socket.On<Dictionary<string, float>>("SetNeuronSize", UpdateNeuronScale);
         manager.Socket.On<Dictionary<string, string>>("SetNeuronShape", UpdateNeuronShape);
         manager.Socket.On<Dictionary<string, string>>("SetNeuronColor", UpdateNeuronColor);
-        manager.Socket.On<List<float>>("SliceVolume", SetVolumeSlice);
-        manager.Socket.On<Dictionary<string, string>>("SetSliceColor", SetVolumeAnnotationColor);
+
+        // Probes
         manager.Socket.On<List<string>>("CreateProbes", CreateProbes);
         manager.Socket.On<Dictionary<string, string>>("SetProbeColors", UpdateProbeColors);
         manager.Socket.On<Dictionary<string, List<float>>>("SetProbePos", UpdateProbePos);
         manager.Socket.On<Dictionary<string, List<float>>>("SetProbeAngles", UpdateProbeAngles);
         manager.Socket.On<Dictionary<string, string>>("SetProbeStyle", UpdateProbeStyle);
         manager.Socket.On<Dictionary<string, List<float>>>("SetProbeSize", UpdateProbeScale);
+
+        // Camera
         manager.Socket.On<List<float>>("SetCameraTarget", SetCameraTarget);
         manager.Socket.On<string>("SetCameraTargetArea", SetCameraTargetArea);
         manager.Socket.On<float>("SetCameraYAngle", SetCameraYAngle);
+
+        // Misc
         manager.Socket.On<string>("ClearAll", ClearAll);
 
+        // If we are building to WebGL or to Standalone, switch how you acquire the user's ID
+#if UNITY_WEBGL
+        // get the url
+        string appURL = Application.absoluteURL;
+        // parse for query strings
+        int queryIdx = appURL.IndexOf("?");
+        if (queryIdx > 0)
+        {
+            string queryString = appURL.Substring(queryIdx);
+            NameValueCollection qscoll = System.Web.HttpUtility.ParseQueryString(queryString);
+            foreach (string query in qscoll)
+            {
+                if (query.Equals("ID"))
+                {
+                    ID = qscoll[query];
+                    Debug.Log("Found ID in URL querystring, setting to: " + ID);
+                }
+            }
+        }
+#else
         ID = Environment.UserName;
         idInput.text = ID;
+        Debug.Log("Setting ID to: " + ID);
+#endif
     }
 
     // CAMERA CONTROLS
@@ -99,7 +139,8 @@ public class UM_Client : MonoBehaviour
 
     private void SetCameraTargetArea(string obj)
     {
-        CCFTreeNode node = modelControl.tree.findNode(GetID(obj));
+        (int ID, bool leftSide, bool rightSide) = GetID(obj);
+        CCFTreeNode node = modelControl.tree.findNode(ID);
         if (node != null)
         {
             Vector3 center = node.GetMeshCenter();
@@ -306,32 +347,11 @@ public class UM_Client : MonoBehaviour
         }
     }
 
-    private async void UpdateVolumeMaterial(Dictionary<string, string> data)
+    private void DeleteNeurons(List<string> data)
     {
-        foreach (KeyValuePair<string, string> kvp in data)
+        foreach (string id in data)
         {
-            if (WaitingOnTask(GetID(kvp.Key)))
-                await nodeTasks[GetID(kvp.Key)];
-
-            modelControl.ChangeMaterial(GetID(kvp.Key), kvp.Value);
-        }
-    }
-
-    private async void UpdateVolumeStyle(Dictionary<string, string> data)
-    {
-        foreach (KeyValuePair<string, string> kvp in data)
-        {
-            CCFTreeNode node = modelControl.tree.findNode(GetID(kvp.Key));
-
-            if (WaitingOnTask(node.ID))
-                await nodeTasks[node.ID];
-
-            if (kvp.Value.ToLower().Equals("whole"))
-                node.SetNodeModelVisibility(true, true);
-            if (kvp.Value.ToLower().Equals("left"))
-                node.SetNodeModelVisibility(true, false);
-            if (kvp.Value.ToLower().Equals("right"))
-                node.SetNodeModelVisibility(false,true);
+            neurons.Remove(id);
         }
     }
 
@@ -340,21 +360,53 @@ public class UM_Client : MonoBehaviour
         main.ChangeColormap(data);
     }
 
-    private int GetID(string idOrAcronym)
+    /// <summary>
+    /// Convert an acronym or ID label into the Allen CCF area ID
+    /// </summary>
+    /// <param name="idOrAcronym">An ID number (e.g. 0) or an acronym (e.g. "root")</param>
+    /// <returns>(int Allen CCF ID, bool left side model, bool right side model)</returns>
+    private (int, bool, bool) GetID(string idOrAcronym)
     {
+        // Check whether a suffix was included
+        int leftIndex = idOrAcronym.IndexOf("-l");
+        int rightIndex = idOrAcronym.IndexOf("-r");
+        bool leftSide = leftIndex > 0;
+        bool rightSide = rightIndex > 0;
+
+        //Remove the suffix
+        if (leftSide)
+            idOrAcronym = idOrAcronym.Substring(0,leftIndex);
+        if (rightSide)
+            idOrAcronym = idOrAcronym.Substring(0,rightIndex);
+
+        // If neither suffix is present, then we want to control both sides
+        if (!leftSide && !rightSide)
+        {
+            // set both to true
+            leftSide = true;
+            rightSide = true;
+        }
+
+        // Lowercase
         string lower = idOrAcronym.ToLower();
 
+        // Check for root (special case, which we can't currently handle)
         if (lower.Equals("root") || lower.Equals("void"))
-            return -1;
+            return (-1, leftSide, rightSide);
+
+        // Figure out what the acronym was by asking CCFModelControl
         if (modelControl.IsAcronym(idOrAcronym))
-            return modelControl.Acronym2ID(idOrAcronym);
+            return (modelControl.Acronym2ID(idOrAcronym), leftSide, rightSide);
         else
         {
+            // It wasn't an acronym, so it has to be an integer
             int ret;
             if (int.TryParse(idOrAcronym, out ret))
-                return ret;
+                return (ret, leftSide, rightSide);
         }
-        return -1;
+
+        // We failed to figure out what this was
+        return (-1, leftSide, rightSide);
     }
 
     ////
@@ -364,21 +416,41 @@ public class UM_Client : MonoBehaviour
 
     Dictionary<int, Task> nodeTasks;
 
+    private async void UpdateVolumeMaterial(Dictionary<string, string> data)
+    {
+        foreach (KeyValuePair<string, string> kvp in data)
+        {
+            (int ID, bool leftSide, bool rightSide) = GetID(kvp.Key);
+            if (WaitingOnTask(ID))
+                await nodeTasks[ID];
+
+            if (leftSide && rightSide)
+                modelControl.ChangeMaterial(ID, kvp.Value);
+            else if (leftSide)
+                modelControl.ChangeMaterialOneSided(ID, kvp.Value, true);
+            else if (rightSide)
+                modelControl.ChangeMaterialOneSided(ID, kvp.Value, false);
+        }
+    }
+
     private async void UpdateColors(Dictionary<string, string> data)
     {
         foreach (KeyValuePair<string, string> kvp in data)
         {
-            CCFTreeNode node = modelControl.tree.findNode(GetID(kvp.Key));
+            (int ID, bool leftSide, bool rightSide) = GetID(kvp.Key);
+            CCFTreeNode node = modelControl.tree.findNode(ID);
 
             if (WaitingOnTask(node.ID))
                 await nodeTasks[node.ID];
 
             Color newColor;
             if (node != null && ColorUtility.TryParseHtmlString(kvp.Value, out newColor))
-                if (main.GetLeftColorOnly())
-                    node.SetColorOneSided(newColor, true);
-                else
+                if (leftSide && rightSide)
                     node.SetColor(newColor);
+                else if (leftSide)
+                    node.SetColorOneSided(newColor, true);
+                else if (rightSide)
+                    node.SetColorOneSided(newColor, false);
             else
                 main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
         }
@@ -388,7 +460,8 @@ public class UM_Client : MonoBehaviour
     {
         foreach (KeyValuePair<string, bool> kvp in data)
         {
-            CCFTreeNode node = modelControl.tree.findNode(GetID(kvp.Key));
+            (int ID, bool leftSide, bool rightSide) = GetID(kvp.Key);
+            CCFTreeNode node = modelControl.tree.findNode(ID);
 
             if (node != null)
             {
@@ -404,8 +477,7 @@ public class UM_Client : MonoBehaviour
                         Task nodeTask = node.loadNodeModel(true);
                         nodeTasks.Add(node.ID, nodeTask);
                         await nodeTask;
-                        
-                        node.SetNodeModelVisibility(kvp.Value);
+
                         visibleNodes.Add(node);
                         // There is a bug somewhere that forces us to have to do this, if it gets tracked down this can be removed...
                         main.FixNodeTransformPosition(node);
@@ -413,10 +485,13 @@ public class UM_Client : MonoBehaviour
                         main.RegisterNode(node);
                     }
                 }
-                else
-                {
+
+                if (leftSide && rightSide)
                     node.SetNodeModelVisibility(kvp.Value);
-                }
+                else if (leftSide)
+                    node.SetNodeModelVisibilityLeft(kvp.Value);
+                else if (rightSide)
+                    node.SetNodeModelVisibilityRight(kvp.Value);
             }
             else
                 main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
@@ -428,13 +503,20 @@ public class UM_Client : MonoBehaviour
 
         foreach (KeyValuePair<string, float> kvp in data)
         {
-            CCFTreeNode node = modelControl.tree.findNode(GetID(kvp.Key));
+            (int ID, bool leftSide, bool rightSide) = GetID(kvp.Key);
+            CCFTreeNode node = modelControl.tree.findNode(ID);
 
             if (node != null)
             {
                 if (WaitingOnTask(node.ID))
                     await nodeTasks[node.ID];
-                node.SetShaderProperty("_Alpha", kvp.Value);
+
+                if (leftSide && rightSide)
+                    node.SetShaderProperty("_Alpha", kvp.Value);
+                else if (leftSide)
+                    node.SetShaderPropertyOneSided("_Alpha", kvp.Value, true);
+                else if (rightSide)
+                    node.SetShaderPropertyOneSided("_Alpha", kvp.Value, false);
             }
             else
                 main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
@@ -445,18 +527,21 @@ public class UM_Client : MonoBehaviour
 
         foreach (KeyValuePair<string, float> kvp in data)
         {
-            CCFTreeNode node = modelControl.tree.findNode(GetID(kvp.Key));
+            (int ID, bool leftSide, bool rightSide) = GetID(kvp.Key);
+            CCFTreeNode node = modelControl.tree.findNode(ID);
 
             if (WaitingOnTask(node.ID))
                 await nodeTasks[node.ID];
 
             if (node != null)
-                if (main.GetLeftColorOnly())
-                {
-                    node.SetColorOneSided(main.GetColormapColor(kvp.Value), true);
-                }
-                else
+            {
+                if (leftSide && rightSide)
                     node.SetColor(main.GetColormapColor(kvp.Value));
+                else if (leftSide)
+                    node.SetColorOneSided(main.GetColormapColor(kvp.Value), true);
+                else if (rightSide)
+                    node.SetColorOneSided(main.GetColormapColor(kvp.Value), false);
+            }
             else
                 main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
         }
@@ -483,7 +568,8 @@ public class UM_Client : MonoBehaviour
     public void UpdateID(string newID)
     {
         main.Log("Updating ID to : " + newID);
-        manager.Socket.Emit("ID", newID);
+        ID = newID;
+        manager.Socket.Emit("ID", new List<string>() { ID, "receive" });
     }
 
     private void OnDestroy()
@@ -494,7 +580,7 @@ public class UM_Client : MonoBehaviour
     private void Connected()
     {
         main.Log("connected! Login with ID: " + ID);
-        manager.Socket.Emit("ID", ID);
+        UpdateID(ID);
     }
 
 }

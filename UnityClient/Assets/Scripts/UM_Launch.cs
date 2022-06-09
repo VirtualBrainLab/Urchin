@@ -186,34 +186,6 @@ public class UM_Launch : MonoBehaviour
         _UpdateExploded();
     }
 
-    public void SetLeftColorOnly(bool state)
-    {
-        colorLeftOnly = state;
-        if (colorLeftOnly)
-        {
-            Debug.Log("Doing the thing");
-            foreach (CCFTreeNode node in visibleNodes.Values)
-            {
-                Debug.Log(node.GetColor());
-                Debug.Log(node.GetDefaultColor());
-                node.SetColorOneSided(node.GetColor(), true);
-            }
-        }
-        else
-        {
-            Debug.Log("Reversing the thing");
-            foreach (CCFTreeNode node in visibleNodes.Values)
-            {
-                node.SetColor(node.GetColor());
-            }
-        }
-    }
-
-    public bool GetLeftColorOnly()
-    {
-        return colorLeftOnly;
-    }
-
     public void UpdateExploded(float newPercExploded)
     {
         percentageExploded = newPercExploded;
@@ -250,5 +222,16 @@ public class UM_Launch : MonoBehaviour
     public void UpdateDataIndex(float newIdx)
     {
         Debug.Log(newIdx);
+    }
+
+    /// <summary>
+    /// Switch the main camera to perspective (or back to orthographic, the default)
+    /// 
+    /// Note: you can't view the volumetric data in the orthographic camera, hence this setting to switch back and forth
+    /// </summary>
+    /// <param name="perspective"></param>
+    public void SwitchCameraMode(bool perspective)
+    {
+        
     }
 }
