@@ -7,16 +7,6 @@ public class UM_VolumeRenderer : MonoBehaviour
 {
     private Texture3D volumeTexture;
 
-    private void Awake()
-    {
-    }
-
-    private void Start()
-    {
-
-        DisplayAllenVolume();
-    }
-
     public async void DisplayAllenVolume()
     {
         Task<Texture3D> volumeTexTask = AddressablesRemoteLoader.LoadAnnotationTexture();
@@ -26,5 +16,15 @@ public class UM_VolumeRenderer : MonoBehaviour
 
         GetComponent<Renderer>().material.mainTexture = volumeTexture;
         GetComponent<Renderer>().enabled = true;
+    }
+
+    public async void ChangeVolumeData()
+    {
+
+    }
+
+    public void Clear()
+    {
+        GetComponent<Renderer>().enabled = false;
     }
 }

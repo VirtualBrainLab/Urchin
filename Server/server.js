@@ -69,23 +69,23 @@ io.on("connection", function (socket) {
   	console.log('All connected clients with ID: ' + ID2Socket[Socket2ID[socket.id]]);
   });
 
-  socket.on('SetVolumeColors', function(data) {
-  	emitToAll(socket.id, 'SetVolumeColors', data);
+  socket.on('SetAreaColors', function(data) {
+  	emitToAll(socket.id, 'SetAreaColors', data);
   });
-  socket.on('SetVolumeVisibility', function(data) {
-  	emitToAll(socket.id, 'SetVolumeVisibility', data);
+  socket.on('SetAreaVisibility', function(data) {
+  	emitToAll(socket.id, 'SetAreaVisibility', data);
   });
-  socket.on('SetVolumeIntensity', function(data) {
-    emitToAll(socket.id, 'SetVolumeIntensity', data);
+  socket.on('SetAreaIntensity', function(data) {
+    emitToAll(socket.id, 'SetAreaIntensity', data);
   });
-  socket.on('SetVolumeColormap', function(data) {
-    emitToAll(socket.id, 'SetVolumeColormap', data);
+  socket.on('SetAreaColormap', function(data) {
+    emitToAll(socket.id, 'SetAreaColormap', data);
   });
-  socket.on('SetVolumeShader', function(data) {
-    emitToAll(socket.id, 'SetVolumeShader', data);
+  socket.on('SetAreaShader', function(data) {
+    emitToAll(socket.id, 'SetAreaShader', data);
   });
-  socket.on('SetVolumeAlpha', function(data) {
-    emitToAll(socket.id, 'SetVolumeAlpha', data);
+  socket.on('SetAreaAlpha', function(data) {
+    emitToAll(socket.id, 'SetAreaAlpha', data);
   });
   socket.on('CreateNeurons', function(data) {
     emitToAll(socket.id, 'CreateNeurons', data);
@@ -137,6 +137,9 @@ io.on("connection", function (socket) {
   });
   socket.on('LoadDefaultAreas', function(data) {
     emitToAll(socket.id, 'LoadDefaultAreas', data);
+  });
+  socket.on('SetVolumeVisibility', function(data) {
+    emitToAll(socket.id, 'SetVolumeVisibility', data);
   });
   socket.on('ClearAll', function(data) {
     emitToAll(socket.id, 'ClearAll', data);

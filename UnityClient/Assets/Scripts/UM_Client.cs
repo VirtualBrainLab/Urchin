@@ -14,12 +14,15 @@ public class UM_Client : MonoBehaviour
     [SerializeField] UM_Launch main;
     [SerializeField] CCFModelControl modelControl;
     [SerializeField] BrainCameraController cameraControl;
+    [SerializeField] private bool localhost;
 
+    // UI
     [SerializeField] private GameObject idPanel;
     [SerializeField] private TextMeshProUGUI idInput;
 
+    // VOLUMES
+    [SerializeField] private UM_VolumeRenderer volRenderer;
 
-    [SerializeField] private bool localhost;
 
     // NEURONS
     [SerializeField] private GameObject neuronPrefab;
@@ -70,14 +73,15 @@ public class UM_Client : MonoBehaviour
         manager.Socket.On("connect", Connected);
 
         // CCF Areas
-        manager.Socket.On<Dictionary<string, bool>>("SetVolumeVisibility", UpdateVisibility);
-        manager.Socket.On<Dictionary<string, string>>("SetVolumeColors", UpdateColors);
-        manager.Socket.On<Dictionary<string, float>>("SetVolumeIntensity", UpdateIntensity);
-        manager.Socket.On<string>("SetVolumeColormap", UpdateVolumeColormap);
-        manager.Socket.On<Dictionary<string, float>>("SetVolumeAlpha", UpdateAlpha);
-        manager.Socket.On<Dictionary<string, string>>("SetVolumeShader", UpdateVolumeMaterial);
+        manager.Socket.On<Dictionary<string, bool>>("SetAreaVisibility", UpdateVisibility);
+        manager.Socket.On<Dictionary<string, string>>("SetAreaColors", UpdateColors);
+        manager.Socket.On<Dictionary<string, float>>("SetAreaIntensity", UpdateIntensity);
+        manager.Socket.On<string>("SetAreaColormap", UpdateVolumeColormap);
+        manager.Socket.On<Dictionary<string, string>>("SetAreaShader", UpdateVolumeMaterial);
+        manager.Socket.On<Dictionary<string, float>>("SetAreaAlpha", UpdateAlpha);
 
         // 3D Volumes
+        manager.Socket.On<List<object>>("SetVolumeVisibility", UpdateVolumeVisibility);
         //manager.Socket.On<List<float>>("SliceVolume", SetVolumeSlice);
         //manager.Socket.On<Dictionary<string, string>>("SetSliceColor", SetVolumeAnnotationColor);
 
@@ -130,6 +134,15 @@ public class UM_Client : MonoBehaviour
 #endif
     }
 
+    // VOLUME CONTROLS
+
+
+    private void UpdateVolumeVisibility(List<object> data)
+    {
+        if (((string)data[0]).Equals("allen"))
+            volRenderer.DisplayAllenVolume();
+    }
+
     // CAMERA CONTROLS
 
     private void SetCameraYAngle(float obj)
@@ -180,6 +193,8 @@ public class UM_Client : MonoBehaviour
         foreach (CCFTreeNode node in visibleNodes)
             node.SetNodeModelVisibility(false, false);
         visibleNodes = new List<CCFTreeNode>();
+
+        volRenderer.Clear();
     }
 
     // PROBE CONTROLS

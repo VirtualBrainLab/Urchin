@@ -50,7 +50,7 @@ def change_id(newID):
 def load_beryl_areas():
 	"""Load all beryl areas and set visibility to True
 
-	NOTE: One of the load functions OR set_volume_visibility must be called
+	NOTE: One of the load functions OR set_area_visibility must be called
 	before you set the color/alpha/etc of brain regions.
 	"""
 	sio.emit('LoadDefaultAreas', 'beryl')
@@ -58,12 +58,12 @@ def load_beryl_areas():
 def load_cosmos_areas():
 	"""Load all cosmos areas and set visibility to True
 
-	NOTE: One of the load functions OR set_volume_visibility must be called
+	NOTE: One of the load functions OR set_area_visibility must be called
 	before you set the color/alpha/etc of brain regions.
 	"""
 	sio.emit('LoadDefaultAreas', 'cosmos')
 
-def set_volume_visibility(areaData):
+def set_area_visibility(areaData):
 	"""Set visibility of CCF volume regions
 
 	Note: use "-l" or "-r" suffix to control visibility of one-sided models
@@ -75,13 +75,13 @@ def set_volume_visibility(areaData):
 
 	Examples
 	--------
-	>>> umr.set_volume_visibility({"root":True})
-	>>> umr.set_volume_visibility({"8":True})
-	>>> umr.set_volume_visibility({"VISp-l":True})
+	>>> umr.set_area_visibility({"root":True})
+	>>> umr.set_area_visibility({"8":True})
+	>>> umr.set_area_visibility({"VISp-l":True})
 	"""
-	sio.emit('SetVolumeVisibility', areaData)
+	sio.emit('SetAreaVisibility', areaData)
 
-def set_volume_color(areaData):
+def set_area_color(areaData):
 	"""Set color of CCF volume regions
 
 	Use "-l" and "-r" to set color of single-sided regions.
@@ -89,9 +89,9 @@ def set_volume_color(areaData):
 	Inputs:
 	areaData -- dictionary of area ID or acronym and hex colors {'root':"#FFFFFF"} or {8:"#FFFFFF"}
 	"""
-	sio.emit('SetVolumeColors', areaData)
+	sio.emit('SetAreaColors', areaData)
 
-def set_volume_intensity(areaData):
+def set_area_intensity(areaData):
 	"""Set color of CCF volume regions according to intensity along a color map
 
 	Use "-l" and "-r" to set color of single-sided regions.
@@ -99,9 +99,9 @@ def set_volume_intensity(areaData):
 	Inputs:
 	areaData -- dictionary of area ID or acronym and hex colors {'root':"#FFFFFF"} or {8:"#FFFFFF"}
 	"""
-	sio.emit('SetVolumeIntensity', areaData)
+	sio.emit('SetAreaIntensity', areaData)
 
-def set_volume_colormap(colormap_name):
+def set_area_colormap(colormap_name):
 	"""Set colormap name
 
 	Options are:
@@ -111,7 +111,7 @@ def set_volume_colormap(colormap_name):
 	Inputs:
 	colormap_name -- string
 	"""
-	sio.emit('SetVolumeColormap', colormap_name)
+	sio.emit('SetAreaColormap', colormap_name)
 
 # def set_volume_explode_style
 
@@ -123,9 +123,9 @@ def set_volume_alpha(areaData):
 	Inputs:
 	areaData -- dictionary of area ID or acronym and float {'root':0.5} or {8:0.5}
 	"""
-	sio.emit('SetVolumeAlpha', areaData)
+	sio.emit('SetAreaAlpha', areaData)
 
-def set_volume_shader(areaData):
+def set_area_shader(areaData):
 	"""Set shader of CCF volume regions
 
 	Use "-l" and "-r" to set color of single-sided regions.
@@ -140,11 +140,11 @@ def set_volume_shader(areaData):
 	Inputs:
 	areaData -- dictionary of area ID or acronym and string {'root':0.5} or {8:0.5}
 	"""
-	sio.emit('SetVolumeShader', areaData)
+	sio.emit('SetAreaShader', areaData)
 
 # def set_volume_data(areaData):
 # 	"""Set data values for volumes (0->1). These are interpreted in the same way that the
-# 	set_volume_intensity function works, but there is a slider in the settings that
+# 	set_area_intensity function works, but there is a slider in the settings that
 # 	lets you move through the index position of the values.
 
 # 	Inputs:
@@ -337,7 +337,7 @@ def set_volume_slice_data(volumeData):
 	Parameters
 	----------
 	volumeData : [string, int, numpy matrix]
-		
+		Name of the volume, depth index in volume, slice data
 	"""
 	# not sure yet what the data size limit is, but lets add one slice at a time for now
 	# volumeData is float array [name, depth, n floats where n = width * height]
