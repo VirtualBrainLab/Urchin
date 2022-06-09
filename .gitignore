@@ -66,3 +66,4 @@ crashlytics-build.properties
 **/Server/node_modules/
 *.pyc
 Examples/.ipynb_checkpoints/*
+UnityClient/docs/*
