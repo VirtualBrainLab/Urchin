@@ -10,7 +10,7 @@
  <img src="https://github.com/dbirman/UMRenderer/raw/main/Examples/gallery/brain_rotate_cropped.gif" width="45%"> 
 </p>
 
-This project allows you to connect your Python scripts to a standalone "mouse brain renderer" program, to create graphics like the ones above. As a user, you only need to read the first set of instructions below (install + instructions).
+This project allows you to connect your Python scripts to a standalone "mouse brain renderer" program, to create graphics like the ones above.
 
 # Documentation
 
