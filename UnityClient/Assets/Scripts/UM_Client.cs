@@ -8,6 +8,7 @@ using TMPro;
 using Unity.Entities;
 using System.Threading.Tasks;
 using System.Collections.Specialized;
+using System.Text;
 
 public class UM_Client : MonoBehaviour
 {
@@ -81,8 +82,10 @@ public class UM_Client : MonoBehaviour
 
         // 3D Volumes
         manager.Socket.On<List<object>>("SetVolumeVisibility", UpdateVolumeVisibility);
-        //manager.Socket.On<List<float>>("SliceVolume", SetVolumeSlice);
-        //manager.Socket.On<Dictionary<string, string>>("SetSliceColor", SetVolumeAnnotationColor);
+        manager.Socket.On<List<object>>("SetVolumeDataMeta", UpdateVolumeMeta);
+        manager.Socket.On<byte[]>("SetVolumeData", UpdateVolumeData);
+        manager.Socket.On<string>("CreateVolume", CreateVolume);
+        manager.Socket.On<List<string>>("SetVolumeColormap", SetVolumeColormap);
 
         // Neurons
         manager.Socket.On<List<string>>("CreateNeurons", CreateNeurons);
@@ -139,8 +142,35 @@ public class UM_Client : MonoBehaviour
     private void UpdateVolumeVisibility(List<object> data)
     {
         if (((string)data[0]).Equals("allen"))
-            volRenderer.DisplayAllenVolume();
+            volRenderer.DisplayAllenVolume((bool)data[1]);
+        else
+            volRenderer.SetVolumeVisibility((string)data[0], (bool)data[1]);
     }
+
+    private void SetVolumeColormap(List<string> obj)
+    {
+        string name = obj[0];
+        obj.RemoveAt(0);
+        volRenderer.SetVolumeColormap(name, obj);
+    }
+
+    private void CreateVolume(string name)
+    {
+        volRenderer.CreateVolume(name);
+    }
+
+    private void UpdateVolumeMeta(List<object> data)
+    {
+        volRenderer.AddVolumeMeta((string)data[0], (int)data[1]);
+    }
+    private void UpdateVolumeData(byte[] bytes)
+    {
+        volRenderer.AddVolumeData(bytes);
+    }
+    //void OnFrame(Socket socket, Packet packet, params object[] args)
+    //{
+    //    texture.LoadImage(packet.Attachments[0]);
+    //}
 
     // CAMERA CONTROLS
 

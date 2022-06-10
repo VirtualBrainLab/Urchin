@@ -1,6 +1,7 @@
 import socketio
 import webbrowser
 import os
+import numpy as np
 
 sio = socketio.Client()
 @sio.event
@@ -307,41 +308,76 @@ def set_camera_y_angle(cameraData):
 # VOLUMES #
 ###########
 
-def create_new_volume(volumeData):
+def create_volume(volumeData):
+	"""Create an empty volume
 
-	# volumeData is [name, width, height, depth]
+	Parameters
+	----------
+	volumeData : string
+		name of volume
+	"""
 	sio.emit('CreateVolume', volumeData)
 
-def set_volume_visibility(volumeVisibility):
+	
+def set_volume_colormap(volumeData):
+	"""Set the colormap for a volume, maximum of 255 values
 
-	# volumeVisibility is [string name, bool visibility]
-	sio.emit('SetVolumeVisibility', volumeVisibility)
+	Note: currently you must set the colormap *before* sending data, the colormap will not re-interpolate the colors
 
-def set_volume_data(volumeData):
-	"""Set the data for a volume
+	Parameters
+	----------
+	volumeData : list of string
+		First string is name, remaining strings are a list of hex colors, values can be RGB or RGBA
+	"""
+	sio.emit('SetVolumeColormap', volumeData)
 
-	Note: this function slices the data by depth and sends data slice-by-slice
+def set_volume_visibility(volumeName, volumeVisibility):
+	"""Change the visibility of a volume
+
+	Note: a volume must have data before it can be made visible
+
+	Parameters
+	----------
+	volumeName : string
+		Volume name
+	volumeVisibility : bool
+		New visibility setting
+	"""
+	sio.emit('SetVolumeVisibility', [volumeName, volumeVisibility])
+
+def set_volume_data(volumeName, volumeData):
+	"""Set the data for a volume using uint8 values from 0->254 (255 is reserved for transparent).
+	Sending your data as any type other than np.uint8 is potentially unsafe.
+	Data will be remapped in the renderer according to the active colormap.
+	nan values will be set to transparent.
+
+	Note: this function slices the data by depth and sends data slice-by-slice, it may take a long time to run. Or does it?
 
 	Parameters
 	----------
 	volumeData : [string, numpy matrix]
-		Name of the volume and the volume itself
+		Name of the volume and the volume itself. Volume should be [528, 320, 256] with +x = posterior, +y = ventral, +z = right
 	"""
-	name = volumeData[0]
-	for di in range(volumeData[1].size[2]):
-		set_volume_slice_data([name, di, volumeData[:,:,di]])
+	volumeData[np.isnan(volumeData)] = 255
+	volumeData = volumeData.astype(np.uint8)
 
-def set_volume_slice_data(volumeData):
-	"""Set the data for a specific slice in a volume
+	for di in np.arange(250,260): #volumeData.shape[2]):
+		set_volume_slice_data(volumeName, int(di), volumeData[:,:,di].flatten().tobytes())
+
+def set_volume_slice_data(volumeName, slice, volumeBytes):
+	"""Set a single slice of data in a volume
 
 	Parameters
 	----------
-	volumeData : [string, int, numpy matrix]
-		Name of the volume, depth index in volume, slice data
+	volumeName : string
+		name of volume
+	slice : int
+		depth slice in volume (on lr dimension)
+	volumeBytes : bytes
+		flattened bytes array from slice
 	"""
-	# not sure yet what the data size limit is, but lets add one slice at a time for now
-	# volumeData is float array [name, depth, n floats where n = width * height]
-	sio.emit('SetVolumeData', volumeData)
+	sio.emit('SetVolumeDataMeta', [volumeName, slice])
+	sio.emit('SetVolumeData', volumeBytes)
 
 ######################
 # VOLUMES: Allen CCF #
@@ -354,9 +390,9 @@ def set_allen_volume_visibility(allenVisibility):
 	Parameters
 	----------
 	allenData : bool
-		new visibility setting for Allen CCF volume
+		Visibility of Allen CCF volume
 	"""
-	set_volume_visibility(['allen', allenVisibility])
+	set_volume_visibility('allen',allenVisibility)
 
 # def set_allen_annotation_color(annotationData):
 # 	"""Set the color of the annotation dataset areas on the slice

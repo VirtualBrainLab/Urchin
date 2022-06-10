@@ -143,6 +143,18 @@ io.on("connection", function (socket) {
   socket.on('SetVolumeVisibility', function(data) {
     emitToAll(socket.id, 'SetVolumeVisibility', data);
   });
+  socket.on('SetVolumeData', function(data) {
+    emitToAll(socket.id, 'SetVolumeData', data);
+  });
+  socket.on('SetVolumeDataMeta', function(data) {
+    emitToAll(socket.id, 'SetVolumeDataMeta', data);
+  });
+  socket.on('CreateVolume', function(data) {
+    emitToAll(socket.id, 'CreateVolume', data);
+  });
+  socket.on('SetVolumeColormap', function(data) {
+    emitToAll(socket.id, 'SetVolumeColormap', data);
+  });
   socket.on('Clear', function(data) {
     emitToAll(socket.id, 'Clear', data);
   });

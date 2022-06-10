@@ -67,3 +67,7 @@ crashlytics-build.properties
 *.pyc
 Examples/.ipynb_checkpoints/*
 UnityClient/docs/*
+
+Examples/data/steven/*nrrd
+Examples/data/steven/*tif
+Examples/data/gaelle/coverage.npy
