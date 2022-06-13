@@ -14,7 +14,7 @@ This project allows you to connect your Python scripts to a standalone "mouse br
 
 # Documentation
 
-For installation and usage please see the [documentation](https://docs.virtualbrainlab.org/build/html/02_brain_viewer.html).
+For installation and usage please see the [documentation](https://virtualbrainlab.org/build/html/03_unity_neuro/01_urn_intro.html).
 
 # Citing
 
