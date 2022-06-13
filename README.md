@@ -1,4 +1,4 @@
-# Unity for Neuroscience
+# Unity Renderer for Neuroscience
 
 <p float="left">
  <img src="https://github.com/dbirman/UMRenderer/raw/main/Examples/gallery/flatmap_layout.png" width="25%"> 
