@@ -186,7 +186,7 @@ def set_neuron_size(neuronData):
 	"""Set size of neurons in mm units
 
 	Inputs:
-	neuronData -- dictionary of neuron names and floats {'n1': 20}
+	neuronData -- dictionary of neuron names and floats {'n1': 0.02}
 	"""
 	sio.emit('SetNeuronSize', neuronData)
 
