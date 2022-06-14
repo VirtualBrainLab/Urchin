@@ -1,0 +1,16 @@
+Metadata-Version: 2.1
+Name: unityneuro
+Version: 0.1.0
+Summary: Unity Renderer for Neuroscience Python API
+Home-page: https://github.com/dbirman/UnityNeuroscience
+Author: Daniel Birman
+Author-email: danbirman@gmail.com
+License: GNU GPLv3
+Platform: UNKNOWN
+Classifier: License :: GNU GPLv3
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3.9
+License-File: LICENSE
+
+UNKNOWN
+

@@ -1,15 +1,15 @@
 from setuptools import setup
 
 setup(
-    name='unitymouse',
+    name='unityneuro',
     version='0.1.0',    
-    description='Unity mouse brain renderer python link',
-    url='https://github.com/dbirman/UMRenderer',
+    description='Unity Renderer for Neuroscience Python API',
+    url='https://github.com/dbirman/UnityNeuroscience',
     author='Daniel Birman',
     author_email='danbirman@gmail.com',
     license='GNU GPLv3',
-    packages=['unitymouse'],
-    install_requires=['python-socketio[client]'],
+    packages=['unityneuro'],
+    install_requires=['python-socketio[client]','numpy'],
 
     classifiers=[
         'License :: GNU GPLv3',  

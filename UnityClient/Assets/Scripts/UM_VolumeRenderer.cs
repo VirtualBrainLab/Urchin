@@ -6,24 +6,26 @@ using UnityEngine;
 public class UM_VolumeRenderer : MonoBehaviour
 {
     private Texture3D volumeTexture;
-    private Dictionary<string, Color[]> volumeData;
-    private Dictionary<string, Color[]> colormaps;
+    private Dictionary<string, Color32[]> volumeData;
+    private Dictionary<string, Color32[]> colormaps;
 
-    private Color[] defaultColormap;
-    private Color transparentBlack;
+    private Color32[] defaultColormap;
+    private Color32 black;
+    private Color32 transparentBlack;
 
     private void Awake()
     {
         volumeTexture = new Texture3D(528, 320, 456, TextureFormat.RGBA32, false);
         GetComponent<Renderer>().material.mainTexture = volumeTexture;
-        volumeData = new Dictionary<string, Color[]>();
-        colormaps = new Dictionary<string, Color[]>();
+        volumeData = new Dictionary<string, Color32[]>();
+        colormaps = new Dictionary<string, Color32[]>();
 
-        transparentBlack = new Color(0, 0, 0, 0);
+        black = new Color32(0, 0, 0, 1);
+        transparentBlack = new Color32(0, 0, 0, 0);
 
-        defaultColormap = new Color[256];
+        defaultColormap = new Color32[256];
         for (int i = 0; i < 255; i++)
-            defaultColormap[i] = Color.black;
+            defaultColormap[i] = black;
         defaultColormap[255] = transparentBlack;
     }
 
@@ -32,9 +34,9 @@ public class UM_VolumeRenderer : MonoBehaviour
         Debug.Log("(UM_VolRend) Creating new volume: " + name);
         // Size is currently hard-coded
         if (volumeData.ContainsKey(name))
-            volumeData[name] = new Color[528 * 320 * 456];
+            volumeData[name] = new Color32[528 * 320 * 456];
         else
-            volumeData.Add(name, new Color[528*320*456]);
+            volumeData.Add(name, new Color32[528*320*456]);
         // Initialize everything with transparent black
         for (int i = 0; i < volumeData.Count; i++)
             volumeData[name][i] = transparentBlack;
@@ -49,13 +51,14 @@ public class UM_VolumeRenderer : MonoBehaviour
     public void SetVolumeColormap(string name, List<string> hexColors)
     {
         Debug.Log("(UM_VolRend) Creating new colormap for: " + name);
-        Color[] newMap = new Color[256];
+        Color32[] newMap = new Color32[256];
         for (int i = 0; i < 255; i++)
         {
             if (i < hexColors.Count)
                 newMap[i] = Utils.ParseHexColor(hexColors[i]);
             else
-                newMap[i] = Color.black;
+                newMap[i] = black;
+            Debug.Log(newMap[i]);
         }
         newMap[255] = transparentBlack;
         if (colormaps.ContainsKey(name))
@@ -69,7 +72,7 @@ public class UM_VolumeRenderer : MonoBehaviour
         Debug.Log("(UM_VolRend) Volume: " + name + " is now visible: " + visible);
         if (volumeData.ContainsKey(name) && visible)
         {
-            volumeTexture.SetPixels(volumeData[name]);
+            volumeTexture.SetPixels32(volumeData[name]);
             volumeTexture.Apply();
             GetComponent<Renderer>().enabled = true;
         }
@@ -104,11 +107,10 @@ public class UM_VolumeRenderer : MonoBehaviour
 
     public void AddVolumeData(byte[] newData)
     {
+        Debug.Log("Adding slice data for " + nextSlice);
+        int slicePos = nextSlice * 528 * 320;
         for (int i = 0; i < newData.Length; i++)
-        {
-            int pos = i + nextSlice * 456;
-            volumeData[nextVol][pos] = colormaps[nextVol][newData[i]];
-        }
+            volumeData[nextVol][i + slicePos] = colormaps[nextVol][newData[i]];
     }
 
     public void Clear()

@@ -118,10 +118,14 @@ public class UM_Client : MonoBehaviour
         int queryIdx = appURL.IndexOf("?");
         if (queryIdx > 0)
         {
+            Debug.Log("Found query string");
             string queryString = appURL.Substring(queryIdx);
+            Debug.Log(queryString);
             NameValueCollection qscoll = System.Web.HttpUtility.ParseQueryString(queryString);
             foreach (string query in qscoll)
             {
+                Debug.Log(query);
+                Debug.Log(qscoll[query]);
                 if (query.Equals("ID"))
                 {
                     ID = qscoll[query];
