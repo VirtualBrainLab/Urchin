@@ -32,11 +32,12 @@ def setup(localhost = False, standalone = False):
 		sio.connect('https://um-commserver.herokuapp.com/')
 
 	if not standalone:
-		url = "http://data.virtualbrainlab.org/UMRenderer/?ID=" + ID
+		url = "http://data.virtualbrainlab.org/urnenderer/?ID=" + ID
 		webbrowser.open(url)
 
 def close():
-	"""Disconnect from the heroku server"""
+  """Disconnect from the Node.js server
+  """
 	sio.disconnect()
 
 def change_id(newID):
@@ -76,9 +77,9 @@ def set_area_visibility(areaData):
 
 	Examples
 	--------
-	>>> umr.set_area_visibility({"root":True})
-	>>> umr.set_area_visibility({"8":True})
-	>>> umr.set_area_visibility({"VISp-l":True})
+	>>> urn.set_area_visibility({"root":True})
+	>>> urn.set_area_visibility({"8":True})
+	>>> urn.set_area_visibility({"VISp-l":True})
 	"""
 	sio.emit('SetAreaVisibility', areaData)
 
@@ -170,15 +171,21 @@ def create_neurons(neuronList):
 
 	Examples
 	--------
-	>>> umr.create_neurons(["n1","n2","n3"])
+	>>> urn.create_neurons(["n1","n2","n3"])
 	"""
 	sio.emit('CreateNeurons', neuronList)
 
 def set_neuron_positions(neuronData):
-	"""Set positions of neurons in ML/AP/DV space in um units relative to CCF [0,0,0] coordinate
+	"""Set neuron positions
 
-	Inputs:
-	neuronData -- dictionary of neuron names and list of coordinates as values {'n1':[500,1500,1800]}
+	Parameters
+	----------
+	neuronData : Dictionary<string, list of int>
+		Keys are neuron names, values are ML/AP/DV coordinates in um units relative to CCF (0,0,0)
+
+	Examples
+	--------
+	>>> urn.set_neuron_positions({'n1':[500,1500,1800]})
 	"""
 	sio.emit('SetNeuronPos', neuronData)
 
@@ -281,6 +288,13 @@ def set_camera_target(cameraData):
 	cameraData -- list containing the CCF coordinate in mm to target ap/dv/lr, default [5.7, 4, 6.6]
 	"""
 	sio.emit('SetCameraTarget', cameraData)
+
+def set_camera_position(cameraData):
+  """
+  
+  """
+
+  sio.emit('SetCameraPosition', cameraData)
 
 # def set_camera_target_area(cameraData):
 # 	"""Set camera angle around the Y (vertical) axis
