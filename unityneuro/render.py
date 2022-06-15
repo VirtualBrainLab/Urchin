@@ -3,6 +3,10 @@ import webbrowser
 import os
 import numpy as np
 
+class bcolors:
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+
 sio = socketio.Client()
 @sio.event
 def connect():
@@ -13,6 +17,18 @@ def connect():
 @sio.event
 def disconnect():
     print("(URN) disconnected from server")
+
+@sio.on('log')
+def message(data):
+	print('(Renderer) ' + data)
+
+@sio.on('warning')
+def message(data):
+	print('(Renderer) ' + bcolors.WARNING + data)
+
+@sio.on('error')
+def message(data):
+	print('(Renderer) ' + bcolors.FAIL + data)
 
 def setup(localhost = False, standalone = False):
 	"""Connect the Unity Renderer for Neuroscience Python API to the web-based (or standalone) viewer
@@ -72,7 +88,7 @@ def set_area_visibility(areaData):
 	Parameters
 	----------
 	areaData : dict {string : bool}
-		Dictionary of area IDs or acronyms and visibility values
+		dictionary of area IDs or acronyms and visibility values
 
 	Examples
 	--------
@@ -83,64 +99,75 @@ def set_area_visibility(areaData):
 	sio.emit('SetAreaVisibility', areaData)
 
 def set_area_color(areaData):
-	"""Set color of CCF volume regions
+	"""Set color of CCF volume regions. Append "-l" or "-r" for single-sided.
 
-	Use "-l" and "-r" to set color of single-sided regions.
+	Parameters
+	----------
+	areaData : dict {string: string}
+		Keys are area IDs or acronyms, Values are hex colors
 
-	Inputs:
-	areaData -- dictionary of area ID or acronym and hex colors {'root':"#FFFFFF"} or {8:"#FFFFFF"}
+	Examples
+	--------
+	>>> umr.set_area_color( {'grey':"#FFFFFF"})
+	>>> umr.set_area_color({8:"#FFFFFF"})
+	>>> umr.set_area_color({"VISp-l":"#00000080"})
 	"""
 	sio.emit('SetAreaColors', areaData)
 
 def set_area_intensity(areaData):
-	"""Set color of CCF volume regions according to intensity along a color map
+	"""Set color of CCF volume regions using colormap. Append "-l/-r" for single-sided.
 
-	Use "-l" and "-r" to set color of single-sided regions.
+	Parameters
+	----------
+	areaData : dict {string: float}
+		keys are area IDs or acronyms, values are hex colors
 
-	Inputs:
-	areaData -- dictionary of area ID or acronym and hex colors {'root':"#FFFFFF"} or {8:"#FFFFFF"}
+	Examples
+	--------
+	>>> umr.set_area_intensity( {'grey':1.0})
+	>>> umr.set_area_intensity({8:1.0})
 	"""
 	sio.emit('SetAreaIntensity', areaData)
 
 def set_area_colormap(colormap_name):
-	"""Set colormap name
+	# """Set colormap name
 
-	Options are:
-		cool (default, teal 0 -> magenta 1)
-		gray (black 0 -> white 1)
+	# Options are:
+	# 	cool (default, teal 0 -> magenta 1)
+	# 	gray (black 0 -> white 1)
 
-	Inputs:
-	colormap_name -- string
-	"""
+	# Inputs:
+	# colormap_name -- string
+	# """
 	sio.emit('SetAreaColormap', colormap_name)
 
 # def set_volume_explode_style
 
 def set_area_alpha(areaData):
-	"""Set alpha of CCF volume regions
+	# """Set alpha of CCF volume regions
 
-	Use "-l" and "-r" to set color of single-sided regions.
+	# Use "-l" and "-r" to set color of single-sided regions.
 
-	Inputs:
-	areaData -- dictionary of area ID or acronym and float {'root':0.5} or {8:0.5}
-	"""
+	# Inputs:
+	# areaData -- dictionary of area ID or acronym and float {'root':0.5} or {8:0.5}
+	# """
 	sio.emit('SetAreaAlpha', areaData)
 
 def set_area_shader(areaData):
-	"""Set shader of CCF volume regions
+	# """Set shader of CCF volume regions
 
-	Use "-l" and "-r" to set color of single-sided regions.
+	# Use "-l" and "-r" to set color of single-sided regions.
 
-	Shader options are:
-		"default"
-		"toon"
-		"toon-outline"
-		"transparent-lit"
-		"transparent-unlit"
+	# Shader options are:
+	# 	"default"
+	# 	"toon"
+	# 	"toon-outline"
+	# 	"transparent-lit"
+	# 	"transparent-unlit"
 
-	Inputs:
-	areaData -- dictionary of area ID or acronym and string {'root':0.5} or {8:0.5}
-	"""
+	# Inputs:
+	# areaData -- dictionary of area ID or acronym and string {'root':0.5} or {8:0.5}
+	# """
 	sio.emit('SetAreaShader', areaData)
 
 # def set_volume_data(areaData):
@@ -175,73 +202,73 @@ def create_neurons(neuronList):
 	sio.emit('CreateNeurons', neuronList)
 
 def set_neuron_positions(neuronData):
-	"""Set positions of neurons in ML/AP/DV space in um units relative to CCF [0,0,0] coordinate
+	# """Set positions of neurons in ML/AP/DV space in um units relative to CCF [0,0,0] coordinate
 
-	Inputs:
-	neuronData -- dictionary of neuron names and list of coordinates as values {'n1':[500,1500,1800]}
-	"""
+	# Inputs:
+	# neuronData -- dictionary of neuron names and list of coordinates as values {'n1':[500,1500,1800]}
+	# """
 	sio.emit('SetNeuronPos', neuronData)
 
 def set_neuron_size(neuronData):
-	"""Set size of neurons in mm units
+	# """Set size of neurons in mm units
 
-	Inputs:
-	neuronData -- dictionary of neuron names and floats {'n1': 20}
-	"""
+	# Inputs:
+	# neuronData -- dictionary of neuron names and floats {'n1': 20}
+	# """
 	sio.emit('SetNeuronSize', neuronData)
 
 def set_neuron_color(neuronData):
-	"""Set color of neurons
+	# """Set color of neurons
 
-	Inputs:
-	neuronData -- dictionary of neuron names and hex colors {'n1': '#FFFFFF'}
-	"""
+	# Inputs:
+	# neuronData -- dictionary of neuron names and hex colors {'n1': '#FFFFFF'}
+	# """
 	sio.emit('SetNeuronColor', neuronData)
 
 def set_neuron_shape(neuronData):
-	"""Change the neuron mesh
+	# """Change the neuron mesh
 
-	Options:
-		sphere (default)
-		cube (lower resolution option with better performance)
+	# Options:
+	# 	sphere (default)
+	# 	cube (lower resolution option with better performance)
 
-	Inputs:
-	neuronData -- dictionary of neuron names and strings {'n1':'sphere'}
-	"""
+	# Inputs:
+	# neuronData -- dictionary of neuron names and strings {'n1':'sphere'}
+	# """
 	sio.emit('SetNeuronShape', neuronData)
 
 def create_probes(probeList):
-	"""Create probe objects
+	# """Create probe objects
 
-	Inputs:
-	probeList -- list of probe names ['p1','p2']
-	"""
+	# Inputs:
+	# probeList -- list of probe names ['p1','p2']
+	# """
 	sio.emit('CreateProbes', probeList)
 
 def set_probe_colors(probeData):
-	"""Set probe object colors
+	# """Set probe object colors
 
-	Inputs:
-	probeData -- dictionary of probe names and color hex codes {'p1':'#FFFFFF'}
-	"""
+	# Inputs:
+	# probeData -- dictionary of probe names and color hex codes {'p1':'#FFFFFF'}
+	# """
 	sio.emit('SetProbeColors', probeData)
 
 def set_probe_positions(probeData):
-	"""Set probe object ML/AP/DV positions in um relative to the CCF (0,0,0) point
+	# """Set probe object ML/AP/DV positions in um relative to the CCF (0,0,0) point
 
-	Inputs:
-	probeData -- dictionary of probe names and float3 list {'p1':[500, 500, 500]}
-	"""
+	# Inputs:
+	# probeData -- dictionary of probe names and float3 list {'p1':[500, 500, 500]}
+	# """
 	sio.emit('SetProbePos', probeData)
 
 def set_probe_angles(probeData):
-	"""Set probe azimuth/elevation/spin angles in degrees
-	Azimuth 0 = AP axis, + rotates clockwise
-	Elevation 0 = Vertical, 90 = Horizontal
+	# """Set probe azimuth/elevation/spin angles in degrees
+	# Azimuth 0 = AP axis, + rotates clockwise
+	# Elevation 0 = Vertical, 90 = Horizontal
 
-	Inputs:
-	probeData -- dictionary of probe names and float3 list {'p1':[-90,0,0]}
-	"""
+	# Inputs:
+	# probeData -- dictionary of probe names and float3 list {'p1':[-90,0,0]}
+	# """
 	sio.emit('SetProbeAngles', probeData)
 
 # def set_probe_style(probeData):
@@ -259,13 +286,13 @@ def set_probe_angles(probeData):
 # 	sio.emit('SetProbeStyle', probeData)
 
 def set_probe_size(probeData):
-	"""Set probe rendering style
+	# """Set probe rendering style
 
-	By default probes are scaled to their real size (70um wide x 20um deep x 3.84 mm tall)
+	# By default probes are scaled to their real size (70um wide x 20um deep x 3.84 mm tall)
 
-	Inputs:
-	probeData -- dictionary of probe names and float3 {'p1':[0.07, 3.84, 0.02]}
-	"""
+	# Inputs:
+	# probeData -- dictionary of probe names and float3 {'p1':[0.07, 3.84, 0.02]}
+	# """
 	sio.emit('SetProbeSize', probeData)
 
 ##########
@@ -273,13 +300,13 @@ def set_probe_size(probeData):
 ##########
 
 def set_camera_target(cameraData):
-	"""Set camera angle around the Y (vertical) axis
+	# """Set camera angle around the Y (vertical) axis
 
-	By default the camera is centered at the center point of the CCF space
+	# By default the camera is centered at the center point of the CCF space
 
-	Inputs:
-	cameraData -- list containing the CCF coordinate in mm to target ap/dv/lr, default [5.7, 4, 6.6]
-	"""
+	# Inputs:
+	# cameraData -- list containing the CCF coordinate in mm to target ap/dv/lr, default [5.7, 4, 6.6]
+	# """
 	sio.emit('SetCameraTarget', cameraData)
 
 # def set_camera_target_area(cameraData):
