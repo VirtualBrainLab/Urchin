@@ -71,6 +71,12 @@ io.on("connection", function (socket) {
 
   // The following is simply a list of all events that can be sent by a client and need to be re-emitted to the receivers
   // no actual functionality is implemented by the echo server
+  
+  // CCF Areas
+  socket.on('LoadDefaultAreas', function(data) {
+    emitToAll(socket.id, 'LoadDefaultAreas', data);
+  });
+
   socket.on('SetAreaColors', function(data) {
   	emitToAll(socket.id, 'SetAreaColors', data);
   });
@@ -83,12 +89,20 @@ io.on("connection", function (socket) {
   socket.on('SetAreaColormap', function(data) {
     emitToAll(socket.id, 'SetAreaColormap', data);
   });
-  socket.on('SetAreaShader', function(data) {
-    emitToAll(socket.id, 'SetAreaShader', data);
+  socket.on('SetAreaMaterial', function(data) {
+    emitToAll(socket.id, 'SetAreaMaterial', data);
   });
   socket.on('SetAreaAlpha', function(data) {
     emitToAll(socket.id, 'SetAreaAlpha', data);
   });
+  socket.on('SetAreaData', function(data) {
+    emitToAll(socket.id, 'SetAreaData', data);
+  });
+  socket.on('SetAreaIndex', function(data) {
+    emitToAll(socket.id, 'SetAreaIndex', data);
+  });
+  
+  // Neurons
   socket.on('CreateNeurons', function(data) {
     emitToAll(socket.id, 'CreateNeurons', data);
   });
@@ -104,12 +118,11 @@ io.on("connection", function (socket) {
   socket.on('SetNeuronColor', function(data) {
     emitToAll(socket.id, 'SetNeuronColor', data);
   });
-  socket.on('SliceVolume', function(data) {
-    emitToAll(socket.id, 'SliceVolume', data);
+  socket.on('SetNeuronMaterial', function(data) {
+    emitToAll(socket.id, 'SetNeuronMaterial', data);
   });
-  socket.on('SetSliceColor', function(data) {
-    emitToAll(socket.id, 'SetSliceColor', data);
-  });
+
+  // Probes
   socket.on('CreateProbes', function(data) {
     emitToAll(socket.id, 'CreateProbes', data);
   });
@@ -128,18 +141,8 @@ io.on("connection", function (socket) {
   socket.on('SetProbeSize', function(data) {
     emitToAll(socket.id, 'SetProbeSize', data);
   });
-  socket.on('SetCameraTarget', function(data) {
-    emitToAll(socket.id, 'SetCameraTarget', data);
-  });
-  socket.on('SetCameraTargetArea', function(data) {
-    emitToAll(socket.id, 'SetCameraTargetArea', data);
-  });
-  socket.on('SetCameraYAngle', function(data) {
-    emitToAll(socket.id, 'SetCameraYAngle', data);
-  });
-  socket.on('LoadDefaultAreas', function(data) {
-    emitToAll(socket.id, 'LoadDefaultAreas', data);
-  });
+
+  // Volumes
   socket.on('SetVolumeVisibility', function(data) {
     emitToAll(socket.id, 'SetVolumeVisibility', data);
   });
@@ -155,17 +158,55 @@ io.on("connection", function (socket) {
   socket.on('SetVolumeColormap', function(data) {
     emitToAll(socket.id, 'SetVolumeColormap', data);
   });
+
+  // Camera
+  socket.on('SetCameraTarget', function(data) {
+    emitToAll(socket.id, 'SetCameraTarget', data);
+  });
+  socket.on('SetCameraPosition', function(data) {
+    emitToAll(socket.id, 'SetCameraPosition', data);
+  });
+  socket.on('SetCameraRotation', function(data) {
+    emitToAll(socket.id, 'SetCameraRotation', data);
+  });
+  socket.on('SetCameraTargetArea', function(data) {
+    emitToAll(socket.id, 'SetCameraTargetArea', data);
+  });
+
+  // Receiver events
+  socket.on('log', function(data) {
+    emitToSender(socket.id, 'log', data);
+  });
+  socket.on('warning', function(data) {
+    emitToSender(socket.id, 'warning', data);
+  });
+  socket.on('error', function(data) {
+    emitToSender(socket.id, 'error', data);
+  });
+  
+
+  // Clear
   socket.on('Clear', function(data) {
     emitToAll(socket.id, 'Clear', data);
   });
 });
 
 function emitToAll(id, event, data) {
-  	console.log('User sent event: ' + event + ' emitting to all clients with ID: ' + Socket2ID[id] + " and type receive");
+  	console.log('Sender sent event: ' + event + ' emitting to all clients with ID: ' + Socket2ID[id] + " and type receive");
   	for (var socketID of ID2Socket[Socket2ID[id]]) {
       if (Socket2Type[socketID]=="receive") {
         console.log('Emitting to: ' + socketID);
         io.to(socketID).emit(event,data);
       }
   	}
+}
+
+function emitToSender(id, event, data) {
+  console.log('Receiver sent event: ' + event + ' emitting to all clients with ID: ' + Socket2ID[id] + " and type send");
+  for (var socketID of ID2Socket[Socket2ID[id]]) {
+    if (Socket2Type[socketID]=="send") {
+      console.log('Emitting to: ' + socketID);
+      io.to(socketID).emit(event,data);
+    }
+  }
 }
