@@ -1,5 +1,5 @@
 
-urchin: unity renderer for neuroscience
+unity renderer for neuroscience
 =======================================
 
 [![PyPI Version](https://img.shields.io/pypi/v/unityneuro.svg)](https://pypi.org/project/unityneuro/)
