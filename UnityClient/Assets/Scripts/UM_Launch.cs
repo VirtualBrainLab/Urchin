@@ -11,10 +11,17 @@ public class UM_Launch : MonoBehaviour
     [SerializeField] private BrainCameraController cameraController;
     [SerializeField] private float maxExplosion = 10f;
 
+    [SerializeField] private GameObject settingsPanel;
+    [SerializeField] private Transform brainControlsT;
+
     [SerializeField] private GameObject consolePanel;
     [SerializeField] private TextMeshProUGUI consoleText;
 
     [SerializeField] private bool loadDefaults;
+
+    // Axes + Grid
+    [SerializeField] private GameObject axesGO;
+    [SerializeField] private GameObject gridGO;
 
     // Exploding
     [Range(0,1), SerializeField] private float percentageExploded = 0f;
@@ -23,6 +30,9 @@ public class UM_Launch : MonoBehaviour
     private bool colorLeftOnly;
 
     private Vector3 center = new Vector3(5.7f, 4f, -6.6f);
+
+    // Neuron materials
+    [SerializeField] private Dictionary<string, Material> neuronMaterials;
 
     // Colormaps
     private List<Converter<float, Color>> colormaps;
@@ -35,7 +45,6 @@ public class UM_Launch : MonoBehaviour
     private Dictionary<int, Vector3> cosmosMeshCenters;
     private Dictionary<int, Vector3> originalTransformPositionsLeft;
     private Dictionary<int, Vector3> originalTransformPositionsRight;
-    private Dictionary<int, Vector3> nodeMeshCenters;
     private Dictionary<int, Vector3> cosmosVectors;
     
     private Dictionary<int, CCFTreeNode> visibleNodes;
@@ -56,7 +65,6 @@ public class UM_Launch : MonoBehaviour
 
         originalTransformPositionsLeft = new Dictionary<int, Vector3>();
         originalTransformPositionsRight = new Dictionary<int, Vector3>();
-        nodeMeshCenters = new Dictionary<int, Vector3>();
 
         visibleNodes = new Dictionary<int, CCFTreeNode>();
 
@@ -137,13 +145,33 @@ public class UM_Launch : MonoBehaviour
         {
             consolePanel.SetActive(!consolePanel.activeSelf);
         }
+
+        // Check for key down events
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            // Hacky workaround because the brain controls doesn't attach to the UI element properly
+            if (settingsPanel.activeSelf)
+                brainControlsT.localPosition = new Vector3(-82.3f, -85.6f, 0f);
+            else
+                brainControlsT.localPosition = new Vector3(20.2f, -85.6f, 0f);
+            settingsPanel.SetActive(!settingsPanel.activeSelf);
+        }
+
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            axesGO.SetActive(!axesGO.activeSelf);
+        }
+
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            gridGO.SetActive(!gridGO.activeSelf);
+        }
     }
 
     public void RegisterNode(CCFTreeNode node)
     {
         originalTransformPositionsLeft.Add(node.ID, node.LeftGameObject().transform.localPosition);
         originalTransformPositionsRight.Add(node.ID, node.RightGameObject().transform.localPosition);
-        nodeMeshCenters.Add(node.ID, node.GetMeshCenter());
         visibleNodes.Add(node.ID,node);
     }
 

@@ -18,19 +18,22 @@ def connect():
 def disconnect():
     print("(URN) disconnected from server")
 
+log_messages = True
 @sio.on('log')
 def message(data):
-	print('(Renderer) ' + data)
+	if log_messages:
+		print('(Renderer) ' + data)
 
 @sio.on('log-warning')
 def message(data):
-	print('(Renderer) ' + bcolors.WARNING + data)
+	if log_messages:
+		print('(Renderer) ' + bcolors.WARNING + data)
 
 @sio.on('log-error')
 def message(data):
 	print('(Renderer) ' + bcolors.FAIL + data)
 
-def setup(localhost = False, standalone = False):
+def setup(verbose = True, localhost = False, standalone = False):
 	"""Connect the Unity Renderer for Neuroscience Python API to the web-based (or standalone) viewer
 
 	Parameters
@@ -41,6 +44,8 @@ def setup(localhost = False, standalone = False):
 		connect to a standalone Desktop build rather than the web-based Brain Viewer, by default False
 	"""
 	ID = os.getlogin()
+
+	log_messages = verbose
 
 	if localhost:
 		sio.connect('http://localhost:5000')
@@ -189,12 +194,12 @@ def set_area_data(area_data):
 	sio.emit('SetAreaData', area_data)
 
 def set_area_data_index(area_index):
-	"""_summary_
+	"""Set the data index for the CCF area models
 
 	Parameters
 	----------
-	area_index : _type_
-		_description_
+	area_index : int
+		data index
 	"""
 	sio.emit('SetAreaIndex', area_index)
 
@@ -425,12 +430,12 @@ def set_camera_position(camera_pos, preserve_target = True):
 	sio.emit('SetCameraPosition', packet)
 
 def set_camera_rotation(camera_rot):
-	"""Set the camera rotation using euler angles
+	"""Set the camera rotation (pitch, yaw, spin). The camera is locked to a target, so this rotation rotates around the target.
 
 	Parameters
 	----------
 	camera_rot : float list
-		list of euler angles to set the camera rotation
+		list of euler angles to set the camera rotation in (pitch, yaw, spin)
 	"""
 	sio.emit('SetCameraRotation', camera_rot)
 

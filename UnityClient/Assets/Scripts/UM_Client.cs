@@ -77,8 +77,11 @@ public class UM_Client : MonoBehaviour
         manager.Socket.On<Dictionary<string, string>>("SetAreaColors", UpdateColors);
         manager.Socket.On<Dictionary<string, float>>("SetAreaIntensity", UpdateIntensity);
         manager.Socket.On<string>("SetAreaColormap", UpdateVolumeColormap);
-        manager.Socket.On<Dictionary<string, string>>("SetAreaShader", UpdateVolumeMaterial);
+        manager.Socket.On<Dictionary<string, string>>("SetAreaMaterial", UpdateVolumeMaterial);
         manager.Socket.On<Dictionary<string, float>>("SetAreaAlpha", UpdateAlpha);
+        manager.Socket.On<Dictionary<string, List<float>>>("SetAreaData", UpdateAreaData);
+        manager.Socket.On<int>("SetAreaIndex", UpdateAreaDataIndex);
+        manager.Socket.On<string>("LoadDefaultAreas", LoadDefaultAreas);
 
         // 3D Volumes
         manager.Socket.On<List<object>>("SetVolumeVisibility", UpdateVolumeVisibility);
@@ -93,6 +96,7 @@ public class UM_Client : MonoBehaviour
         manager.Socket.On<Dictionary<string, float>>("SetNeuronSize", UpdateNeuronScale);
         manager.Socket.On<Dictionary<string, string>>("SetNeuronShape", UpdateNeuronShape);
         manager.Socket.On<Dictionary<string, string>>("SetNeuronColor", UpdateNeuronColor);
+        manager.Socket.On<Dictionary<string, string>>("SetNeuronMaterial", UpdateNeuronMaterial);
 
         // Probes
         manager.Socket.On<List<string>>("CreateProbes", CreateProbes);
@@ -104,8 +108,9 @@ public class UM_Client : MonoBehaviour
 
         // Camera
         manager.Socket.On<List<float>>("SetCameraTarget", SetCameraTarget);
+        manager.Socket.On<List<float>>("SetCameraPosition", SetCameraPosition);
+        manager.Socket.On<List<float>>("SetCameraRotation", SetCameraRotation);
         manager.Socket.On<string>("SetCameraTargetArea", SetCameraTargetArea);
-        manager.Socket.On<float>("SetCameraYAngle", SetCameraYAngle);
 
         // Misc
         manager.Socket.On<string>("Clear", Clear);
@@ -165,7 +170,7 @@ public class UM_Client : MonoBehaviour
 
     private void UpdateVolumeMeta(List<object> data)
     {
-        volRenderer.AddVolumeMeta((string)data[0], (int)data[1]);
+        volRenderer.AddVolumeMeta((string)data[0], (int)data[1], (bool)data[2]);
     }
     private void UpdateVolumeData(byte[] bytes)
     {
@@ -178,6 +183,20 @@ public class UM_Client : MonoBehaviour
 
     // CAMERA CONTROLS
 
+
+    private void SetCameraRotation(List<float> obj)
+    {
+        cameraControl.SetBrainAxisAngles(new Vector3(obj[1], obj[0], obj[2]));
+    }
+
+    private void SetCameraPosition(List<float> obj)
+    {
+        // position in ml/ap/dv relative to ccf 0,0,0
+        LogError("Setting camera position not implemented yet. Use set_camera_target and set_camera_rotation instead.");
+        //Vector3 ccfPosition25 = new Vector3(obj[0]/25, obj[1]/25, obj[2]/25);
+        //cameraControl.SetOffsetPosition(Utils.apdvlr2World(ccfPosition25));
+    }
+
     private void SetCameraYAngle(float obj)
     {
         cameraControl.SetSpin(obj);
@@ -189,16 +208,22 @@ public class UM_Client : MonoBehaviour
         CCFTreeNode node = modelControl.tree.findNode(ID);
         if (node != null)
         {
-            Vector3 center = node.GetMeshCenter();
+            Vector3 center = node.GetMeshCenter(leftSide, rightSide);
             cameraControl.SetCameraTarget(center);
         }
         else
             main.Log("Failed to find node to set camera target: " + obj);
     }
 
-    private void SetCameraTarget(List<float> obj)
+    private void SetCameraTarget(List<float> mlapdv)
     {
-        cameraControl.SetCameraTarget(new Vector3(obj[0], obj[1], obj[2]));
+        // data comes in in um units in ml/ap/dv
+        // note that (0,0,0) in world is the center of the brain
+        // so offset by (-6.6 ap, -4 dv, -5.7 lr) to get to the corner
+        // in world space, x = ML, y = DV, z = AP
+
+        Vector3 worldCoords = new Vector3(5.7f - mlapdv[0]/1000f, 4f - mlapdv[2] / 1000f, mlapdv[1] / 1000f - 6.6f);
+        cameraControl.SetCameraTarget(worldCoords);
     }
 
     // UPDATE
@@ -382,6 +407,14 @@ public class UM_Client : MonoBehaviour
         main.Log("Not implemented");
     }
 
+    // NEURONS
+
+
+    private void UpdateNeuronMaterial(Dictionary<string, string> obj)
+    {
+        throw new NotImplementedException();
+    }
+
     private void UpdateNeuronScale(Dictionary<string, float> data)
     {
         main.Log("Updating neuron scale");
@@ -498,11 +531,99 @@ public class UM_Client : MonoBehaviour
     }
 
     ////
-    //// VOLUME FUNCTIONS
+    //// AREA FUNCTIONS
     /// Note that these are asynchronous calls, because we can't guarantee that the volumes are loaded until the call to setVisibility evaluates fully
     ////
 
     Dictionary<int, Task> nodeTasks;
+    private int areaDataIndex;
+    private Dictionary<int, List<float>> areaData;
+    private Dictionary<int, (bool, bool)> areaSides;
+    private void UpdateAreaDataIndex(int obj)
+    {
+        SetAreaDataIndex(obj);
+    }
+
+    private void UpdateAreaData(Dictionary<string, List<float>> newAreaData)
+    {
+        foreach (KeyValuePair<string, List<float>> kvp in newAreaData)
+        {
+            (int ID, bool leftSide, bool rightSide) = GetID(kvp.Key);
+
+            if (areaData.ContainsKey(ID))
+            {
+                areaData[ID] = kvp.Value;
+                areaSides[ID] = (leftSide, rightSide);
+            }
+            else
+            {
+                areaData.Add(ID, kvp.Value);
+                areaSides.Add(ID, (leftSide, rightSide));
+            }
+        }
+    }
+
+    public void SetAreaDataIndex(int newIndex)
+    {
+        areaDataIndex = newIndex;
+        UpdateAreaDataIntensity();
+    }
+
+    private async void UpdateAreaDataIntensity()
+    {
+        foreach (KeyValuePair<int, List<float>> kvp in areaData)
+        {
+            int ID = kvp.Key;
+            (bool leftSide, bool rightSide) = areaSides[ID];
+
+            CCFTreeNode node = modelControl.tree.findNode(ID);
+            
+            if (WaitingOnTask(node.ID))
+                await nodeTasks[node.ID];
+
+            float currentValue = kvp.Value[areaDataIndex];
+
+            if (node != null)
+            {
+                if (leftSide && rightSide)
+                    node.SetColor(main.GetColormapColor(currentValue));
+                else if (leftSide)
+                    node.SetColorOneSided(main.GetColormapColor(currentValue), true);
+                else if (rightSide)
+                    node.SetColorOneSided(main.GetColormapColor(currentValue), false);
+            }
+            else
+                main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+        }
+    }
+
+
+    private async void LoadDefaultAreas(string whichNodes)
+    {
+        Task<List<CCFTreeNode>> nodeTask;
+        if (whichNodes.Equals("cosmos"))
+            nodeTask = modelControl.LoadCosmosNodes(true);
+        else if (whichNodes.Equals("beryl"))
+            nodeTask = modelControl.LoadBerylNodes(true);
+        else
+        {
+            main.Log("Failed to load nodes: " + whichNodes);
+            LogError("Node group " + whichNodes + " does not exist.");
+            return;
+        }
+
+        await nodeTask;
+
+        foreach (CCFTreeNode node in nodeTask.Result)
+        {
+            node.SetNodeModelVisibility(true, true);
+            visibleNodes.Add(node);
+            // There is a bug somewhere that forces us to have to do this, if it gets tracked down this can be removed...
+            main.FixNodeTransformPosition(node);
+            // Make sure to fix position before registering!
+            main.RegisterNode(node);
+        }
+    }
 
     private async void UpdateVolumeMaterial(Dictionary<string, string> data)
     {
@@ -669,6 +790,24 @@ public class UM_Client : MonoBehaviour
     {
         main.Log("connected! Login with ID: " + ID);
         UpdateID(ID);
+
+        //manager.Socket.Emit("log", "test log");
+        //manager.Socket.Emit("log-warning", "test warning");
+        //manager.Socket.Emit("log-error", "test error");
     }
 
+    private void Log(string msg)
+    {
+        manager.Socket.Emit("log", msg);
+    }
+
+    private void LogWarning(string msg)
+    {
+        manager.Socket.Emit("log-warning", msg);
+    }
+
+    private void LogError(string msg)
+    {
+        manager.Socket.Emit("log-error", msg);
+    }
 }

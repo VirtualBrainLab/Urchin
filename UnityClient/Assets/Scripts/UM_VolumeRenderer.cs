@@ -98,11 +98,13 @@ public class UM_VolumeRenderer : MonoBehaviour
 
     private string nextVol;
     private int nextSlice;
+    private bool nextApply;
 
-    public void AddVolumeMeta(string name, int slice)
+    public void AddVolumeMeta(string name, int slice, bool immediateApply)
     {
         nextVol = name;
         nextSlice = slice;
+        nextApply = immediateApply;
     }
 
     public void AddVolumeData(byte[] newData)
@@ -111,6 +113,11 @@ public class UM_VolumeRenderer : MonoBehaviour
         int slicePos = nextSlice * 528 * 320;
         for (int i = 0; i < newData.Length; i++)
             volumeData[nextVol][i + slicePos] = colormaps[nextVol][newData[i]];
+        if (nextApply)
+        {
+            volumeTexture.SetPixels32(volumeData[nextVol]);
+            volumeTexture.Apply();
+        }
     }
 
     public void Clear()
