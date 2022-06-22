@@ -170,9 +170,12 @@ public class UM_Launch : MonoBehaviour
 
     public void RegisterNode(CCFTreeNode node)
     {
-        originalTransformPositionsLeft.Add(node.ID, node.LeftGameObject().transform.localPosition);
-        originalTransformPositionsRight.Add(node.ID, node.RightGameObject().transform.localPosition);
-        visibleNodes.Add(node.ID,node);
+        if (!originalTransformPositionsLeft.ContainsKey(node.ID))
+            originalTransformPositionsLeft.Add(node.ID, node.LeftGameObject().transform.localPosition);
+        if (!originalTransformPositionsRight.ContainsKey(node.ID))
+            originalTransformPositionsRight.Add(node.ID, node.RightGameObject().transform.localPosition);
+        if (!visibleNodes.ContainsKey(node.ID))
+            visibleNodes.Add(node.ID,node);
     }
 
     public Color GetColormapColor(float perc)

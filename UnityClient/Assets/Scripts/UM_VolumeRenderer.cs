@@ -1,10 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 
 public class UM_VolumeRenderer : MonoBehaviour
 {
+    [SerializeField] GameObject volumeLoadingUIGO;
+    [SerializeField] TMP_Text volumeLoadingUIText;
+
+    [SerializeField] UM_CameraController cameraControl;
+
     private Texture3D volumeTexture;
     private Dictionary<string, Color32[]> volumeData;
     private Dictionary<string, Color32[]> colormaps;
@@ -58,7 +64,6 @@ public class UM_VolumeRenderer : MonoBehaviour
                 newMap[i] = Utils.ParseHexColor(hexColors[i]);
             else
                 newMap[i] = black;
-            Debug.Log(newMap[i]);
         }
         newMap[255] = transparentBlack;
         if (colormaps.ContainsKey(name))
@@ -69,12 +74,16 @@ public class UM_VolumeRenderer : MonoBehaviour
 
     public void SetVolumeVisibility(string name, bool visible)
     {
+
         Debug.Log("(UM_VolRend) Volume: " + name + " is now visible: " + visible);
         if (volumeData.ContainsKey(name) && visible)
         {
             volumeTexture.SetPixels32(volumeData[name]);
             volumeTexture.Apply();
             GetComponent<Renderer>().enabled = true;
+
+            // Force the camera to perspective
+            cameraControl.SwitchCameraMode(false);
         }
         else if (!visible)
             GetComponent<Renderer>().enabled = false;
@@ -102,6 +111,7 @@ public class UM_VolumeRenderer : MonoBehaviour
 
     public void AddVolumeMeta(string name, int slice, bool immediateApply)
     {
+        volumeLoadingUIGO.SetActive(true);
         nextVol = name;
         nextSlice = slice;
         nextApply = immediateApply;
@@ -113,10 +123,15 @@ public class UM_VolumeRenderer : MonoBehaviour
         int slicePos = nextSlice * 528 * 320;
         for (int i = 0; i < newData.Length; i++)
             volumeData[nextVol][i + slicePos] = colormaps[nextVol][newData[i]];
+
+        // slices count down, so invert that
+        volumeLoadingUIText.text = (456-nextSlice+1) + "/456";
+
         if (nextApply)
         {
             volumeTexture.SetPixels32(volumeData[nextVol]);
             volumeTexture.Apply();
+            volumeLoadingUIGO.SetActive(false);
         }
     }
 

@@ -429,15 +429,17 @@ def set_camera_position(camera_pos, preserve_target = True):
 	packet.append(preserve_target)
 	sio.emit('SetCameraPosition', packet)
 
-def set_camera_rotation(camera_rot):
+def set_camera_rotation(pitch, yaw, spin):
 	"""Set the camera rotation (pitch, yaw, spin). The camera is locked to a target, so this rotation rotates around the target.
+
+	Rotations are applied in order: pitch, then yaw, then spin.
 
 	Parameters
 	----------
 	camera_rot : float list
 		list of euler angles to set the camera rotation in (pitch, yaw, spin)
 	"""
-	sio.emit('SetCameraRotation', camera_rot)
+	sio.emit('SetCameraRotation', [pitch, yaw, spin])
 
 def set_camera_target_area(camera_target_area):
 	"""Set the camera rotation to look towards a target area
@@ -529,9 +531,9 @@ def set_volume_data(volume_name, volumeData):
 
 	for di in np.arange(0,ndepth):
 		if di == (ndepth-1):
-			set_volume_slice_data(volume_name, int(ndepth-di), localData[:,:,di].flatten('F').tobytes(), True)
+			set_volume_slice_data(volume_name, int(ndepth-1-di), localData[:,:,di].flatten('F').tobytes(), True)
 		else:
-			set_volume_slice_data(volume_name, int(ndepth-di), localData[:,:,di].flatten('F').tobytes())
+			set_volume_slice_data(volume_name, int(ndepth-1-di), localData[:,:,di].flatten('F').tobytes())
 
 def set_volume_slice_data(volume_name, slice, volume_bytes, override_gpu_apply = False):
 	"""Set a single slice of data in a volume
