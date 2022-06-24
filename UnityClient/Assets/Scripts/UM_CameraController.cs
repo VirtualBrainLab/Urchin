@@ -9,6 +9,14 @@ public class UM_CameraController : MonoBehaviour
     [SerializeField] Camera orthoCamera;
     [SerializeField] Camera perspectiveCamera;
 
+    private GameObject uiGO;
+    
+    private void Awake()
+    {
+
+        uiGO = GameObject.Find("UI");
+    }
+
     public void CameraContinuousRotationButton()
     {
         cameraController.SetCameraContinuousRotation(true);
@@ -20,14 +28,16 @@ public class UM_CameraController : MonoBehaviour
         {
             orthoCamera.gameObject.SetActive(true);
             perspectiveCamera.gameObject.SetActive(false);
-            GameObject.Find("UI").GetComponent<Canvas>().worldCamera = orthoCamera;
+            if (uiGO)
+                uiGO.GetComponent<Canvas>().worldCamera = orthoCamera;
             cameraController.SetCamera(orthoCamera);
         }
         else
         {
             orthoCamera.gameObject.SetActive(false);
             perspectiveCamera.gameObject.SetActive(true);
-            GameObject.Find("UI").GetComponent<Canvas>().worldCamera = perspectiveCamera;
+            if (uiGO)
+                uiGO.GetComponent<Canvas>().worldCamera = perspectiveCamera;
             cameraController.SetCamera(perspectiveCamera);
         }
     }

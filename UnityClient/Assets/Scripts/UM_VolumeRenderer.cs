@@ -91,18 +91,24 @@ public class UM_VolumeRenderer : MonoBehaviour
 
     public async void DisplayAllenVolume(bool visible)
     {
-        Debug.Log("(UM_VolRend) Volume: allen is now visible: " + visible);
         if (visible)
         {
             Task<Texture3D> volumeTexTask = AddressablesRemoteLoader.LoadAnnotationTexture();
             await volumeTexTask;
 
             volumeTexture = volumeTexTask.Result;
+            GetComponent<Renderer>().material.mainTexture = volumeTexture;
+            volumeTexture.Apply();
 
             GetComponent<Renderer>().enabled = true;
+
+            // Force the camera to perspective
+            cameraControl.SwitchCameraMode(false);
         }
         else
             GetComponent<Renderer>().enabled = false;
+
+        Debug.Log("(UM_VolRend) Volume: allen is now visible: " + visible);
     }
 
     private string nextVol;
