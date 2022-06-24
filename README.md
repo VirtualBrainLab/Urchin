@@ -1,10 +1,10 @@
 
-unity renderer for neuroscience
+urchin
 ========================================
 
 [![PyPI Version](https://img.shields.io/pypi/v/unityneuro.svg)](https://pypi.org/project/unityneuro/)
 
-This project allows you to connect your Python scripts to a standalone brain renderer program, to create graphics like the ones below.
+Urchin (Unity Renderer for Neuroscience) is a python package that links your analysis scripts to a standalone brain renderer program, to create graphics like the ones below.
 
 # Gallery
 <p float="left">
