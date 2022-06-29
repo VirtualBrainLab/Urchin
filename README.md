@@ -24,7 +24,20 @@ To install the package run `pip install unityneuro`. To get started open a Pytho
 ```
 import unityneuro.render as urn
 urn.setup()
+```
+
+A few quick examples to get you started.
+
+### Render all Allen CCF areas
+```
+urn.load_beryl_areas()
+```
+
+### Load the basic 3D model of the brain and make it transparent
+```
 urn.set_area_visibility({"grey":True})
+urn.set_area_material({"grey":"transparent-lit"})
+urn.set_area_alpha({"grey":0.25})
 ```
 
 # Documentation
