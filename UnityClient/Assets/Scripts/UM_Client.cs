@@ -40,6 +40,7 @@ public class UM_Client : MonoBehaviour
 
     // NODES
     private List<CCFTreeNode> visibleNodes;
+    private int[] missing = { 738, 995 };
 
     // POSITIONING
     private Vector3 center = new Vector3(5.7f, 4f, -6.6f);
@@ -489,8 +490,8 @@ public class UM_Client : MonoBehaviour
     private (int, bool, bool) GetID(string idOrAcronym)
     {
         // Check whether a suffix was included
-        int leftIndex = idOrAcronym.IndexOf("-l");
-        int rightIndex = idOrAcronym.IndexOf("-r");
+        int leftIndex = idOrAcronym.IndexOf("-lh");
+        int rightIndex = idOrAcronym.IndexOf("-rh");
         bool leftSide = leftIndex > 0;
         bool rightSide = rightIndex > 0;
 
@@ -586,11 +587,11 @@ public class UM_Client : MonoBehaviour
             if (node != null)
             {
                 if (leftSide && rightSide)
-                    node.SetColor(main.GetColormapColor(currentValue));
+                    node.SetColor(main.GetColormapColor(currentValue), true);
                 else if (leftSide)
-                    node.SetColorOneSided(main.GetColormapColor(currentValue), true);
+                    node.SetColorOneSided(main.GetColormapColor(currentValue), true, true);
                 else if (rightSide)
-                    node.SetColorOneSided(main.GetColormapColor(currentValue), false);
+                    node.SetColorOneSided(main.GetColormapColor(currentValue), false, true);
             }
             else
                 main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
@@ -649,17 +650,17 @@ public class UM_Client : MonoBehaviour
             (int ID, bool leftSide, bool rightSide) = GetID(kvp.Key);
             CCFTreeNode node = modelControl.tree.findNode(ID);
 
-            if (WaitingOnTask(node.ID))
-                await nodeTasks[node.ID];
-
-            Color newColor;
+            Color newColor = Color.black;
             if (node != null && ColorUtility.TryParseHtmlString(kvp.Value, out newColor))
+                if (WaitingOnTask(node.ID))
+                    await nodeTasks[node.ID];
+
                 if (leftSide && rightSide)
-                    node.SetColor(newColor);
+                    node.SetColor(newColor, true);
                 else if (leftSide)
-                    node.SetColorOneSided(newColor, true);
+                    node.SetColorOneSided(newColor, true, true);
                 else if (rightSide)
-                    node.SetColorOneSided(newColor, false);
+                    node.SetColorOneSided(newColor, false, true);
             else
                 main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
         }
@@ -672,28 +673,39 @@ public class UM_Client : MonoBehaviour
             (int ID, bool leftSide, bool rightSide) = GetID(kvp.Key);
             CCFTreeNode node = modelControl.tree.findNode(ID);
 
-            if (node != null)
+            if (node != null && !node.IsLoaded())
             {
-                // Check if we already loaded this and whether 
-                if (!node.IsLoaded())
+                if (missing.Contains(node.ID))
                 {
-                    if (nodeTasks.ContainsKey(node.ID))
-                    {
-                        main.Log("Node " + node.ID + " is already being loaded, did you send duplicate instructions?");
-                    }
-                    else
-                    {
-                        Task nodeTask = node.loadNodeModel(true);
-                        nodeTasks.Add(node.ID, nodeTask);
-                        await nodeTask;
-
-                        visibleNodes.Add(node);
-                        // There is a bug somewhere that forces us to have to do this, if it gets tracked down this can be removed...
-                        main.FixNodeTransformPosition(node);
-                        // Make sure to fix position before registering!
-                        main.RegisterNode(node);
-                    }
+                    LogWarning("The mesh file for area " + node.ID + " does not exist, we can't load it");
+                    continue;
                 }
+                if (nodeTasks.ContainsKey(node.ID))
+                {
+                    main.Log("Node " + node.ID + " is already being loaded, did you send duplicate instructions?");
+                }
+                else
+                {
+                    Task nodeTask = node.loadNodeModel(true);
+                    nodeTasks.Add(node.ID, nodeTask);
+                }
+            }
+        }
+
+        await Task.WhenAll(nodeTasks.Values);
+
+        foreach (KeyValuePair<string, bool> kvp in data)
+        {
+            (int ID, bool leftSide, bool rightSide) = GetID(kvp.Key);
+            CCFTreeNode node = modelControl.tree.findNode(ID);
+
+            if (node != null && node.IsLoaded())
+            {
+                visibleNodes.Add(node);
+                // There is a bug somewhere that forces us to have to do this, if it gets tracked down this can be removed...
+                main.FixNodeTransformPosition(node);
+                // Make sure to fix position before registering!
+                main.RegisterNode(node);
 
                 if (leftSide && rightSide)
                     node.SetNodeModelVisibility(kvp.Value);
@@ -739,17 +751,17 @@ public class UM_Client : MonoBehaviour
             (int ID, bool leftSide, bool rightSide) = GetID(kvp.Key);
             CCFTreeNode node = modelControl.tree.findNode(ID);
 
-            if (WaitingOnTask(node.ID))
-                await nodeTasks[node.ID];
-
             if (node != null)
             {
+                if (WaitingOnTask(node.ID))
+                    await nodeTasks[node.ID];
+
                 if (leftSide && rightSide)
-                    node.SetColor(main.GetColormapColor(kvp.Value));
+                    node.SetColor(main.GetColormapColor(kvp.Value), true);
                 else if (leftSide)
-                    node.SetColorOneSided(main.GetColormapColor(kvp.Value), true);
+                    node.SetColorOneSided(main.GetColormapColor(kvp.Value), true, true);
                 else if (rightSide)
-                    node.SetColorOneSided(main.GetColormapColor(kvp.Value), false);
+                    node.SetColorOneSided(main.GetColormapColor(kvp.Value), false, true);
             }
             else
                 main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
@@ -798,16 +810,19 @@ public class UM_Client : MonoBehaviour
 
     private void Log(string msg)
     {
+        main.Log("Sending message to client: " + msg);
         manager.Socket.Emit("log", msg);
     }
 
     private void LogWarning(string msg)
     {
+        main.Log("Sending warning to client: " + msg);
         manager.Socket.Emit("log-warning", msg);
     }
 
     private void LogError(string msg)
     {
+        main.Log("Sending error to client: " + msg);
         manager.Socket.Emit("log-error", msg);
     }
 }

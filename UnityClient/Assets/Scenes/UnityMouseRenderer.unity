@@ -11698,9 +11698,6 @@ MonoBehaviour:
   axesGO: {fileID: 1716532780}
   gridGO: {fileID: 681682130}
   percentageExploded: 0
-  colormapOptions:
-  - cool
-  - gray
   cosmosParentObjects:
   - {fileID: 2138639683}
   - {fileID: 211372986}
@@ -11723,12 +11720,16 @@ MonoBehaviour:
   overrideNetwork: 1
   brainRegionMaterials:
   - {fileID: 2100000, guid: 4fdce846a282bef42af0221c4d4da68d, type: 2}
+  - {fileID: 2100000, guid: 4fdce846a282bef42af0221c4d4da68d, type: 2}
+  - {fileID: 2100000, guid: f105eb238dcc87744a1e76aeecbe1bc0, type: 2}
   - {fileID: 2100000, guid: 77ae49eeea4656242bf40d119e6f7f0f, type: 2}
   - {fileID: 2100000, guid: 2a8f9060c91986e4083dd67bf487177b, type: 2}
   - {fileID: 2100000, guid: 985ea6e720ac003459443e2632bde924, type: 2}
   - {fileID: 2100000, guid: b8a04b95bf5e0fe4dbdfd3978413393d, type: 2}
   brainRegionMaterialNames:
   - default
+  - opaque-lit
+  - opaque-unlit
   - toon
   - toon-outline
   - transparent-lit
