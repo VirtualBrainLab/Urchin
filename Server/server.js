@@ -172,6 +172,9 @@ io.on("connection", function (socket) {
   socket.on('SetCameraTargetArea', function(data) {
     emitToAll(socket.id, 'SetCameraTargetArea', data);
   });
+  socket.on('SetCameraZoom', function(data) {
+    emitToAll(socket.id, 'SetCameraZoom', data);
+  });
 
   // Receiver events
   socket.on('log', function(data) {

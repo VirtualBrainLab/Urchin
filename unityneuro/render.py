@@ -89,7 +89,7 @@ def load_cosmos_areas():
 def set_area_visibility(area_visibilities):
 	"""Set visibility of CCF area models
 
-	**Note:** you can append a "-l" or "-r" suffix to any area acronym or ID to control the visibility of just one-half of the model. This can be used in all of the set_area_* functions.
+	**Note:** you can append a "-lh" or "-rh" suffix to any area acronym or ID to control the visibility of just one-half of the model. This can be used in all of the set_area_* functions.
 
 	Parameters
 	----------
@@ -141,8 +141,10 @@ def set_area_colormap(colormap_name):
 
 	Options are
 	 - cool (default, teal 0 -> magenta 1)
-	 - gray (black 0 -> white 1)
-
+	 - grey (black 0 -> white 1)
+	 - grey-green (grey 0, light 1/255 -> dark 1)
+	 - grey-purple (grey 0, light 1/255 -> dark 1)
+	 - grey-red (grey 0, light 1/255 -> dark 1)
 
 	Parameters
 	----------
@@ -170,7 +172,8 @@ def set_area_material(area_materials):
 	"""Set material of CCF area models.
 
 	Material options are
-	 - 'default'
+	 - 'opaque-lit' or 'default'
+	 - 'opaque-unlit'
 	 - 'transparent-lit'
 	 - 'transparent-unlit'
 
@@ -441,6 +444,16 @@ def set_camera_rotation(pitch, yaw, spin):
 	"""
 	sio.emit('SetCameraRotation', [pitch, yaw, spin])
 
+def set_camera_zoom(zoom):
+	"""Set the camera zoom. 
+
+	Parameters
+	----------
+	zoom : float	
+		camera zoom parameter
+	"""
+	sio.emit('SetCameraZoom', zoom)
+
 def set_camera_target_area(camera_target_area):
 	"""Set the camera rotation to look towards a target area
 
@@ -449,7 +462,7 @@ def set_camera_target_area(camera_target_area):
 	Parameters
 	----------
 	camera_target_area : string
-		area ID or acronym, append "-l" or "-r" for one-sided meshes
+		area ID or acronym, append "-lh" or "-rh" for one-sided meshes
 	"""
 	sio.emit('SetCameraTargetArea', camera_target_area)
 
