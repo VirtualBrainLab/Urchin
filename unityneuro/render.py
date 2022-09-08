@@ -226,6 +226,20 @@ def create_neurons(neuron_names):
 	"""
 	sio.emit('CreateNeurons', neuron_names)
 
+def delete_neurons(neuron_names):
+  """Delete neuron objects
+
+  Parameters
+  ----------
+  neuron_names : string list
+    names of the neuron objects
+
+  Examples
+  --------
+  >>> urn.delete_neurons(["n1","n2","n3"])
+  """
+  sio.emit('DeleteNeurons', neuron_names)
+
 def set_neuron_positions(neuron_positions):
 	"""Set neuron positions
 
@@ -322,6 +336,20 @@ def create_probes(probe_names):
 	>>> urn.create_probes(['p1'])
 	"""
 	sio.emit('CreateProbes', probe_names)
+
+def delete_probes(probe_names):
+	"""Delete probe objects
+
+	Parameters
+	----------
+	probe_names : string list
+		list of names of new probes to create
+
+	Examples
+	--------
+	>>> urn.delete_probes(['p1'])
+	"""
+	sio.emit('DeleteProbes', probe_names)
 
 def set_probe_colors(probe_colors):
 	"""Set colors of probe objects
@@ -486,6 +514,20 @@ def create_volume(volume_name):
 	"""
 	sio.emit('CreateVolume', volume_name)
 
+def delete_volume(volume_name):
+	"""Delete a volume data matrix.
+
+	Parameters
+	----------
+	volume_name : string
+		volume name
+
+	Examples
+	--------
+	>>> urn.delete_volume('histology')
+	"""
+	sio.emit('DeleteVolume', volume_name)
+
 	
 def set_volume_colormap(volume_name, colormap):
 	"""Set the colormap for a volume, maximum of 254 values
@@ -580,6 +622,11 @@ def set_allen_volume_visibility(allenVisibility):
 	"""
 	set_volume_visibility('allen',allenVisibility)
 
+
+######################
+# CLEAR #
+######################
+
 def clear():
 	"""Clear the renderer scene of all objects
 	"""
@@ -604,3 +651,80 @@ def clear_volumes():
 	"""Clear all 3D volumes
 	"""
 	sio.emit('Clear', 'volumes')
+
+  
+######################
+# TEXT #
+######################
+
+def create_text(text_id):
+  """Create a text object
+
+  Parameters
+  ----------
+  text_id : list of strings
+      IDs for text objects
+      
+	Examples
+	--------
+	>>> urn.create_text(['t1','t2'])
+  """
+  sio.emit('CreateText',text_id)
+
+def set_text(text_text):
+  """Set the text in a set of text objects
+
+  Parameters
+  ----------
+  text_text : dict {string : string}
+		dictionary of IDs and text
+
+	Examples
+	--------
+	>>> urn.set_text({'t1': 'test text'})
+  """
+  sio.emit('SetText',text_text)
+
+def set_text_colors(text_colors):
+  """Set the color of a set of text objects
+
+  Parameters
+  ----------
+  text_colors : dict {string : string hex color}
+      dictionary of IDs and hex colors as strings
+      
+	Examples
+	--------
+	>>> urn.set_text_colors({'t1': '#FF0000'})
+  """
+  sio.emit('SetTextColors',text_colors)
+
+def set_text_sizes(text_sizes):
+  """Set the font size of a set of text objects
+
+  Parameters
+  ----------
+  text_sizes : dict {string : int}
+      dictionary of IDs and font sizes
+      
+	Examples
+	--------
+	>>> urn.set_text_sizes({'t1': 12})
+  """
+  sio.emit('SetTextSizes',text_sizes)
+
+def set_text_positions(text_pos):
+  """Set the positions of a set of text objects in UI canvas space
+
+  Note that by default the UI canvas is 800 x 600
+
+  Parameters
+  ----------
+  text_pos : dict {string : list of two floats}
+      dictionary of IDs and canvas positions for the top left corner
+      
+	Examples
+	--------
+	>>> urn.set_text_positions({'t1': [400, 300]})
+  """
+  sio.emit('SetTextPositions', text_pos)

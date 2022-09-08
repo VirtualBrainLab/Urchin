@@ -106,6 +106,9 @@ io.on("connection", function (socket) {
   socket.on('CreateNeurons', function(data) {
     emitToAll(socket.id, 'CreateNeurons', data);
   });
+  socket.on('DeleteNeurons', function(data) {
+    emitToAll(socket.id, 'DeleteNeurons', data);
+  });
   socket.on('SetNeuronPos', function(data) {
     emitToAll(socket.id, 'SetNeuronPos', data);
   });
@@ -126,6 +129,9 @@ io.on("connection", function (socket) {
   socket.on('CreateProbes', function(data) {
     emitToAll(socket.id, 'CreateProbes', data);
   });
+  socket.on('DeleteProbes', function(data) {
+    emitToAll(socket.id, 'DeleteProbes', data);
+  });
   socket.on('SetProbeColors', function(data) {
     emitToAll(socket.id, 'SetProbeColors', data);
   });
@@ -143,6 +149,12 @@ io.on("connection", function (socket) {
   });
 
   // Volumes
+  socket.on('CreateVolume', function(data) {
+    emitToAll(socket.id, 'CreateVolume', data);
+  });
+  socket.on('DeleteVolume', function(data) {
+    emitToAll(socket.id, 'DeleteVolume', data);
+  });
   socket.on('SetVolumeVisibility', function(data) {
     emitToAll(socket.id, 'SetVolumeVisibility', data);
   });
@@ -151,9 +163,6 @@ io.on("connection", function (socket) {
   });
   socket.on('SetVolumeDataMeta', function(data) {
     emitToAll(socket.id, 'SetVolumeDataMeta', data);
-  });
-  socket.on('CreateVolume', function(data) {
-    emitToAll(socket.id, 'CreateVolume', data);
   });
   socket.on('SetVolumeColormap', function(data) {
     emitToAll(socket.id, 'SetVolumeColormap', data);
@@ -186,7 +195,24 @@ io.on("connection", function (socket) {
   socket.on('error', function(data) {
     emitToSender(socket.id, 'error', data);
   });
+
+  // Text
   
+  socket.on('CreateText', function(data) {
+    emitToSender(socket.id, 'CreateText', data);
+  });
+  socket.on('SetText', function(data) {
+    emitToSender(socket.id, 'SetText', data);
+  });
+  socket.on('SetTextColors', function(data) {
+    emitToSender(socket.id, 'SetTextColors', data);
+  });
+  socket.on('SetTextSizes', function(data) {
+    emitToSender(socket.id, 'SetTextSizes', data);
+  });
+  socket.on('SetText', function(data) {
+    emitToSender(socket.id, 'SetTextPositions', data);
+  });
 
   // Clear
   socket.on('Clear', function(data) {
