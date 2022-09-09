@@ -660,7 +660,7 @@ def delete_text(text_id):
 	--------
 	>>> urn.delete_text(['t1'])
   """
-  sio.emit('CreateText',text_id)
+  sio.emit('DeleteText',text_id)
 
 def set_text(text_text):
   """Set the text in a set of text objects
