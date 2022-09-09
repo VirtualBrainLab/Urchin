@@ -199,22 +199,22 @@ io.on("connection", function (socket) {
   // Text
   
   socket.on('CreateText', function(data) {
-    emitToSender(socket.id, 'CreateText', data);
+    emitToAll(socket.id, 'CreateText', data);
   });
   socket.on('DeleteText', function(data) {
-    emitToSender(socket.id, 'DeleteText', data);
+    emitToAll(socket.id, 'DeleteText', data);
   });
   socket.on('SetText', function(data) {
-    emitToSender(socket.id, 'SetText', data);
+    emitToAll(socket.id, 'SetText', data);
   });
   socket.on('SetTextColors', function(data) {
-    emitToSender(socket.id, 'SetTextColors', data);
+    emitToAll(socket.id, 'SetTextColors', data);
   });
   socket.on('SetTextSizes', function(data) {
-    emitToSender(socket.id, 'SetTextSizes', data);
+    emitToAll(socket.id, 'SetTextSizes', data);
   });
   socket.on('SetText', function(data) {
-    emitToSender(socket.id, 'SetTextPositions', data);
+    emitToAll(socket.id, 'SetTextPositions', data);
   });
 
   // Clear
