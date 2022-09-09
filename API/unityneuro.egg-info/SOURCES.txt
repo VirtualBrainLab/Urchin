@@ -1,6 +1,6 @@
 LICENSE
 README.md
-setup.py
+pyproject.toml
 unityneuro/__init__.py
 unityneuro/render.py
 unityneuro.egg-info/PKG-INFO
