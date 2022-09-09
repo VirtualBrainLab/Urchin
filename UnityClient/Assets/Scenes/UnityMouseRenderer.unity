@@ -6071,6 +6071,7 @@ RectTransform:
   - {fileID: 906750440}
   - {fileID: 834132773}
   - {fileID: 1409937194}
+  - {fileID: 1648926225}
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -12293,6 +12294,7 @@ MonoBehaviour:
   consolePanel: {fileID: 971937620}
   consoleText: {fileID: 1782345597}
   idPanel: {fileID: 1875325468}
+  infoPanelText: {fileID: 1409937193}
   loadDefaults: 0
   axesGO: {fileID: 1716532780}
   gridGO: {fileID: 681682130}
@@ -12360,7 +12362,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   addressablesStorageRemotePath: http://data.virtualbrainlab.org/AddressablesStorage
-  buildVersion: 0.1.1
+  buildVersion: 0.2.0
   delayCatalogLoad: 0
 --- !u!114 &1595768705
 MonoBehaviour:
@@ -12419,8 +12421,8 @@ MonoBehaviour:
   volRenderer: {fileID: 94244070}
   neuronPrefab: {fileID: 7973822280577014711, guid: f3a0350e123573d41a17b28587350ada, type: 3}
   neuronMeshList:
-  - {fileID: 10207, guid: 0000000000000000e000000000000000, type: 3}
-  - {fileID: 10202, guid: 0000000000000000e000000000000000, type: 3}
+  - {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  - {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   neuronMeshNames:
   - sphere
   - cube
@@ -12428,6 +12430,8 @@ MonoBehaviour:
   probePrefab: {fileID: 0}
   probeLinePrefab: {fileID: 2507564506256405100, guid: bbfd294d9a4375144b5214e4196f5d20, type: 3}
   probeParent: {fileID: 1878764715}
+  textParent: {fileID: 1648926224}
+  textPrefab: {fileID: 6770107022373063410, guid: 91207b2304d756945a8e98e4a7c9ec67, type: 3}
 --- !u!1 &1597538379
 GameObject:
   m_ObjectHideFlags: 0
@@ -12795,6 +12799,51 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1648926224
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1648926225}
+  - component: {fileID: 1648926226}
+  m_Layer: 5
+  m_Name: TextParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1648926225
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1648926224}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 858013926}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &1648926226
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1648926224}
+  m_CullTransparentMesh: 1
 --- !u!1 &1671532046
 GameObject:
   m_ObjectHideFlags: 0
@@ -13100,6 +13149,18 @@ MonoBehaviour:
       - m_Target: {fileID: 1861690901}
         m_TargetAssemblyTypeName: BrainCameraController, Assembly-CSharp
         m_MethodName: SetCameraBackgroundToggle
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1595768701}
+        m_TargetAssemblyTypeName: UM_Launch, Assembly-CSharp
+        m_MethodName: UpdateTextColor
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

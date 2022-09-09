@@ -37,6 +37,11 @@ public class UM_Client : MonoBehaviour
     private Dictionary<string, GameObject> probes;
     private Dictionary<string, Vector3[]> probeCoordinates;
 
+    // TEXT
+    [SerializeField] private GameObject textParent;
+    [SerializeField] private GameObject textPrefab;
+    private Dictionary<string, GameObject> texts;
+
     // NODES
     private List<CCFTreeNode> visibleNodes;
     private int[] missing = { 738, 995 };
@@ -58,6 +63,7 @@ public class UM_Client : MonoBehaviour
         nodeTasks = new Dictionary<int, Task>();
         probeCoordinates = new Dictionary<string, Vector3[]>();
         visibleNodes = new List<CCFTreeNode>();
+        texts = new Dictionary<string, GameObject>();
     }
 
     /// <summary>
@@ -114,6 +120,16 @@ public class UM_Client : MonoBehaviour
         manager.Socket.On<List<float>>("SetCameraPosition", SetCameraPosition);
         manager.Socket.On<List<float>>("SetCameraRotation", SetCameraRotation);
         manager.Socket.On<string>("SetCameraTargetArea", SetCameraTargetArea);
+        manager.Socket.On<float>("SetCameraZoom", SetCameraZoom);
+
+
+        // Text
+        manager.Socket.On<List<string>>("CreateText", CreateText);
+        manager.Socket.On<List<string>>("DeleteText", DeleteText);
+        manager.Socket.On<Dictionary<string, string>>("SetTextText", SetText);
+        manager.Socket.On<Dictionary<string, string>>("SetTextColors", SetTextColors);
+        manager.Socket.On<Dictionary<string, int>>("SetTextSizes", SetTextSizes);
+        manager.Socket.On<Dictionary<string, List<float>>>("SetTextPositions", SetTextPositions);
 
         // Misc
         manager.Socket.On<string>("Clear", Clear);
@@ -197,6 +213,11 @@ public class UM_Client : MonoBehaviour
         cameraControl.SetBrainAxisAngles(new Vector3(obj[1], obj[0], obj[2]));
     }
 
+    private void SetCameraZoom(float obj)
+    {
+        cameraControl.SetZoom(obj);
+    }
+
     private void SetCameraPosition(List<float> obj)
     {
         // position in ml/ap/dv relative to ccf 0,0,0
@@ -234,7 +255,7 @@ public class UM_Client : MonoBehaviour
         cameraControl.SetCameraTarget(worldCoords);
     }
 
-    // CLEAR
+    #region Clear
 
     private void Clear(string val)
     {
@@ -245,6 +266,7 @@ public class UM_Client : MonoBehaviour
                 ClearProbes();
                 ClearAreas();
                 ClearVolumes();
+                ClearTexts();
                 break;
             case "neurons":
                 ClearNeurons();
@@ -257,6 +279,9 @@ public class UM_Client : MonoBehaviour
                 break;
             case "volumes":
                 ClearVolumes();
+                break;
+            case "texts":
+                ClearTexts();
                 break;
         }
     }
@@ -291,6 +316,16 @@ public class UM_Client : MonoBehaviour
         Debug.Log("(Client) Clearing volumes");
         volRenderer.Clear();
     }
+
+    private void ClearTexts()
+    {
+        Debug.Log("(Client) Clearing text");
+        foreach (GameObject text in texts.Values)
+            Destroy(text);
+        texts = new Dictionary<string, GameObject>();
+    }
+
+    #endregion
 
     // PROBE CONTROLS
 
@@ -790,6 +825,80 @@ public class UM_Client : MonoBehaviour
         return false;
     }
 
+    #region Text
+
+    private void CreateText(List<string> data)
+    {
+        Debug.Log("Creating text");
+        foreach (string textName in data)
+        {
+            if (!texts.ContainsKey(textName))
+            {
+                GameObject textGO = Instantiate(textPrefab, textParent.transform);
+                texts.Add(textName, textGO);
+            }
+        }
+    }
+
+    private void DeleteText(List<string> data)
+    {
+        Debug.Log("Deleting text");
+        foreach (string textName in data)
+        {
+            if (texts.ContainsKey(textName))
+            {
+                Destroy(texts[textName]);
+                texts.Remove(textName);
+            }
+        }
+    }
+
+    private void SetText(Dictionary<string, string> data)
+    {
+        Debug.Log("Setting text");
+        foreach (KeyValuePair<string, string> kvp in data)
+        {
+            if (texts.ContainsKey(kvp.Key))
+                texts[kvp.Key].GetComponent<TMP_Text>().text = kvp.Value;
+        }
+    }
+
+    private void SetTextColors(Dictionary<string, string> data)
+    {
+        Debug.Log("Setting text colors");
+        foreach (KeyValuePair<string, string> kvp in data)
+        {
+            Color newColor;
+            if (texts.ContainsKey(kvp.Key) && ColorUtility.TryParseHtmlString(kvp.Value, out newColor))
+            {
+                texts[kvp.Key].GetComponent<TMP_Text>().color = newColor;
+            }
+            else
+                LogError("Failed to set text color to: " + kvp.Value);
+        }
+    }
+
+    private void SetTextSizes(Dictionary<string, int> data)
+    {
+        Debug.Log("Setting text sizes");
+        foreach (KeyValuePair<string, int> kvp in data)
+        {
+            if (texts.ContainsKey(kvp.Key))
+                texts[kvp.Key].GetComponent<TMP_Text>().fontSize = kvp.Value;
+        }
+    }
+
+    private void SetTextPositions(Dictionary<string, List<float>> data)
+    {
+        Debug.Log("Setting text positions");
+        foreach (KeyValuePair<string, List<float>> kvp in data)
+        {
+            if (texts.ContainsKey(kvp.Key))
+                texts[kvp.Key].transform.localPosition = new Vector2(kvp.Value[0], kvp.Value[1]);
+        }
+    } 
+     
+    #endregion
 
     ////
     //// SOCKET FUNCTIONS

@@ -629,6 +629,11 @@ def clear_volumes():
 	"""
 	sio.emit('Clear', 'volumes')
 
+def clear_texts():
+	"""Clear all text
+	"""
+	sio.emit('Clear', 'texts')
+
   
 ######################
 # TEXT #
@@ -674,7 +679,7 @@ def set_text(text_text):
 	--------
 	>>> urn.set_text({'t1': 'test text'})
   """
-  sio.emit('SetText',text_text)
+  sio.emit('SetTextText',text_text)
 
 def set_text_colors(text_colors):
   """Set the color of a set of text objects

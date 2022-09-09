@@ -7,7 +7,7 @@ Unity Renderer for Neuroscience is a python package for making interactive 3D vi
 
 setup(
     name='unityneuro',
-    version='0.4.0',    
+    version='0.4.1',    
     description='Urchin - Unity Renderer for Neuroscience Python API',
     long_description=LONG_DESCRIPTION,
     url='https://virtualbrainlab.org/build/html/03_unity_neuro/01_urn_intro.html',

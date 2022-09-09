@@ -18,6 +18,7 @@ public class UM_Launch : MonoBehaviour
     [SerializeField] private TextMeshProUGUI consoleText;
 
     [SerializeField] private GameObject idPanel;
+    [SerializeField] private GameObject infoPanelText;
 
     [SerializeField] private bool loadDefaults;
 
@@ -320,14 +321,9 @@ public class UM_Launch : MonoBehaviour
         Debug.Log(newIdx);
     }
 
-    /// <summary>
-    /// Switch the main camera to perspective (or back to orthographic, the default)
-    /// 
-    /// Note: you can't view the volumetric data in the orthographic camera, hence this setting to switch back and forth
-    /// </summary>
-    /// <param name="perspective"></param>
-    public void SwitchCameraMode(bool perspective)
+    public void UpdateTextColor(bool state)
     {
-        
+        foreach (TMP_Text text in infoPanelText.GetComponentsInChildren<TMP_Text>())
+            text.color = state ? Color.black : Color.white;
     }
 }

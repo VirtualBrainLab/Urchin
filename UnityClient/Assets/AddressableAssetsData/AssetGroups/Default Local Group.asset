@@ -16,15 +16,7 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: dd3e91c2fb312f94f9e91cb930333f25
-  m_SerializeEntries:
-  - m_GUID: e569275163d050c4e98a09ec5aa7502d
-    m_Address: Assets/AddressableAssets/3D/mouseSkull_lowPoly.obj
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 9555d08e41ee965478cc913bf7989727
-    m_Address: Assets/AddressableAssets/bwm_trajectory_data.csv
-    m_ReadOnly: 0
-    m_SerializedLabels: []
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 581325d2abf8e154fa325f391e893c68, type: 2}
   m_SchemaSet:
