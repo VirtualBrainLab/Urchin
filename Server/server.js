@@ -201,6 +201,9 @@ io.on("connection", function (socket) {
   socket.on('CreateText', function(data) {
     emitToSender(socket.id, 'CreateText', data);
   });
+  socket.on('DeleteText', function(data) {
+    emitToSender(socket.id, 'DeleteText', data);
+  });
   socket.on('SetText', function(data) {
     emitToSender(socket.id, 'SetText', data);
   });

@@ -18,7 +18,6 @@ public class UM_Client : MonoBehaviour
     [SerializeField] private bool localhost;
 
     // UI
-    [SerializeField] private GameObject idPanel;
     [SerializeField] private TextMeshProUGUI idInput;
 
     // VOLUMES
@@ -89,10 +88,12 @@ public class UM_Client : MonoBehaviour
         manager.Socket.On<List<object>>("SetVolumeDataMeta", UpdateVolumeMeta);
         manager.Socket.On<byte[]>("SetVolumeData", UpdateVolumeData);
         manager.Socket.On<string>("CreateVolume", CreateVolume);
+        manager.Socket.On<string>("DeleteVolume", DeleteVolume);
         manager.Socket.On<List<string>>("SetVolumeColormap", SetVolumeColormap);
 
         // Neurons
         manager.Socket.On<List<string>>("CreateNeurons", CreateNeurons);
+        manager.Socket.On<List<string>>("DeleteNeurons", DeleteNeurons);
         manager.Socket.On<Dictionary<string, List<float>>>("SetNeuronPos", UpdateNeuronPos);
         manager.Socket.On<Dictionary<string, float>>("SetNeuronSize", UpdateNeuronScale);
         manager.Socket.On<Dictionary<string, string>>("SetNeuronShape", UpdateNeuronShape);
@@ -101,6 +102,7 @@ public class UM_Client : MonoBehaviour
 
         // Probes
         manager.Socket.On<List<string>>("CreateProbes", CreateProbes);
+        manager.Socket.On<List<string>>("DeleteProbes", DeleteProbes);
         manager.Socket.On<Dictionary<string, string>>("SetProbeColors", UpdateProbeColors);
         manager.Socket.On<Dictionary<string, List<float>>>("SetProbePos", UpdateProbePos);
         manager.Socket.On<Dictionary<string, List<float>>>("SetProbeAngles", UpdateProbeAngles);
@@ -169,6 +171,11 @@ public class UM_Client : MonoBehaviour
         volRenderer.CreateVolume(name);
     }
 
+    private void DeleteVolume(string name)
+    {
+        volRenderer.DeleteVolume(name);
+    }
+
     private void UpdateVolumeMeta(List<object> data)
     {
         volRenderer.AddVolumeMeta((string)data[0], (int)data[1], (bool)data[2]);
@@ -225,17 +232,6 @@ public class UM_Client : MonoBehaviour
 
         Vector3 worldCoords = new Vector3(5.7f - mlapdv[0]/1000f, 4f - mlapdv[2] / 1000f, mlapdv[1] / 1000f - 6.6f);
         cameraControl.SetCameraTarget(worldCoords);
-    }
-
-    // UPDATE
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            idPanel.SetActive(!idPanel.activeSelf);
-        }
     }
 
     // CLEAR
@@ -398,6 +394,15 @@ public class UM_Client : MonoBehaviour
         }
     }
 
+    private void DeleteProbes(List<string> data)
+    {
+        foreach (string probeName in data)
+        {
+            Destroy(probes[probeName]);
+            probes.Remove(probeName);
+        }
+    }
+
     private void SetVolumeAnnotationColor(Dictionary<string, string> data)
     {
         main.Log("Not implemented");
@@ -463,6 +468,7 @@ public class UM_Client : MonoBehaviour
 
     private void CreateNeurons(List<string> data)
     {
+        main.Log("Creating neurons");
         foreach (string id in data)
         {
             neurons.Add(id, Instantiate(neuronPrefab, neuronParent));
@@ -471,8 +477,10 @@ public class UM_Client : MonoBehaviour
 
     private void DeleteNeurons(List<string> data)
     {
+        main.Log("Deleting neurons");
         foreach (string id in data)
         {
+            Destroy(neurons[id]);
             neurons.Remove(id);
         }
     }

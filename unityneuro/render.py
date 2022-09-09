@@ -647,6 +647,20 @@ def create_text(text_id):
 	>>> urn.create_text(['t1','t2'])
   """
   sio.emit('CreateText',text_id)
+  
+def delete_text(text_id):
+  """Delete a text object
+
+  Parameters
+  ----------
+  text_id : list of strings
+      IDs for text objects
+      
+	Examples
+	--------
+	>>> urn.delete_text(['t1'])
+  """
+  sio.emit('CreateText',text_id)
 
 def set_text(text_text):
   """Set the text in a set of text objects
