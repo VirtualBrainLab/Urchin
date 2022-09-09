@@ -1,6 +1,7 @@
 #if !BESTHTTP_DISABLE_ALTERNATE_SSL && (!UNITY_WEBGL || UNITY_EDITOR)
 #pragma warning disable
 using System;
+using System.Runtime.CompilerServices;
 
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Math.Raw;
 
@@ -15,7 +16,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities
             0x1F, 0x00, 0x1B, 0x01, 0x1C, 0x0D, 0x17, 0x02, 0x1D, 0x15, 0x13, 0x0E, 0x18, 0x10, 0x03, 0x07,
             0x1E, 0x1A, 0x0C, 0x16, 0x14, 0x12, 0x0F, 0x06, 0x19, 0x0B, 0x11, 0x05, 0x0A, 0x04, 0x09, 0x08 };
 
-        public static int NumberOfLeadingZeros(int i)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static int NumberOfLeadingZeros(int i)
         {
             if (i <= 0)
                 return (~i >> (31 - 5)) & (1 << 5);
@@ -30,19 +31,19 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities
             return n;
         }
 
-        public static int NumberOfTrailingZeros(int i)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static int NumberOfTrailingZeros(int i)
         {
             int n = DeBruijnTZ[(uint)((i & -i) * 0x0EF96A62) >> 27];
             int m = (((i & 0xFFFF) | (int)((uint)i >> 16)) - 1) >> 31;
             return n - m;
         }
 
-        public static int Reverse(int i)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static int Reverse(int i)
         {
             return (int)Reverse((uint)i);
         }
 
-        public static uint Reverse(uint i)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static uint Reverse(uint i)
         {
             i = Bits.BitPermuteStepSimple(i, 0x55555555U, 1);
             i = Bits.BitPermuteStepSimple(i, 0x33333333U, 2);
@@ -50,33 +51,33 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities
             return ReverseBytes(i);
         }
 
-        public static int ReverseBytes(int i)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static int ReverseBytes(int i)
         {
             return (int)ReverseBytes((uint)i);
         }
 
-        public static uint ReverseBytes(uint i)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static uint ReverseBytes(uint i)
         {
             return RotateLeft(i & 0xFF00FF00U,  8) |
                    RotateLeft(i & 0x00FF00FFU, 24);
         }
 
-        public static int RotateLeft(int i, int distance)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static int RotateLeft(int i, int distance)
         {
             return (i << distance) ^ (int)((uint)i >> -distance);
         }
 
-        public static uint RotateLeft(uint i, int distance)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static uint RotateLeft(uint i, int distance)
         {
             return (i << distance) ^ (i >> -distance);
         }
 
-        public static int RotateRight(int i, int distance)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static int RotateRight(int i, int distance)
         {
             return (int)((uint)i >> distance) ^ (i << -distance);
         }
 
-        public static uint RotateRight(uint i, int distance)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static uint RotateRight(uint i, int distance)
         {
             return (i >> distance) ^ (i << -distance);
         }

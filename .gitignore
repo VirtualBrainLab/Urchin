@@ -60,6 +60,7 @@ crashlytics-build.properties
 
 **/Assets/Resources/*
 **/Assets/AddressableAssets/*
+**/Assets/Best HTTP/*
 **/ServerData/*
 **/ServerData.zip
 

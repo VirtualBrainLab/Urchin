@@ -9,9 +9,9 @@ using BestHTTP.SecureProtocol.Org.BouncyCastle.Math;
 namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities
 {
     /// <summary> General array utilities.</summary>
-    [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.NullChecks, false)]
-    [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.ArrayBoundsChecks, false)]
-    [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.DivideByZeroChecks, false)]
+    
+    
+    
     [BestHTTP.PlatformSupport.IL2CPP.Il2CppEagerStaticClassConstructionAttribute]
     public abstract class Arrays
     {

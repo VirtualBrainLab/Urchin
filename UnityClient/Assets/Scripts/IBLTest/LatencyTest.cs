@@ -39,7 +39,7 @@ public class LatencyTest : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    async void Start()
     {
         latencies = new Dictionary<int, float>();
         nodes = new Dictionary<int, CCFTreeNode>();
@@ -68,7 +68,8 @@ public class LatencyTest : MonoBehaviour
             CCFTreeNode node = modelControl.tree.findNode(pair.Key);
             if (node != null)
             {
-                node.loadNodeModel(true, handle => { });
+                node.LoadNodeModel(true);
+                await node.GetLoadedTask();
                 node.SetNodeModelVisibility(false,false);
                 GameObject nodeGO = node.LeftGameObject();
                 nodeGO.AddComponent<MeshCollider>();

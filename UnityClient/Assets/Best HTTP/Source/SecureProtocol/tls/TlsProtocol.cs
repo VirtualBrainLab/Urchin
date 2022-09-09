@@ -3,7 +3,10 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Threading;
 
+using BestHTTP.Connections.TLS;
+using BestHTTP.PlatformSupport.Threading;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Tls.Crypto;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities;
 
@@ -348,12 +351,19 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
                     throw new TlsFatalAlert(AlertDescription.internal_error);
                 }
 
-                SafeReadRecord();
+                using (new WriteLock(this.applicationDataLock))
+                    SafeReadRecord();
             }
         }
 
+        protected virtual void handleRenegotiation()
+        {
+            // TODO: check whether renegotiation is enabled or not and call BeginHandshake/RefuseRenegotiation accordingly.
+            BeginHandshake(true);
+        }
+
         /// <exception cref="IOException"/>
-        protected virtual void BeginHandshake()
+        protected virtual void BeginHandshake(bool renegotiation)
         {
             AbstractTlsContext context = ContextAdmin;
             TlsPeer peer = Peer;
@@ -368,6 +378,11 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
             context.HandshakeBeginning(peer);
 
             SecurityParameters securityParameters = context.SecurityParameters;
+
+            if (renegotiation != securityParameters.IsRenegotiating)
+            {
+                throw new TlsFatalAlert(AlertDescription.internal_error);
+            }
 
             securityParameters.m_extendedPadding = peer.ShouldUseExtendedPadding();
         }
@@ -407,7 +422,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
                 AbstractTlsContext context = ContextAdmin;
                 SecurityParameters securityParameters = context.SecurityParameters;
 
-                if (!context.IsHandshaking ||
+                if ((!context.IsHandshaking && !securityParameters.IsRenegotiating) ||
                     null == securityParameters.LocalVerifyData ||
                     null == securityParameters.PeerVerifyData)
                 {
@@ -712,28 +727,70 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
             if (len < 1)
                 return 0;
 
-            while (m_applicationDataQueue.Available == 0)
+            using (new WriteLock(this.applicationDataLock))
             {
-                if (this.m_closed)
+                while (m_applicationDataQueue.Available == 0)
                 {
-                    if (this.m_failedWithError)
-                        throw new IOException("Cannot read application data on failed TLS connection");
+                    if (this.m_closed)
+                    {
+                        if (this.m_failedWithError)
+                            throw new IOException("Cannot read application data on failed TLS connection");
 
-                    return -1;
+                        return -1;
+                    }
+                    if (!m_appDataReady)
+                        throw new InvalidOperationException("Cannot read application data until initial handshake completed.");
+
+                    /*
+                     * NOTE: Only called more than once when empty records are received, so no special
+                     * InterruptedIOException handling is necessary.
+                     */
+                    SafeReadRecord();
                 }
-                if (!m_appDataReady)
-                    throw new InvalidOperationException("Cannot read application data until initial handshake completed.");
 
-                /*
-                 * NOTE: Only called more than once when empty records are received, so no special
-                 * InterruptedIOException handling is necessary.
-                 */
-                SafeReadRecord();
+                len = System.Math.Min(len, m_applicationDataQueue.Available);
+                m_applicationDataQueue.RemoveData(buf, off, len, 0);
+                return len;
             }
+        }
 
-            len = System.Math.Min(len, m_applicationDataQueue.Available);
-            m_applicationDataQueue.RemoveData(buf, off, len, 0);
-            return len;
+        ReaderWriterLockSlim applicationDataLock = new ReaderWriterLockSlim();
+
+        public bool TryEnterApplicationDataLock(int millisecondsTimeout)
+        {
+            return this.applicationDataLock.TryEnterWriteLock(millisecondsTimeout);
+        }
+
+        public void ExitApplicationDataLock()
+        {
+            this.applicationDataLock.ExitWriteLock();
+        }
+
+        public int TestApplicationData()
+        {
+            using (new WriteLock(this.applicationDataLock))
+            {
+                while (m_applicationDataQueue.Available == 0)
+                {
+                    if (this.m_closed)
+                    {
+                        if (this.m_failedWithError)
+                            throw new IOException("Cannot read application data on failed TLS connection");
+
+                        return -1;
+                    }
+                    if (!m_appDataReady)
+                        throw new InvalidOperationException("Cannot read application data until initial handshake completed.");
+
+                    /*
+                     * NOTE: Only called more than once when empty records are received, so no special
+                     * InterruptedIOException handling is necessary.
+                     */
+                    SafeReadRecord();
+                }
+
+                return m_applicationDataQueue.Available;
+            }
         }
 
         /// <exception cref="IOException"/>
@@ -1584,6 +1641,8 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
 
         public virtual void Close()
         {
+            applicationDataLock?.Dispose();
+            applicationDataLock = null;
             HandleClose(true);
         }
 
@@ -1694,6 +1753,9 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
             {
                 context.SecurityParameters.m_masterSecret = TlsUtilities.CalculateMasterSecret(context,
                     preMasterSecret);
+
+                if (context.SecurityParameters.NegotiatedVersion != ProtocolVersion.TLSv13)
+                    KeyLogFileWriter.WriteLabel(Labels.CLIENT_RANDOM, context.SecurityParameters);
             }
             finally
             {

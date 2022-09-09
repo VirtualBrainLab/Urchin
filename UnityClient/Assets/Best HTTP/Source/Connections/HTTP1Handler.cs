@@ -2,6 +2,7 @@
 using System;
 using BestHTTP.Core;
 using BestHTTP.Logger;
+using BestHTTP.PlatformSupport.Threading;
 
 #if !BESTHTTP_DISABLE_CACHING
 using BestHTTP.Caching;
@@ -37,7 +38,7 @@ namespace BestHTTP.Connections
         {
             HTTPManager.Logger.Information("HTTP1Handler", string.Format("[{0}] started processing request '{1}'", this, this.conn.CurrentRequest.CurrentUri.ToString()), this.Context, this.conn.CurrentRequest.Context);
 
-            System.Threading.Thread.CurrentThread.Name = "BestHTTP.HTTP1 R&W";
+            ThreadedRunner.SetThreadName("BestHTTP.HTTP1 R&W");
 
             HTTPConnectionStates proposedConnectionState = HTTPConnectionStates.Processing;
 
@@ -175,7 +176,7 @@ namespace BestHTTP.Connections
                         //  request events are processed before connection events (just switching the EnqueueRequestEvent and EnqueueConnectionEvent wouldn't work
                         //  see order of ProcessQueues in HTTPManager.OnUpdate!) and it would pick this very same closing/closed connection!
 
-                        if (proposedConnectionState == HTTPConnectionStates.Closed)
+                        if (proposedConnectionState == HTTPConnectionStates.Closed || proposedConnectionState == HTTPConnectionStates.ClosedResendRequest)
                             ConnectionEventHelper.EnqueueConnectionEvent(new ConnectionEventInfo(this.conn, this.conn.CurrentRequest));
                         else
                             RequestEventHelper.EnqueueRequestEvent(new RequestEventInfo(this.conn.CurrentRequest, RequestEvents.Resend));
@@ -219,7 +220,7 @@ namespace BestHTTP.Connections
 
         private bool Receive(HTTPRequest request)
         {
-            SupportedProtocols protocol = request.ProtocolHandler == SupportedProtocols.Unknown ? HTTPProtocolFactory.GetProtocolFromUri(request.CurrentUri) : request.ProtocolHandler;
+            SupportedProtocols protocol = HTTPProtocolFactory.GetProtocolFromUri(request.CurrentUri);
 
             if (HTTPManager.Logger.Level == Logger.Loglevels.All)
                 HTTPManager.Logger.Verbose("HTTPConnection", string.Format("[{0}] - Receive - protocol: {1}", this.ToString(), protocol.ToString()), this.Context, request.Context);

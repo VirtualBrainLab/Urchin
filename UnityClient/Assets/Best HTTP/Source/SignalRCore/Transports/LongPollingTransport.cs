@@ -240,7 +240,14 @@ namespace BestHTTP.SignalRCore.Transports
 
                             // The connections is OK, call OnMessages with an empty list to update HubConnection's lastMessageReceivedAt.
                             this.messages.Clear();
-                            this.connection.OnMessages(this.messages);
+                            try
+                            {
+                                this.connection.OnMessages(this.messages);
+                            }
+                            finally
+                            {
+                                this.messages.Clear();
+                            }
 
                             SendMessages();
 

@@ -50,13 +50,15 @@ namespace BestHTTP.SignalRCore.Transports
             }
 
 #if !UNITY_WEBGL || UNITY_EDITOR
+            this.webSocket.StartPingThread = true;
+
             // prepare the internal http request
             if (this.connection.AuthenticationProvider != null)
                 webSocket.OnInternalRequestCreated = (ws, internalRequest) => this.connection.AuthenticationProvider.PrepareRequest(internalRequest);
 #endif
             this.webSocket.OnOpen += OnOpen;
             this.webSocket.OnMessage += OnMessage;
-            this.webSocket.OnBinary += OnBinary;
+            this.webSocket.OnBinaryNoAlloc += OnBinaryNoAlloc;
             this.webSocket.OnError += OnError;
             this.webSocket.OnClosed += OnClosed;
 
@@ -71,7 +73,7 @@ namespace BestHTTP.SignalRCore.Transports
             {
                 BufferPool.Release(msg.Data);
 
-                this.OnError(this.webSocket, "Send called while the websocket is null or isn't open! Transport's State: " + this.State);
+                //this.OnError(this.webSocket, "Send called while the websocket is null or isn't open! Transport's State: " + this.State);
                 return;
             }
 
@@ -133,14 +135,14 @@ namespace BestHTTP.SignalRCore.Transports
             }
         }
 
-        private void OnBinary(WebSocket.WebSocket webSocket, byte[] data)
+        private void OnBinaryNoAlloc(WebSocket.WebSocket webSocket, BufferSegment data)
         {
             if (this.State == TransportStates.Closing)
                 return;
 
             if (this.State == TransportStates.Connecting)
             {
-                HandleHandshakeResponse(System.Text.Encoding.UTF8.GetString(data, 0, data.Length));
+                HandleHandshakeResponse(System.Text.Encoding.UTF8.GetString(data.Data, data.Offset, data.Count));
 
                 return;
             }
@@ -148,7 +150,7 @@ namespace BestHTTP.SignalRCore.Transports
             this.messages.Clear();
             try
             {
-                this.connection.Protocol.ParseMessages(new BufferSegment(data, 0, data.Length), ref this.messages);
+                this.connection.Protocol.ParseMessages(data, ref this.messages);
 
                 this.connection.OnMessages(this.messages);
             }
@@ -159,8 +161,6 @@ namespace BestHTTP.SignalRCore.Transports
             finally
             {
                 this.messages.Clear();
-
-                BufferPool.Release(data);
             }
         }
 
@@ -192,7 +192,7 @@ namespace BestHTTP.SignalRCore.Transports
         {
             HTTPManager.Logger.Verbose("WebSocketTransport", "StartClose", this.Context);
 
-            if (this.webSocket != null)
+            if (this.webSocket != null && this.webSocket.IsOpen)
             {
                 this.State = TransportStates.Closing;
                 this.webSocket.Close();

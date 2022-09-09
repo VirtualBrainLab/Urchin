@@ -56,9 +56,10 @@ namespace BestHTTP.Core
                 HTTPManager.Logger.Information(typeof(HostConnection).Name, string.Format("AddProtocol({0}) - changing from {1} to {2}", this.VariantId, oldProtocol, protocolSupport), this.Context);
 
                 HostManager.Save();
-
-                TryToSendQueuedRequests();
             }
+
+            if (protocolSupport == HostProtocolSupport.HTTP2)
+                TryToSendQueuedRequests();
         }
 
         internal HostConnection Send(HTTPRequest request)
@@ -95,6 +96,14 @@ namespace BestHTTP.Core
 
                 if (conn.State == HTTPConnectionStates.Initial || conn.State == HTTPConnectionStates.Free || conn.CanProcessMultiple)
                 {
+                    if (!conn.TestConnection())
+                    {
+                        HTTPManager.Logger.Verbose("HostConnection", "GetNextAvailable - TestConnection returned false!", this.Context, request.Context, conn.Context);
+
+                        RemoveConnectionImpl(conn, HTTPConnectionStates.Closed);
+                        continue;
+                    }
+
                     HTTPManager.Logger.Verbose("HostConnection", string.Format("GetNextAvailable - returning with connection. state: {0}, CanProcessMultiple: {1}", conn.State, conn.CanProcessMultiple), this.Context, request.Context, conn.Context);
                     return conn;
                 }
@@ -135,8 +144,7 @@ namespace BestHTTP.Core
                 HTTPManager.Logger.Verbose("HostConnection", string.Format("GetNextAvailable - creating new connection, key: {0} ", key), this.Context, request.Context, conn.Context);
             }
 #endif
-
-                Connections.Add(conn);
+            Connections.Add(conn);
 
             return conn;
         }
@@ -150,7 +158,7 @@ namespace BestHTTP.Core
             return this;
         }
 
-        internal HostConnection RemoveConnection(ConnectionBase conn, HTTPConnectionStates setState)
+        private bool RemoveConnectionImpl(ConnectionBase conn, HTTPConnectionStates setState)
         {
             conn.State = setState;
             conn.Dispose();
@@ -158,7 +166,14 @@ namespace BestHTTP.Core
             bool found = this.Connections.Remove(conn);
 
             if (!found)
-                HTTPManager.Logger.Warning(typeof(HostConnection).Name, string.Format("RemoveConnection - Couldn't find connection! key: {0}", conn.ServerAddress), this.Context, conn.Context);
+                HTTPManager.Logger.Information(typeof(HostConnection).Name, string.Format("RemoveConnection - Couldn't find connection! key: {0}", conn.ServerAddress), this.Context, conn.Context);
+
+            return found;
+        }
+
+        internal HostConnection RemoveConnection(ConnectionBase conn, HTTPConnectionStates setState)
+        {
+            RemoveConnectionImpl(conn, setState);
 
             return this;
         }
@@ -195,6 +210,19 @@ namespace BestHTTP.Core
 
             // repeat until the connection's state is free
             return conn.State == HTTPConnectionStates.Free;
+        }
+
+        public void RemoveAllIdleConnections()
+        {
+            for (int i = 0; i < this.Connections.Count; i++)
+                if (this.Connections[i].State == HTTPConnectionStates.Free)
+                {
+                    int countBefore = this.Connections.Count;
+                    RemoveConnection(this.Connections[i], HTTPConnectionStates.Closed);
+
+                    if (countBefore != this.Connections.Count)
+                        i--;
+                }
         }
 
         internal void Shutdown()

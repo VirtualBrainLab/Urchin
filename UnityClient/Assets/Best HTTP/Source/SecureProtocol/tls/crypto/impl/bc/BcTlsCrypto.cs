@@ -494,7 +494,8 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls.Crypto.Impl.BC
 
         protected virtual IBlockCipher CreateAesEngine()
         {
-            return new AesEngine();
+            //return new AesEngine();
+            return new AesFastEngine();
         }
 
         protected virtual IBlockCipher CreateAriaEngine()

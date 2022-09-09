@@ -686,8 +686,8 @@ public class UM_Client : MonoBehaviour
                 }
                 else
                 {
-                    Task nodeTask = node.loadNodeModel(true);
-                    nodeTasks.Add(node.ID, nodeTask);
+                    node.LoadNodeModel(true);
+                    nodeTasks.Add(node.ID, node.GetLoadedTask());
                 }
             }
         }

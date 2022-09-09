@@ -10,12 +10,24 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls.Crypto
         public readonly int off, len;
         public readonly short contentType;
 
+        public readonly bool fromBufferPool;
+
         public TlsDecodeResult(byte[] buf, int off, int len, short contentType)
         {
             this.buf = buf;
             this.off = off;
             this.len = len;
             this.contentType = contentType;
+            this.fromBufferPool = false;
+        }
+
+        public TlsDecodeResult(byte[] buf, int off, int len, short contentType, bool fromPool)
+        {
+            this.buf = buf;
+            this.off = off;
+            this.len = len;
+            this.contentType = contentType;
+            this.fromBufferPool = fromPool;
         }
     }
 }

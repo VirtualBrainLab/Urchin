@@ -7,9 +7,9 @@ using BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities;
 
 namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Modes.Gcm
 {
-    [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.NullChecks, false)]
-    [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.ArrayBoundsChecks, false)]
-    [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.DivideByZeroChecks, false)]
+    
+    
+    
     [BestHTTP.PlatformSupport.IL2CPP.Il2CppEagerStaticClassConstructionAttribute]
     public sealed class Tables8kGcmMultiplier
         : IGcmMultiplier

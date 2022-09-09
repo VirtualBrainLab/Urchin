@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
+using BestHTTP.PlatformSupport.Threading;
+
 #if NET_STANDARD_2_0 || NETFX_CORE
 using System.Runtime.CompilerServices;
 #endif
@@ -27,9 +29,9 @@ namespace BestHTTP.PlatformSupport.Memory
             this.Count = count;
         }
 
-        [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.NullChecks, false)]
-        [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.ArrayBoundsChecks, false)]
-        [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.DivideByZeroChecks, false)]
+        
+        
+        
         public override bool Equals(object obj)
         {
             if (obj == null || !(obj is BufferSegment))
@@ -38,9 +40,9 @@ namespace BestHTTP.PlatformSupport.Memory
             return Equals((BufferSegment)obj);
         }
 
-        [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.NullChecks, false)]
-        [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.ArrayBoundsChecks, false)]
-        [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.DivideByZeroChecks, false)]
+        
+        
+        
         public bool Equals(BufferSegment other)
         {
             return this.Data == other.Data &&
@@ -48,33 +50,33 @@ namespace BestHTTP.PlatformSupport.Memory
                    this.Count == other.Count;
         }
 
-        [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.NullChecks, false)]
-        [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.ArrayBoundsChecks, false)]
-        [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.DivideByZeroChecks, false)]
+        
+        
+        
         public override int GetHashCode()
         {
             return (this.Data != null ? this.Data.GetHashCode() : 0) * 21 + this.Offset + this.Count;
         }
 
-        [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.NullChecks, false)]
-        [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.ArrayBoundsChecks, false)]
-        [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.DivideByZeroChecks, false)]
+        
+        
+        
         public static bool operator ==(BufferSegment left, BufferSegment right)
         {
             return left.Equals(right);
         }
 
-        [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.NullChecks, false)]
-        [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.ArrayBoundsChecks, false)]
-        [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.DivideByZeroChecks, false)]
+        
+        
+        
         public static bool operator !=(BufferSegment left, BufferSegment right)
         {
             return !left.Equals(right);
         }
 
-        [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.NullChecks, false)]
-        [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.ArrayBoundsChecks, false)]
-        [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.DivideByZeroChecks, false)]
+        
+        
+        
         public override string ToString()
         {
             var sb = new System.Text.StringBuilder("[BufferSegment ");
@@ -211,9 +213,9 @@ namespace BestHTTP.PlatformSupport.Memory
         }
     }
 
-    [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.NullChecks, false)]
-    [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.ArrayBoundsChecks, false)]
-    [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.DivideByZeroChecks, false)]
+    
+    
+    
     [BestHTTP.PlatformSupport.IL2CPP.Il2CppEagerStaticClassConstructionAttribute]
     public static class BufferPool
     {
@@ -285,7 +287,6 @@ namespace BestHTTP.PlatformSupport.Memory
         private static long PoolSize = 0;
         private static long GetBuffers = 0;
         private static long ReleaseBuffers = 0;
-        private readonly static System.Text.StringBuilder statiscticsBuilder = new System.Text.StringBuilder();
 
         private readonly static ReaderWriterLockSlim rwLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
 
@@ -388,23 +389,20 @@ namespace BestHTTP.PlatformSupport.Memory
 
             int size = buffer.Length;
 
-            if (size == 0 || size > MaxBufferSize)
+            if (size == 0 || size < MinBufferSize || size > MaxBufferSize)
                 return;
 
-            rwLock.EnterWriteLock();
-            try
+            using (new WriteLock(rwLock))
             {
-                if (PoolSize + size > MaxPoolSize)
+                var ps = Interlocked.Read(ref PoolSize);
+                if (ps + size > MaxPoolSize)
                     return;
-                PoolSize += size;
+                
+                Interlocked.Add(ref PoolSize, size);
 
                 ReleaseBuffers++;
 
                 AddFreeBuffer(buffer);
-            }
-            finally
-            {
-                rwLock.ExitWriteLock();
             }
         }
 
@@ -433,67 +431,60 @@ namespace BestHTTP.PlatformSupport.Memory
             return buffer = newBuf;
         }
 
+        public struct BufferStats
+        {
+            public long Size;
+            public int Count;
+        }
+
+        public struct BufferPoolStats
+        {
+            public long GetBuffers;
+            public long ReleaseBuffers;
+            public long PoolSize;
+            public long MaxPoolSize;
+            public long MinBufferSize;
+            public long MaxBufferSize;
+
+            public int FreeBufferCount;
+            public List<BufferStats> FreeBufferStats;
+
+            public TimeSpan NextMaintenance;
+        }
+
         /// <summary>
         /// Get textual statistics about the buffer pool.
         /// </summary>
-        public static string GetStatistics(bool showEmptyBuffers = true)
+        public static void GetStatistics(ref BufferPoolStats stats)
         {
-            rwLock.EnterReadLock();
-            try
+            using (new ReadLock(rwLock))
             {
-                statiscticsBuilder.Length = 0;
-                statiscticsBuilder.AppendFormat("Pooled array reused count: {0:N0}\n", GetBuffers);
-                statiscticsBuilder.AppendFormat("Release call count: {0:N0}\n", ReleaseBuffers);
-                statiscticsBuilder.AppendFormat("PoolSize: {0:N0}\n", PoolSize);
-                statiscticsBuilder.AppendFormat("Buffers: {0}\n", FreeBuffers.Count);
+                stats.GetBuffers = GetBuffers;
+                stats.ReleaseBuffers = ReleaseBuffers;
+                stats.PoolSize = PoolSize;
+                stats.MinBufferSize = MinBufferSize;
+                stats.MaxBufferSize = MaxBufferSize;
+                stats.MaxPoolSize = MaxPoolSize;
+
+                stats.FreeBufferCount = FreeBuffers.Count;
+                if (stats.FreeBufferStats == null)
+                    stats.FreeBufferStats = new List<BufferStats>(FreeBuffers.Count);
+                else
+                    stats.FreeBufferStats.Clear();
 
                 for (int i = 0; i < FreeBuffers.Count; ++i)
                 {
                     BufferStore store = FreeBuffers[i];
                     List<BufferDesc> buffers = store.buffers;
 
-                    if (showEmptyBuffers || buffers.Count > 0)
-                        statiscticsBuilder.AppendFormat("- Size: {0:N0} Count: {1:N0}\n", store.Size, buffers.Count);
+                    BufferStats bufferStats = new BufferStats();
+                    bufferStats.Size = store.Size;
+                    bufferStats.Count = buffers.Count;
+
+                    stats.FreeBufferStats.Add(bufferStats);
                 }
 
-#if UNITY_EDITOR
-                if (EnableDebugStackTraceCollection)
-                {
-                    lock (getStackStats)
-                    {
-                        int sum = 0;
-                        foreach (var kvp in getStackStats)
-                            sum += kvp.Value;
-
-                        statiscticsBuilder.AppendFormat("Get stacks: {0:N0}\n", sum);
-
-                        foreach (var kvp in getStackStats)
-                        {
-                            statiscticsBuilder.AppendFormat("- {0:N0}: {1}\n", kvp.Value, kvp.Key);
-                        }
-                    }
-
-                    lock (releaseStackStats)
-                    {
-                        int sum = 0;
-                        foreach (var kvp in releaseStackStats)
-                            sum += kvp.Value;
-
-                        statiscticsBuilder.AppendFormat("Release stacks: {0:N0}\n", sum);
-
-                        foreach (var kvp in releaseStackStats)
-                        {
-                            statiscticsBuilder.AppendFormat("- {0:N0}: {1}\n", kvp.Value, kvp.Key);
-                        }
-                    }
-                }
-#endif
-
-                return statiscticsBuilder.ToString();
-            }
-            finally
-            {
-                rwLock.ExitReadLock();
+                stats.NextMaintenance = (lastMaintenance + RunMaintenanceEvery) - DateTime.UtcNow;
             }
         }
 
@@ -502,15 +493,10 @@ namespace BestHTTP.PlatformSupport.Memory
         /// </summary>
         public static void Clear()
         {
-            rwLock.EnterWriteLock();
-            try
+            using (new WriteLock(rwLock))
             {
                 FreeBuffers.Clear();
-                PoolSize = 0;
-            }
-            finally
-            {
-                rwLock.ExitWriteLock();
+                Interlocked.Exchange(ref PoolSize, 0);
             }
         }
 
@@ -528,8 +514,7 @@ namespace BestHTTP.PlatformSupport.Memory
             //    HTTPManager.Logger.Information("BufferPool", "Before Maintain: " + GetStatistics());
 
             DateTime olderThan = now - RemoveOlderThan;
-            rwLock.EnterWriteLock();
-            try
+            using (new WriteLock(rwLock))
             {
                 for (int i = 0; i < FreeBuffers.Count; ++i)
                 {
@@ -556,10 +541,6 @@ namespace BestHTTP.PlatformSupport.Memory
                         FreeBuffers.RemoveAt(i--);
                 }
             }
-            finally
-            {
-                rwLock.ExitWriteLock();
-            }
 
             //if (HTTPManager.Logger.Level == Logger.Loglevels.All)
             //    HTTPManager.Logger.Information("BufferPool", "After Maintain: " + GetStatistics());
@@ -570,7 +551,7 @@ namespace BestHTTP.PlatformSupport.Memory
 #if NET_STANDARD_2_0 || NETFX_CORE
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        private static bool IsPowerOfTwo(long x)
+        public static bool IsPowerOfTwo(long x)
         {
             return (x & (x - 1)) == 0;
         }
@@ -603,8 +584,7 @@ namespace BestHTTP.PlatformSupport.Memory
             //
             // An interesting read can be found here: https://stackoverflow.com/questions/21411018/readerwriterlockslim-enterupgradeablereadlock-always-a-deadlock
 
-            rwLock.EnterWriteLock();
-            try
+            using (new WriteLock(rwLock))
             {
                 for (int i = 0; i < FreeBuffers.Count; ++i)
                 {
@@ -622,10 +602,6 @@ namespace BestHTTP.PlatformSupport.Memory
                         return lastFree;
                     }
                 }
-            }
-            finally
-            {
-                rwLock.ExitWriteLock();
             }
 
             return BufferDesc.Empty;

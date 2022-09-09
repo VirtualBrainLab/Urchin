@@ -67,7 +67,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
             tlsServer.Init(m_tlsServerContext);
             tlsServer.NotifyCloseHandle(this);
 
-            BeginHandshake();
+            BeginHandshake(false);
 
             if (m_blocking)
             {

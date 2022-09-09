@@ -176,31 +176,39 @@ namespace BestHTTP
                             switch (this.Credentials.Type)
                             {
                                 case AuthenticationTypes.Basic:
-                                    // With Basic authentication we don't want to wait for a challenge, we will send the hash with the first request
-                                    outStream.Write(string.Format("Proxy-Authorization: {0}", string.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes(this.Credentials.UserName + ":" + this.Credentials.Password)))).GetASCIIBytes());
-                                    outStream.Write(HTTPRequest.EOL);
-                                    break;
+                                    {
+                                        // With Basic authentication we don't want to wait for a challenge, we will send the hash with the first request
+                                        var buff = string.Format("Proxy-Authorization: {0}", string.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes(this.Credentials.UserName + ":" + this.Credentials.Password)))).GetASCIIBytes();
+                                        outStream.Write(buff.Data, buff.Offset, buff.Count);
+                                        BufferPool.Release(buff);
+
+                                        outStream.Write(HTTPRequest.EOL);
+                                        break;
+                                    }
 
                                 case AuthenticationTypes.Unknown:
                                 case AuthenticationTypes.Digest:
-                                    var digest = DigestStore.Get(this.Address);
-                                    if (digest != null)
                                     {
-                                        string authentication = digest.GenerateResponseHeader(request, this.Credentials, true);
-                                        if (!string.IsNullOrEmpty(authentication))
+                                        var digest = DigestStore.Get(this.Address);
+                                        if (digest != null)
                                         {
-                                            string auth = string.Format("Proxy-Authorization: {0}", authentication);
-                                            if (HTTPManager.Logger.Level <= Logger.Loglevels.Information)
-                                                HTTPManager.Logger.Information("HTTPProxy", "Sending proxy authorization header: " + auth, request.Context);
+                                            string authentication = digest.GenerateResponseHeader(request, this.Credentials, true);
+                                            if (!string.IsNullOrEmpty(authentication))
+                                            {
+                                                string auth = string.Format("Proxy-Authorization: {0}", authentication);
+                                                if (HTTPManager.Logger.Level <= Logger.Loglevels.Information)
+                                                    HTTPManager.Logger.Information("HTTPProxy", "Sending proxy authorization header: " + auth, request.Context);
 
-                                            var bytes = auth.GetASCIIBytes();
-                                            outStream.Write(bytes);
-                                            outStream.Write(HTTPRequest.EOL);
-                                            BufferPool.Release(bytes);
+                                                var buff = auth.GetASCIIBytes();
+                                                outStream.Write(buff.Data, buff.Offset, buff.Count);
+                                                BufferPool.Release(buff);
+
+                                                outStream.Write(HTTPRequest.EOL);                                                
+                                            }
                                         }
-                                    }
 
-                                    break;
+                                        break;
+                                    }
                             }
                         }
 

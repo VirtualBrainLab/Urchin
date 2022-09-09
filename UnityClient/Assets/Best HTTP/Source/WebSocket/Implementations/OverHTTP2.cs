@@ -105,7 +105,7 @@ namespace BestHTTP.WebSocket
             }
         }
 
-        private void OnHeadersReceived(HTTPRequest req, HTTPResponse resp)
+        private void OnHeadersReceived(HTTPRequest req, HTTPResponse resp, Dictionary<string, List<string>> newHeaders)
         {
             if (resp != null && resp.StatusCode == 200)
             {
@@ -293,15 +293,30 @@ namespace BestHTTP.WebSocket
 
                     case WebSocketFrameTypes.Binary:
                         frame.DecodeWithExtensions(this.Parent);
+
                         if (this.Parent.OnBinary != null)
                         {
                             try
                             {
-                                this.Parent.OnBinary(this.Parent, frame.Data);
+                                var data = new byte[frame.Length];
+                                Array.Copy(frame.Data, 0, data, 0, (int)frame.Length);
+                                this.Parent.OnBinary(this.Parent, data);
                             }
                             catch (Exception ex)
                             {
-                                HTTPManager.Logger.Exception("OverHTTP2", "OnBinary", ex, this.Parent.Context);
+                                HTTPManager.Logger.Exception("OverHTTP2", "OnBinaryNoAlloc", ex, this.Parent.Context);
+                            }
+                        }
+
+                        if (this.Parent.OnBinaryNoAlloc != null)
+                        {
+                            try
+                            {
+                                this.Parent.OnBinaryNoAlloc(this.Parent, new BufferSegment(frame.Data, 0, (int)frame.Length));
+                            }
+                            catch (Exception ex)
+                            {
+                                HTTPManager.Logger.Exception("OverHTTP2", "OnBinaryNoAlloc", ex, this.Parent.Context);
                             }
                         }
                         break;
@@ -309,7 +324,7 @@ namespace BestHTTP.WebSocket
                     // Upon receipt of a Ping frame, an endpoint MUST send a Pong frame in response, unless it already received a Close frame.
                     case WebSocketFrameTypes.Ping:
                         if (!closeSent && !this.upStream.IsClosed)
-                            Send(new WebSocketFrame(this.Parent, WebSocketFrameTypes.Pong, frame.Data));
+                            Send(new WebSocketFrame(this.Parent, WebSocketFrameTypes.Pong, frame.Data, 0, frame.Length, true, true));
                         break;
 
                     case WebSocketFrameTypes.Pong:
@@ -387,6 +402,8 @@ namespace BestHTTP.WebSocket
 
                         break;
                 }
+
+                frame.ReleaseData();
             }
 
             return false;

@@ -2,8 +2,10 @@ using System;
 using System.Collections.Concurrent;
 
 using BestHTTP.Connections;
-using BestHTTP.Extensions;
 using BestHTTP.Logger;
+
+// Required for ConcurrentQueue.Clear extension.
+using BestHTTP.Extensions;
 
 namespace BestHTTP.Core
 {
@@ -96,6 +98,9 @@ namespace BestHTTP.Core
 
         public static void EnqueueConnectionEvent(ConnectionEventInfo @event)
         {
+            if (HTTPManager.Logger.Level == Loglevels.All)
+                HTTPManager.Logger.Information("ConnectionEventHelper", "Enqueue connection event: " + @event.ToString(), @event.Source.Context);
+
             connectionEventQueue.Enqueue(@event);
         }
 
@@ -122,6 +127,12 @@ namespace BestHTTP.Core
                     {
                         HTTPManager.Logger.Exception("ConnectionEventHelper", "ProcessQueue", ex, connectionEvent.Source.Context);
                     }
+                }
+
+                if (connectionEvent.Source.LastProcessedUri == null)
+                {
+                    HTTPManager.Logger.Information("ConnectionEventHelper", String.Format("Ignoring ConnectionEventInfo({0}) because its LastProcessedUri is null!", connectionEvent.ToString()));
+                    return;
                 }
 
                 switch (connectionEvent.Event)

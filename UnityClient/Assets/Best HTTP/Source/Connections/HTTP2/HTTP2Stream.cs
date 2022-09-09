@@ -421,7 +421,7 @@ namespace BestHTTP.Connections.HTTP2
                     BufferPool.Release(frame.Payload);
             }
 
-            if (windowUpdate > 0)
+            if (windowUpdate > 0 && this.State != HTTP2StreamStates.Closed)
             {
                 if (HTTPManager.Logger.Level <= Logger.Loglevels.All)
                     HTTPManager.Logger.Information("HTTP2Stream", string.Format("[{0}] Sending window update: {1:N0}, current window: {2:N0}, initial window size: {3:N0}", this.Id, windowUpdate, this.localWindow, this.settings.MySettings[HTTP2Settings.INITIAL_WINDOW_SIZE]), this.Context, this.AssignedRequest.Context, this.parent.Context);
@@ -476,13 +476,13 @@ namespace BestHTTP.Connections.HTTP2
                     // remote Window can be negative! See https://httpwg.org/specs/rfc7540.html#InitialWindowSize
                     if (this.remoteWindow <= 0)
                     {
-                        HTTPManager.Logger.Warning("HTTP2Stream", string.Format("[{0}] Skipping data sending as remote Window is {1}!", this.Id, this.remoteWindow), this.Context, this.AssignedRequest.Context, this.parent.Context);
+                        HTTPManager.Logger.Information("HTTP2Stream", string.Format("[{0}] Skipping data sending as remote Window is {1}!", this.Id, this.remoteWindow), this.Context, this.AssignedRequest.Context, this.parent.Context);
                         return;
                     }
 
                     // This step will send one frame per OpenState call.
 
-                    Int64 maxFrameSize = Math.Min(this.remoteWindow, this.settings.RemoteSettings[HTTP2Settings.MAX_FRAME_SIZE]);
+                    Int64 maxFrameSize = Math.Min(HTTPRequest.UploadChunkSize, Math.Min(this.remoteWindow, this.settings.RemoteSettings[HTTP2Settings.MAX_FRAME_SIZE]));
 
                     HTTP2FrameHeaderAndPayload frame = new HTTP2FrameHeaderAndPayload();
                     frame.Type = HTTP2FrameTypes.DATA;

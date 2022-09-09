@@ -56,7 +56,12 @@ namespace BestHTTP.Connections.HTTP2
         /// <summary>
         /// Time between two ping messages.
         /// </summary>
-        public TimeSpan PingFrequency = TimeSpan.FromSeconds(30);
+        public TimeSpan PingFrequency = TimeSpan.FromSeconds(5);
+
+        /// <summary>
+        /// Timeout to receive a ping acknowledgement from the server. If no ack reveived in this time the connection will be treated as broken.
+        /// </summary>
+        public TimeSpan Timeout = TimeSpan.FromSeconds(10);
 
         /// <summary>
         /// Set to true to enable RFC 8441 "Bootstrapping WebSockets with HTTP/2" (https://tools.ietf.org/html/rfc8441).

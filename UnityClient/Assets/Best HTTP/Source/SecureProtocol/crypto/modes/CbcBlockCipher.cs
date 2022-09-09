@@ -9,9 +9,9 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Modes
     /**
     * implements Cipher-Block-Chaining (CBC) mode on top of a simple cipher.
     */
-    [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.NullChecks, false)]
-    [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.ArrayBoundsChecks, false)]
-    [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.DivideByZeroChecks, false)]
+    
+    
+    
     [BestHTTP.PlatformSupport.IL2CPP.Il2CppEagerStaticClassConstructionAttribute]
     public class CbcBlockCipher
 		: IBlockCipher

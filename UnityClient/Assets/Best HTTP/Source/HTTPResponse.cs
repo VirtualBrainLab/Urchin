@@ -27,9 +27,6 @@ namespace BestHTTP
     using BestHTTP.Logger;
     using BestHTTP.Timings;
 
-    /// <summary>
-    ///
-    /// </summary>
     public class HTTPResponse : IDisposable
     {
         internal const byte CR = 13;
@@ -163,6 +160,9 @@ namespace BestHTTP
         /// </summary>
         public bool IsClosedManually { get; protected set; }
 
+        /// <summary>
+        /// IProtocol.LoggingContext implementation.
+        /// </summary>
         public LoggingContext Context { get; private set; }
 
         /// <summary>
@@ -226,7 +226,7 @@ namespace BestHTTP
             this.Context.Add("IsFromCache", isFromCache);
         }
 
-        public virtual bool Receive(long forceReadRawContentLength = -1, bool readPayloadData = true, bool sendUpgradedEvent = true)
+        public bool Receive(long forceReadRawContentLength = -1, bool readPayloadData = true, bool sendUpgradedEvent = true)
         {
             if (this.baseRequest.IsCancellationRequested)
                 return false;
@@ -384,6 +384,8 @@ namespace BestHTTP
 
         protected void ReadHeaders(Stream stream)
         {
+            var newHeaders = this.baseRequest.OnHeadersReceived != null ? new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase) : null;
+
             string headerName = ReadTo(stream, (byte)':', LF)/*.Trim()*/;
             while (headerName != string.Empty)
             {
@@ -394,19 +396,26 @@ namespace BestHTTP
 
                 AddHeader(headerName, value);
 
+                if (newHeaders != null)
+                {
+                    List<string> values;
+                    if (!newHeaders.TryGetValue(headerName, out values))
+                        newHeaders.Add(headerName, values = new List<string>(1));
+
+                    values.Add(value);
+                }
+
                 headerName = ReadTo(stream, (byte)':', LF);
             }
 
             if (this.baseRequest.OnHeadersReceived != null)
-                RequestEventHelper.EnqueueRequestEvent(new RequestEventInfo(this.baseRequest, RequestEvents.Headers));
+                RequestEventHelper.EnqueueRequestEvent(new RequestEventInfo(this.baseRequest, newHeaders));
         }
 
         public void AddHeader(string name, string value)
         {
-            name = name.ToLower();
-
             if (Headers == null)
-                Headers = new Dictionary<string, List<string>>();
+                Headers = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 
             List<string> values;
             if (!Headers.TryGetValue(name, out values))
@@ -424,7 +433,6 @@ namespace BestHTTP
 
         /// <summary>
         /// Returns the list of values that received from the server for the given header name.
-        /// <remarks>Remarks: All headers converted to lowercase while reading the response.</remarks>
         /// </summary>
         /// <param name="name">Name of the header</param>
         /// <returns>If no header found with the given name or there are no values in the list (eg. Count == 0) returns null.</returns>
@@ -432,8 +440,6 @@ namespace BestHTTP
         {
             if (Headers == null)
                 return null;
-
-            name = name.ToLower();
 
             List<string> values;
             if (!Headers.TryGetValue(name, out values) || values.Count == 0)
@@ -451,8 +457,6 @@ namespace BestHTTP
         {
             if (Headers == null)
                 return null;
-
-            name = name.ToLower();
 
             List<string> values;
             if (!Headers.TryGetValue(name, out values) || values.Count == 0)
@@ -562,7 +566,8 @@ namespace BestHTTP
         internal static string ReadTo(Stream stream, byte blocker1, byte blocker2)
         {
             byte[] readBuf = BufferPool.Get(1024, true);
-            try {
+            try
+            {
                 int bufpos = 0;
 
                 int ch = stream.ReadByte();
@@ -594,7 +599,8 @@ namespace BestHTTP
         internal static string NoTrimReadTo(Stream stream, byte blocker1, byte blocker2)
         {
             byte[] readBuf = BufferPool.Get(1024, true);
-            try {
+            try
+            {
                 int bufpos = 0;
 
                 int ch = stream.ReadByte();
@@ -1153,7 +1159,7 @@ namespace BestHTTP
             if (!IsCacheOnly)
 #endif
             {
-                if (this.baseRequest.OnStreamingData != null && buffer != null && bufferLength > 0)
+                if (this.baseRequest.UseStreaming && buffer != null && bufferLength > 0)
                 {
                     RequestEventHelper.EnqueueRequestEvent(new RequestEventInfo(this.baseRequest, buffer, bufferLength));
                     Interlocked.Increment(ref this.UnprocessedFragments);

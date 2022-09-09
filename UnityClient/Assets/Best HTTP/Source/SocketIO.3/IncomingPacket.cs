@@ -17,6 +17,14 @@ namespace BestHTTP.SocketIO3
         public BufferSegment PayloadData { get; set; }
 
         public bool IsVolatile { get; set; }
+
+        public override string ToString()
+        {
+            if (!string.IsNullOrEmpty(this.Payload))
+                return this.Payload;
+            else
+                return this.PayloadData.ToString();
+        }
     }
 
     public struct IncomingPacket

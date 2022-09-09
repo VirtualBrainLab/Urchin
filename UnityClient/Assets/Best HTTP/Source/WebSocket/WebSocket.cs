@@ -94,6 +94,11 @@ namespace BestHTTP.WebSocket
         public OnWebSocketBinaryDelegate OnBinary;
 
         /// <summary>
+        /// Called when a Binary message received. It's a more performant version than the OnBinary event, as the memory will be reused.
+        /// </summary>
+        public OnWebSocketBinaryNoAllocDelegate OnBinaryNoAlloc;
+
+        /// <summary>
         /// Called when the WebSocket connection is closed.
         /// </summary>
         public OnWebSocketClosedDelegate OnClosed;

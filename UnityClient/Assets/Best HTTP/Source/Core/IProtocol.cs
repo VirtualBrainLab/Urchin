@@ -1,4 +1,6 @@
-﻿using System;
+using System;
+
+using BestHTTP.Logger;
 
 namespace BestHTTP.Core
 {
@@ -24,6 +26,7 @@ namespace BestHTTP.Core
         HostConnectionKey ConnectionKey { get; }
 
         bool IsClosed { get; }
+        LoggingContext LoggingContext { get; }
 
         void HandleEvents();
 

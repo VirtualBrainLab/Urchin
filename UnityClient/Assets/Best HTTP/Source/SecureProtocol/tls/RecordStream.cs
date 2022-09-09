@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
+using BestHTTP.PlatformSupport.Memory;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Tls.Crypto;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities;
 
@@ -227,13 +228,18 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
 
                 decoded = DecodeAndVerify(recordType, recordVersion, m_inputRecord.m_buf, RecordFormat.FragmentOffset,
                     length);
+
+                // with aead/cha-cha in and out buffer is the same
+                m_handler.ProcessRecord(decoded.contentType, decoded.buf, decoded.off, decoded.len);
+
+                if (decoded.fromBufferPool)
+                    BestHTTP.PlatformSupport.Memory.BufferPool.Release(decoded.buf);
             }
             finally
             {
                 m_inputRecord.Reset();
             }
 
-            m_handler.ProcessRecord(decoded.contentType, decoded.buf, decoded.off, decoded.len);
             return true;
         }
 
@@ -480,16 +486,26 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
 
             internal void Reset()
             {
-                m_buf = m_header;
-                m_pos = 0;
-            }
+                    if (m_buf != m_header)
+                        BufferPool.Release(m_buf);
+
+                    m_buf = m_header;
+                    m_pos = 0;
+                }
 
             private void Resize(int length)
             {
                 if (m_buf.Length < length)
                 {
-                    byte[] tmp = new byte[length];
+                    //byte[] tmp = new byte[length];
+                    //Array.Copy(m_buf, 0, tmp, 0, m_pos);
+                    //m_buf = tmp;
+
+                    byte[] tmp = BufferPool.Get(length, true);
                     Array.Copy(m_buf, 0, tmp, 0, m_pos);
+
+                    if (m_buf != m_header)
+                        BufferPool.Release(m_buf);
                     m_buf = tmp;
                 }
             }

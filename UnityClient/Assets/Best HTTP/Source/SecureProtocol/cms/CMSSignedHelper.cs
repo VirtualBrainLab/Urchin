@@ -22,7 +22,6 @@ using BestHTTP.SecureProtocol.Org.BouncyCastle.X509;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.X509.Store;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Parameters;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities.Collections;
-using BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Tls;
 
 namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Cms
 {

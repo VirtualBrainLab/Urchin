@@ -76,7 +76,7 @@ public class UM_Launch_ibl_mini : MonoBehaviour
 
     private async void DelayedStart()
     {
-        await modelControl.GetDefaultLoaded();
+        await modelControl.GetDefaultLoadedTask();
         ccfLoaded = true;
 
         foreach (CCFTreeNode node in modelControl.GetDefaultLoadedNodes())

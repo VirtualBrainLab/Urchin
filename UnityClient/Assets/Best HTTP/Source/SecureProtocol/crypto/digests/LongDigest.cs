@@ -11,9 +11,9 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Digests
     /**
     * Base class for SHA-384 and SHA-512.
     */
-    [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.NullChecks, false)]
-    [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.ArrayBoundsChecks, false)]
-    [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.DivideByZeroChecks, false)]
+    
+    
+    
     [BestHTTP.PlatformSupport.IL2CPP.Il2CppEagerStaticClassConstructionAttribute]
     public abstract class LongDigest
 		: IDigest, IMemoable
