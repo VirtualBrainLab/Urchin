@@ -74,115 +74,115 @@ io.on("connection", function (socket) {
   
   // CCF Areas
   socket.on('LoadDefaultAreas', function(data) {
-    emitToAll(socket.id, 'LoadDefaultAreas', data);
+    emitToReceiver(socket.id, 'LoadDefaultAreas', data);
   });
 
   socket.on('SetAreaColors', function(data) {
-  	emitToAll(socket.id, 'SetAreaColors', data);
+  	emitToReceiver(socket.id, 'SetAreaColors', data);
   });
   socket.on('SetAreaVisibility', function(data) {
-  	emitToAll(socket.id, 'SetAreaVisibility', data);
+  	emitToReceiver(socket.id, 'SetAreaVisibility', data);
   });
   socket.on('SetAreaIntensity', function(data) {
-    emitToAll(socket.id, 'SetAreaIntensity', data);
+    emitToReceiver(socket.id, 'SetAreaIntensity', data);
   });
   socket.on('SetAreaColormap', function(data) {
-    emitToAll(socket.id, 'SetAreaColormap', data);
+    emitToReceiver(socket.id, 'SetAreaColormap', data);
   });
   socket.on('SetAreaMaterial', function(data) {
-    emitToAll(socket.id, 'SetAreaMaterial', data);
+    emitToReceiver(socket.id, 'SetAreaMaterial', data);
   });
   socket.on('SetAreaAlpha', function(data) {
-    emitToAll(socket.id, 'SetAreaAlpha', data);
+    emitToReceiver(socket.id, 'SetAreaAlpha', data);
   });
   socket.on('SetAreaData', function(data) {
-    emitToAll(socket.id, 'SetAreaData', data);
+    emitToReceiver(socket.id, 'SetAreaData', data);
   });
   socket.on('SetAreaIndex', function(data) {
-    emitToAll(socket.id, 'SetAreaIndex', data);
+    emitToReceiver(socket.id, 'SetAreaIndex', data);
   });
   
   // Neurons
   socket.on('CreateNeurons', function(data) {
-    emitToAll(socket.id, 'CreateNeurons', data);
+    emitToReceiver(socket.id, 'CreateNeurons', data);
   });
   socket.on('DeleteNeurons', function(data) {
-    emitToAll(socket.id, 'DeleteNeurons', data);
+    emitToReceiver(socket.id, 'DeleteNeurons', data);
   });
   socket.on('SetNeuronPos', function(data) {
-    emitToAll(socket.id, 'SetNeuronPos', data);
+    emitToReceiver(socket.id, 'SetNeuronPos', data);
   });
   socket.on('SetNeuronSize', function(data) {
-    emitToAll(socket.id, 'SetNeuronSize', data);
+    emitToReceiver(socket.id, 'SetNeuronSize', data);
   });
   socket.on('SetNeuronShape', function(data) {
-    emitToAll(socket.id, 'SetNeuronShape', data);
+    emitToReceiver(socket.id, 'SetNeuronShape', data);
   });
   socket.on('SetNeuronColor', function(data) {
-    emitToAll(socket.id, 'SetNeuronColor', data);
+    emitToReceiver(socket.id, 'SetNeuronColor', data);
   });
   socket.on('SetNeuronMaterial', function(data) {
-    emitToAll(socket.id, 'SetNeuronMaterial', data);
+    emitToReceiver(socket.id, 'SetNeuronMaterial', data);
   });
 
   // Probes
   socket.on('CreateProbes', function(data) {
-    emitToAll(socket.id, 'CreateProbes', data);
+    emitToReceiver(socket.id, 'CreateProbes', data);
   });
   socket.on('DeleteProbes', function(data) {
-    emitToAll(socket.id, 'DeleteProbes', data);
+    emitToReceiver(socket.id, 'DeleteProbes', data);
   });
   socket.on('SetProbeColors', function(data) {
-    emitToAll(socket.id, 'SetProbeColors', data);
+    emitToReceiver(socket.id, 'SetProbeColors', data);
   });
   socket.on('SetProbePos', function(data) {
-    emitToAll(socket.id, 'SetProbePos', data);
+    emitToReceiver(socket.id, 'SetProbePos', data);
   });
   socket.on('SetProbeAngles', function(data) {
-    emitToAll(socket.id, 'SetProbeAngles', data);
+    emitToReceiver(socket.id, 'SetProbeAngles', data);
   });
   socket.on('SetProbeStyle', function(data) {
-    emitToAll(socket.id, 'SetProbeStyle', data);
+    emitToReceiver(socket.id, 'SetProbeStyle', data);
   });
   socket.on('SetProbeSize', function(data) {
-    emitToAll(socket.id, 'SetProbeSize', data);
+    emitToReceiver(socket.id, 'SetProbeSize', data);
   });
 
   // Volumes
   socket.on('CreateVolume', function(data) {
-    emitToAll(socket.id, 'CreateVolume', data);
+    emitToReceiver(socket.id, 'CreateVolume', data);
   });
   socket.on('DeleteVolume', function(data) {
-    emitToAll(socket.id, 'DeleteVolume', data);
+    emitToReceiver(socket.id, 'DeleteVolume', data);
   });
   socket.on('SetVolumeVisibility', function(data) {
-    emitToAll(socket.id, 'SetVolumeVisibility', data);
+    emitToReceiver(socket.id, 'SetVolumeVisibility', data);
   });
   socket.on('SetVolumeData', function(data) {
-    emitToAll(socket.id, 'SetVolumeData', data);
+    emitToReceiver(socket.id, 'SetVolumeData', data);
   });
   socket.on('SetVolumeDataMeta', function(data) {
-    emitToAll(socket.id, 'SetVolumeDataMeta', data);
+    emitToReceiver(socket.id, 'SetVolumeDataMeta', data);
   });
   socket.on('SetVolumeColormap', function(data) {
-    emitToAll(socket.id, 'SetVolumeColormap', data);
+    emitToReceiver(socket.id, 'SetVolumeColormap', data);
   });
 
   // Camera
   socket.on('SetCameraTarget', function(data) {
-    emitToAll(socket.id, 'SetCameraTarget', data);
+    emitToReceiver(socket.id, 'SetCameraTarget', data);
   });
   socket.on('SetCameraPosition', function(data) {
-    emitToAll(socket.id, 'SetCameraPosition', data);
+    emitToReceiver(socket.id, 'SetCameraPosition', data);
   });
   socket.on('SetCameraRotation', function(data) {
-    emitToAll(socket.id, 'SetCameraRotation', data);
+    emitToReceiver(socket.id, 'SetCameraRotation', data);
   });
   socket.on('SetCameraTargetArea', function(data) {
-    emitToAll(socket.id, 'SetCameraTargetArea', data);
+    emitToReceiver(socket.id, 'SetCameraTargetArea', data);
   });
   socket.on('SetCameraZoom', function(data) {
-    emitToAll(socket.id, 'SetCameraZoom', data);
+    emitToReceiver(socket.id, 'SetCameraZoom', data);
   });
 
   // Receiver events
@@ -199,31 +199,31 @@ io.on("connection", function (socket) {
   // Text
   
   socket.on('CreateText', function(data) {
-    emitToAll(socket.id, 'CreateText', data);
+    emitToReceiver(socket.id, 'CreateText', data);
   });
   socket.on('DeleteText', function(data) {
-    emitToAll(socket.id, 'DeleteText', data);
+    emitToReceiver(socket.id, 'DeleteText', data);
   });
-  socket.on('SetText', function(data) {
-    emitToAll(socket.id, 'SetText', data);
+  socket.on('SetTextText', function(data) {
+    emitToReceiver(socket.id, 'SetTextText', data);
   });
   socket.on('SetTextColors', function(data) {
-    emitToAll(socket.id, 'SetTextColors', data);
+    emitToReceiver(socket.id, 'SetTextColors', data);
   });
   socket.on('SetTextSizes', function(data) {
-    emitToAll(socket.id, 'SetTextSizes', data);
+    emitToReceiver(socket.id, 'SetTextSizes', data);
   });
-  socket.on('SetText', function(data) {
-    emitToAll(socket.id, 'SetTextPositions', data);
+  socket.on('SetTextPositions', function(data) {
+    emitToReceiver(socket.id, 'SetTextPositions', data);
   });
 
   // Clear
   socket.on('Clear', function(data) {
-    emitToAll(socket.id, 'Clear', data);
+    emitToReceiver(socket.id, 'Clear', data);
   });
 });
 
-function emitToAll(id, event, data) {
+function emitToReceiver(id, event, data) {
   	console.log('Sender sent event: ' + event + ' emitting to all clients with ID: ' + Socket2ID[id] + " and type receive");
   	for (var socketID of ID2Socket[Socket2ID[id]]) {
       if (Socket2Type[socketID]=="receive") {
