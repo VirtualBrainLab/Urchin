@@ -16,7 +16,7 @@ const server = app.listen(port, function () {
 const io = require("socket.io")(server, {
   cors:
   {
-    "origin": "http://data.virtualbrainlab.org",
+    "origin": "https://data.virtualbrainlab.org",
     "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
     "preflightContinue": false,
     "optionsSuccessStatus": 204
