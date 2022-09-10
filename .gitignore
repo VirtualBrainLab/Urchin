@@ -74,5 +74,5 @@ Examples/data/steven/*tif
 Examples/data/gaelle/coverage.npy
 
 unityneuro.egg-info/*
-dist/*
+**/dist/*
 build/*
