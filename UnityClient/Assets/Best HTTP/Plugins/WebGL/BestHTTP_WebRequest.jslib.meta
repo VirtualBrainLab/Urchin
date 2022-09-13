@@ -1,20 +1,31 @@
 fileFormatVersion: 2
 guid: 3a8cd111a04391742a3eaa9a96f9a0ac
 PluginImporter:
-  serializedVersion: 1
+  externalObjects: {}
+  serializedVersion: 2
   iconMap: {}
   executionOrder: {}
+  defineConstraints: []
   isPreloaded: 0
+  isOverridable: 0
+  isExplicitlyReferenced: 0
+  validateReferences: 1
   platformData:
-    Editor:
+  - first:
+      : data
+    second:
+      enabled: 0
+      settings: {}
+  - first:
+      Editor: Editor
+    second:
       enabled: 0
       settings:
         DefaultValueInitialized: true
-    WebGL:
+  - first:
+      WebGL: WebGL
+    second:
       enabled: 1
-      settings: {}
-    data:
-      enabled: 0
       settings: {}
   userData: 
   assetBundleName: 
