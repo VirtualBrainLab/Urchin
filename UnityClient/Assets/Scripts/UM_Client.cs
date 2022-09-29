@@ -121,6 +121,7 @@ public class UM_Client : MonoBehaviour
         manager.Socket.On<List<float>>("SetCameraRotation", SetCameraRotation);
         manager.Socket.On<string>("SetCameraTargetArea", SetCameraTargetArea);
         manager.Socket.On<float>("SetCameraZoom", SetCameraZoom);
+        manager.Socket.On<List<float>>("SetCameraPan", SetCameraPan);
 
 
         // Text
@@ -253,6 +254,11 @@ public class UM_Client : MonoBehaviour
 
         Vector3 worldCoords = new Vector3(5.7f - mlapdv[0]/1000f, 4f - mlapdv[2] / 1000f, mlapdv[1] / 1000f - 6.6f);
         cameraControl.SetCameraTarget(worldCoords);
+    }
+
+    private void SetCameraPan(List<float> panXY)
+    {
+        cameraControl.SetCameraPan(new Vector2(panXY[0], panXY[1]));
     }
 
     #region Clear

@@ -184,6 +184,9 @@ io.on("connection", function (socket) {
   socket.on('SetCameraZoom', function(data) {
     emitToReceiver(socket.id, 'SetCameraZoom', data);
   });
+  socket.on('SetCameraPan', function(data) {
+    emitToReceiver(socket.id, 'SetCameraPan', data);
+  });
 
   // Receiver events
   socket.on('log', function(data) {

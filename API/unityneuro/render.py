@@ -471,6 +471,22 @@ def set_camera_target_area(camera_target_area):
 	"""
 	sio.emit('SetCameraTargetArea', camera_target_area)
 
+def set_camera_pan(pan_x, pan_y):
+	"""Set camera pan coordinates
+
+	Parameters
+	----------
+	pan_x : float
+		x coordinate
+	pan_y : float
+		y coordinate
+	
+	Examples
+	--------
+	>>> urn.set_camera_pan(3.0, 4.0)
+	"""
+	sio.emit('SetCameraPan', [pan_x, pan_y])
+
 ###########
 # VOLUMES #
 ###########
