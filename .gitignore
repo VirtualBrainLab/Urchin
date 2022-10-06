@@ -78,3 +78,4 @@ unityneuro.egg-info/*
 build/*
 
 **/.ipynb_checkpoints/**
+**/imgs/*
