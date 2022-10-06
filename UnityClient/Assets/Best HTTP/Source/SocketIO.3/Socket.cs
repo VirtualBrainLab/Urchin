@@ -227,7 +227,21 @@ namespace BestHTTP.SocketIO3
 
         public void On<T>(SocketIOEventTypes eventType, Action<T> callback)
         {
-            this.TypedEventTable.Register(EventNames.GetNameFor(eventType), new Type[] { typeof(T) }, (args) => callback((T)args[0]));
+            string eventName = EventNames.GetNameFor(eventType);
+            this.TypedEventTable.Register(eventName, new Type[] { typeof(T) }, (args) =>
+            {
+                T arg = default(T);
+                try
+                {
+                    arg = (T)args[0];
+                }
+                catch (Exception ex)
+                {
+                    HTTPManager.Logger.Exception("Socket", String.Format("On<{0}>('{1}') - cast failed", typeof(T).Name, eventName), ex, this.Context);
+                }
+
+                callback(arg);
+            });
         }
 
         public void On(string eventName, Action callback)
@@ -237,27 +251,112 @@ namespace BestHTTP.SocketIO3
 
         public void On<T>(string eventName, Action<T> callback)
         {
-            this.TypedEventTable.Register(eventName, new Type[] { typeof(T) }, (args) => callback((T)args[0]));
+            this.TypedEventTable.Register(eventName, new Type[] { typeof(T) }, (args) => {
+                T arg = default(T);
+                try
+                {
+                    arg = (T)args[0];
+                }
+                catch (Exception ex)
+                {
+                    HTTPManager.Logger.Exception("Socket", String.Format("On<{0}>('{1}') - cast failed", typeof(T).Name, eventName), ex, this.Context);
+                    return;
+                }
+
+                callback(arg);
+            });
         }
 
         public void On<T1, T2>(string eventName, Action<T1, T2> callback)
         {
-            this.TypedEventTable.Register(eventName, new Type[] { typeof(T1), typeof(T2) }, (args) => callback((T1)args[0], (T2)args[1]));
+            this.TypedEventTable.Register(eventName, new Type[] { typeof(T1), typeof(T2) }, (args) => {
+                T1 arg1 = default(T1);
+                T2 arg2 = default(T2);
+                try
+                {
+                    arg1 = (T1)args[0];
+                    arg2 = (T2)args[1];
+                }
+                catch (Exception ex)
+                {
+                    HTTPManager.Logger.Exception("Socket", String.Format("On<{0}, {1}>('{2}') - cast failed", typeof(T1).Name, typeof(T2).Name, eventName), ex, this.Context);
+                    return;
+                }
+
+                callback(arg1, arg2);
+            });
         }
 
         public void On<T1, T2, T3>(string eventName, Action<T1, T2, T3> callback)
         {
-            this.TypedEventTable.Register(eventName, new Type[] { typeof(T1), typeof(T2), typeof(T3) }, (args) => callback((T1)args[0], (T2)args[1], (T3)args[2]));
+            this.TypedEventTable.Register(eventName, new Type[] { typeof(T1), typeof(T2), typeof(T3) }, (args) => {
+                T1 arg1 = default(T1);
+                T2 arg2 = default(T2);
+                T3 arg3 = default(T3);
+                try
+                {
+                    arg1 = (T1)args[0];
+                    arg2 = (T2)args[1];
+                    arg3 = (T3)args[2];
+                }
+                catch (Exception ex)
+                {
+                    HTTPManager.Logger.Exception("Socket", String.Format("On<{0}, {1}, {2}>('{3}') - cast failed", typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, eventName), ex, this.Context);
+                    return;
+                }
+
+                callback(arg1, arg2, arg3);
+            });
         }
 
         public void On<T1, T2, T3, T4>(string eventName, Action<T1, T2, T3, T4> callback)
         {
-            this.TypedEventTable.Register(eventName, new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4) }, (args) => callback((T1)args[0], (T2)args[1], (T3)args[2], (T4)args[3]));
+            this.TypedEventTable.Register(eventName, new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4) }, (args) => {
+                T1 arg1 = default(T1);
+                T2 arg2 = default(T2);
+                T3 arg3 = default(T3);
+                T4 arg4 = default(T4);
+                try
+                {
+                    arg1 = (T1)args[0];
+                    arg2 = (T2)args[1];
+                    arg3 = (T3)args[2];
+                    arg4 = (T4)args[3];
+                }
+                catch (Exception ex)
+                {
+                    HTTPManager.Logger.Exception("Socket", String.Format("On<{0}, {1}, {2}, {3}>('{4}') - cast failed", typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, typeof(T4).Name, eventName), ex, this.Context);
+                    return;
+                }
+
+                callback(arg1, arg2, arg3, arg4);
+            });
         }
 
         public void On<T1, T2, T3, T4, T5>(string eventName, Action<T1, T2, T3, T4, T5> callback)
         {
-            this.TypedEventTable.Register(eventName, new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5) }, (args) => callback((T1)args[0], (T2)args[1], (T3)args[2], (T4)args[3], (T5)args[4]));
+            this.TypedEventTable.Register(eventName, new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5) }, (args) => {
+                T1 arg1 = default(T1);
+                T2 arg2 = default(T2);
+                T3 arg3 = default(T3);
+                T4 arg4 = default(T4);
+                T5 arg5 = default(T5);
+                try
+                {
+                    arg1 = (T1)args[0];
+                    arg2 = (T2)args[1];
+                    arg3 = (T3)args[2];
+                    arg4 = (T4)args[3];
+                    arg5 = (T5)args[4];
+                }
+                catch (Exception ex)
+                {
+                    HTTPManager.Logger.Exception("Socket", String.Format("On<{0}, {1}, {2}, {3}, {4}>('{5}') - cast failed", typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, typeof(T4).Name, typeof(T5).Name, eventName), ex, this.Context);
+                    return;
+                }
+
+                callback(arg1, arg2, arg3, arg4, arg5);
+            });
         }
 
         #endregion

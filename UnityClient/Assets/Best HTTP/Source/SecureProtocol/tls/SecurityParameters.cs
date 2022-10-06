@@ -311,6 +311,9 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
             get { return m_verifyDataLength; }
         }
 
+        public bool IsRenegotiating { get; set; }
+        public Certificate PreRenegotiatingServerCert { get; set; }
+
         private static TlsSecret ClearSecret(TlsSecret secret)
         {
             if (null != secret)

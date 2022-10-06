@@ -72,7 +72,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
             tlsClient.Init(m_tlsClientContext);
             tlsClient.NotifyCloseHandle(this);
 
-            BeginHandshake();
+            BeginHandshake(false);
 
             if (m_blocking)
             {
@@ -80,9 +80,9 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
             }
         }
 
-        protected override void BeginHandshake()
+        protected override void BeginHandshake(bool renegotiation)
         {
-            base.BeginHandshake();
+            base.BeginHandshake(renegotiation);
 
             SendClientHello();
             this.m_connectionState = CS_CLIENT_HELLO;
@@ -736,7 +736,8 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
                  */
                 if (IsApplicationDataReady)
                 {
-                    RefuseRenegotiation();
+                    //RefuseRenegotiation();
+                    handleRenegotiation();
                 }
                 break;
             }
@@ -778,6 +779,10 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
             m_recordStream.SetWriteVersion(legacy_record_version);
 
             SecurityParameters securityParameters = m_tlsClientContext.SecurityParameters;
+            if (securityParameters.IsRenegotiating)
+            {
+                throw new TlsFatalAlert(AlertDescription.internal_error);
+            }
 
             /*
              * RFC 8446 4.1.4. Upon receipt of a HelloRetryRequest, the client MUST check the
@@ -1063,7 +1068,15 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
 
             SecurityParameters securityParameters = m_tlsClientContext.SecurityParameters;
 
-            // NOT renegotiating
+            if (securityParameters.IsRenegotiating)
+            {
+                // Check that this matches the negotiated version from the initial handshake
+                if (!server_version.Equals(securityParameters.NegotiatedVersion))
+                {
+                    throw new TlsFatalAlert(AlertDescription.illegal_parameter);
+                }
+            }
+            else
             {
                 if (!ProtocolVersion.Contains(m_tlsClientContext.ClientSupportedVersions, server_version))
                     throw new TlsFatalAlert(AlertDescription.protocol_version);
@@ -1171,7 +1184,42 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
 
             byte[] renegExtData = TlsUtilities.GetExtensionData(m_serverExtensions, ExtensionType.renegotiation_info);
 
-            // NOT renegotiating
+            if (securityParameters.IsRenegotiating)
+            {
+                /*
+                 * RFC 5746 3.5. Client Behavior: Secure Renegotiation
+                 * 
+                 * This text applies if the connection's "secure_renegotiation" flag is set to TRUE.
+                 */
+                if (!securityParameters.IsSecureRenegotiation)
+                {
+                    throw new TlsFatalAlert(AlertDescription.internal_error);
+                }
+
+                /*
+                 * When a ServerHello is received, the client MUST verify that the "renegotiation_info"
+                 * extension is present; if it is not, the client MUST abort the handshake.
+                 */
+                if (renegExtData == null)
+                {
+                    throw new TlsFatalAlert(AlertDescription.handshake_failure);
+                }
+
+                /*
+                 * The client MUST then verify that the first half of the "renegotiated_connection"
+                 * field is equal to the saved client_verify_data value, and the second half is equal to
+                 * the saved server_verify_data value. If they are not, the client MUST abort the
+                 * handshake.
+                 */
+                SecurityParameters saved = m_tlsClientContext.SecurityParameters;
+                byte[] reneg_conn_info = Arrays.Concatenate(saved.LocalVerifyData, saved.PeerVerifyData);
+
+                if (!Arrays.ConstantTimeAreEqual(renegExtData, TlsProtocol.CreateRenegotiationInfo(reneg_conn_info)))
+                {
+                    throw new TlsFatalAlert(AlertDescription.handshake_failure);
+                }
+            }
+            else
             {
                 /*
                  * RFC 5746 3.4. Client Behavior: Initial Handshake (both full and session-resumption)
@@ -1353,6 +1401,15 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
             this.m_certificateRequest = certificateRequest;
 
             TlsUtilities.EstablishServerSigAlgs(m_tlsClientContext.SecurityParameters, certificateRequest);
+        }
+
+        protected override void Send13CertificateMessage(Certificate certificate)
+        {
+            // Create a new certificate with the current context.
+            certificate = new Certificate(this.m_certificateRequest.GetCertificateRequestContext(), certificate.GetCertificateEntryList());
+
+            // call base's implementation with the new certificate
+            base.Send13CertificateMessage(certificate);
         }
 
         /// <exception cref="IOException"/>
@@ -1602,12 +1659,17 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
         {
             SecurityParameters securityParameters = m_tlsClientContext.SecurityParameters;
 
-            ProtocolVersion[] supportedVersions;
-            ProtocolVersion earliestVersion, latestVersion;
+            ProtocolVersion[] supportedVersions = m_tlsClient.GetProtocolVersions();
+            ProtocolVersion earliestVersion = ProtocolVersion.GetEarliestTls(supportedVersions),
+                            latestVersion = ProtocolVersion.GetLatestTls(supportedVersions);
 
-            // NOT renegotiating
+            if (securityParameters.IsRenegotiating)
             {
-                supportedVersions = m_tlsClient.GetProtocolVersions();
+                latestVersion = m_tlsClientContext.ClientVersion;
+            }
+            else
+            {
+                m_tlsClientContext.SetClientSupportedVersions(supportedVersions);
 
                 if (ProtocolVersion.Contains(supportedVersions, ProtocolVersion.SSLv3))
                 {
@@ -1619,16 +1681,14 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
                     m_recordStream.SetWriteVersion(ProtocolVersion.TLSv10);
                 }
 
-                earliestVersion = ProtocolVersion.GetEarliestTls(supportedVersions);
-                latestVersion = ProtocolVersion.GetLatestTls(supportedVersions);
+                //earliestVersion = ProtocolVersion.GetEarliestTls(supportedVersions);
+                //latestVersion = ProtocolVersion.GetLatestTls(supportedVersions);
 
                 if (!ProtocolVersion.IsSupportedTlsVersionClient(latestVersion))
                     throw new TlsFatalAlert(AlertDescription.internal_error);
 
                 m_tlsClientContext.SetClientVersion(latestVersion);
             }
-
-            m_tlsClientContext.SetClientSupportedVersions(supportedVersions);
 
             bool offeringTlsV12Minus = ProtocolVersion.TLSv12.IsEqualOrLaterVersionOf(earliestVersion);
             bool offeringTlsV13Plus = ProtocolVersion.TLSv13.IsEqualOrEarlierVersionOf(latestVersion);
@@ -1711,7 +1771,27 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
                 securityParameters.m_clientRandom = CreateRandomBlock(useGmtUnixTime, m_tlsClientContext);
             }
 
-            // NOT renegotiating
+            if (securityParameters.IsRenegotiating)
+            {
+                /*
+                 * RFC 5746 3.5. Client Behavior: Secure Renegotiation
+                 * 
+                 * This text applies if the connection's "secure_renegotiation" flag is set to TRUE.
+                 */
+                if (!securityParameters.IsSecureRenegotiation)
+                {
+                    throw new TlsFatalAlert(AlertDescription.internal_error);
+                }
+
+                /*
+                 * The client MUST include the "renegotiation_info" extension in the ClientHello,
+                 * containing the saved client_verify_data. The SCSV MUST NOT be included.
+                 */
+                SecurityParameters saved = m_tlsClientContext.SecurityParameters;
+
+                m_clientExtensions[ExtensionType.renegotiation_info] = TlsProtocol.CreateRenegotiationInfo(saved.LocalVerifyData);
+            }
+            else
             {
                 /*
                  * RFC 5746 3.4. Client Behavior: Initial Handshake (both full and session-resumption)

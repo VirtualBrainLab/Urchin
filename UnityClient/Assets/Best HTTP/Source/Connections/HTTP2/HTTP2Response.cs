@@ -25,6 +25,8 @@ namespace BestHTTP.Connections.HTTP2
         internal void AddHeaders(List<KeyValuePair<string, string>> headers)
         {
             this.ExpectedContentLength = -1;
+            Dictionary<string, List<string>> newHeaders = this.baseRequest.OnHeadersReceived != null ? new Dictionary<string, List<string>>() : null;
+
             for (int i = 0; i < headers.Count; ++i)
             {
                 KeyValuePair<string, string> header = headers[i];
@@ -51,12 +53,21 @@ namespace BestHTTP.Connections.HTTP2
 
                     base.AddHeader(header.Key, header.Value);
                 }
+
+                if (newHeaders != null)
+                {
+                    List<string> values;
+                    if (!newHeaders.TryGetValue(header.Key, out values))
+                        newHeaders.Add(header.Key, values = new List<string>(1));
+
+                    values.Add(header.Value);
+                }
             }
 
             if (this.ExpectedContentLength == -1 && base.baseRequest.OnDownloadProgress != null)
                 HTTPManager.Logger.Information("HTTP2Response", "AddHeaders - No Content-Length header found!", this.baseRequest.Context, this.Context);
 
-            RequestEventHelper.EnqueueRequestEvent(new RequestEventInfo(this.baseRequest, RequestEvents.Headers));
+            RequestEventHelper.EnqueueRequestEvent(new RequestEventInfo(this.baseRequest, newHeaders));
         }
 
         internal void AddData(Stream stream)

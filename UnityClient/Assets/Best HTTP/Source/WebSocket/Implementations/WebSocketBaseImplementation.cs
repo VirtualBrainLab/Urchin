@@ -1,6 +1,8 @@
 #if !BESTHTTP_DISABLE_WEBSOCKET
 using System;
 
+using BestHTTP.PlatformSupport.Memory;
+
 #if !UNITY_WEBGL || UNITY_EDITOR
 using BestHTTP.WebSocket.Frames;
 #endif
@@ -22,6 +24,7 @@ namespace BestHTTP.WebSocket
     public delegate void OnWebSocketOpenDelegate(WebSocket webSocket);
     public delegate void OnWebSocketMessageDelegate(WebSocket webSocket, string message);
     public delegate void OnWebSocketBinaryDelegate(WebSocket webSocket, byte[] data);
+    public delegate void OnWebSocketBinaryNoAllocDelegate(WebSocket webSocket, BufferSegment data);
     public delegate void OnWebSocketClosedDelegate(WebSocket webSocket, UInt16 code, string message);
     public delegate void OnWebSocketErrorDelegate(WebSocket webSocket, string reason);
 

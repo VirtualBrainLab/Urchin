@@ -54,6 +54,11 @@ public class UM_VolumeRenderer : MonoBehaviour
             colormaps.Add(name, defaultColormap);
     }
 
+    public void DeleteVolume(string name)
+    {
+        volumeData.Remove(name);
+    }
+
     public void SetVolumeColormap(string name, List<string> hexColors)
     {
         Debug.Log("(UM_VolRend) Creating new colormap for: " + name);

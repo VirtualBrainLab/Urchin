@@ -224,6 +224,9 @@ namespace BestHTTP.SocketIO3
             this.State = States.Initial;
             this.PreviousState = States.Initial;
             this.Parser = parser ?? new DefaultJsonParser();
+
+            if (uri.Scheme.StartsWith("ws"))
+                options.ConnectWith = TransportTypes.WebSocket;
         }
 
         #endregion

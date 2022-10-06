@@ -35,16 +35,16 @@ namespace BestHTTP.Extensions
         /// <summary>
         /// On WP8 platform there are no ASCII encoding.
         /// </summary>
-        public static byte[] GetASCIIBytes(this string str)
+        public static BufferSegment GetASCIIBytes(this string str)
         {
-            byte[] result = BufferPool.Get(str.Length, false);
+            byte[] result = BufferPool.Get(str.Length, true);
             for (int i = 0; i < str.Length; ++i)
             {
                 char ch = str[i];
                 result[i] = (byte)((ch < (char)0x80) ? ch : '?');
             }
 
-            return result;
+            return new BufferSegment(result, 0, str.Length);
         }
 
         public static void SendAsASCII(this BinaryWriter stream, string str)
@@ -69,7 +69,7 @@ namespace BestHTTP.Extensions
         public static void WriteLine(this Stream fs, string line)
         {
             var buff = line.GetASCIIBytes();
-            fs.Write(buff, 0, buff.Length);
+            fs.Write(buff.Data, buff.Offset, buff.Count);
             fs.WriteLine();
             BufferPool.Release(buff);
         }
@@ -77,7 +77,7 @@ namespace BestHTTP.Extensions
         public static void WriteLine(this Stream fs, string format, params object[] values)
         {
             var buff = string.Format(format, values).GetASCIIBytes();
-            fs.Write(buff, 0, buff.Length);
+            fs.Write(buff.Data, buff.Offset, buff.Count);
             fs.WriteLine();
             BufferPool.Release(buff);
         }
@@ -122,6 +122,11 @@ namespace BestHTTP.Extensions
         public static void WriteArray(this Stream stream, byte[] array)
         {
             stream.Write(array, 0, array.Length);
+        }
+
+        public static void WriteBufferSegment(this Stream stream, BufferSegment buffer)
+        {
+            stream.Write(buffer.Data, buffer.Offset, buffer.Count);
         }
 
         /// <summary>
@@ -243,23 +248,24 @@ namespace BestHTTP.Extensions
 
         public static string CalculateMD5Hash(this string input)
         {
-            byte[] ascii = input.GetASCIIBytes();
-            var hash = ascii.CalculateMD5Hash();
-            BufferPool.Release(ascii);
+            var asciiBuff = input.GetASCIIBytes();
+            var hash = asciiBuff.CalculateMD5Hash();
+            BufferPool.Release(asciiBuff);
             return hash;
         }
 
-        public static string CalculateMD5Hash(this byte[] input)
+        public static string CalculateMD5Hash(this BufferSegment input)
         {
 #if NETFX_CORE
             var alg = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5);
-            IBuffer buff = CryptographicBuffer.CreateFromByteArray(input);
+            //IBuffer buff = CryptographicBuffer.CreateFromByteArray(input);
+            IBuffer buff = System.Runtime.InteropServices.WindowsRuntime.WindowsRuntimeBufferExtensions.AsBuffer(input.Data, input.Offset, input.Count);
             var hashed = alg.HashData(buff);
             var res = CryptographicBuffer.EncodeToHexString(hashed);
             return res;
 #else
             using (var md5 = Cryptography.MD5.Create()) {
-                var hash = md5.ComputeHash(input);
+                var hash = md5.ComputeHash(input.Data, input.Offset, input.Count);
                 var sb = new StringBuilder(hash.Length);
                 for (int i = 0; i < hash.Length; ++i)
                     sb.Append(hash[i].ToString("x2"));

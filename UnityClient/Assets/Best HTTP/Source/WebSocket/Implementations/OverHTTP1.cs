@@ -283,10 +283,17 @@ namespace BestHTTP.WebSocket
                     this.Parent.OnMessage(this.Parent, msg);
             };
 
-            webSocket.OnBinary = (ws, bin) =>
+            webSocket.OnBinaryNoAlloc = (ws, frame) =>
             {
                 if (this.Parent.OnBinary != null)
+                {
+                    var bin = new byte[frame.Count];
+                    Array.Copy(frame.Data, 0, bin, 0, frame.Count);
                     this.Parent.OnBinary(this.Parent, bin);
+                }
+
+                if (this.Parent.OnBinaryNoAlloc != null)
+                    this.Parent.OnBinaryNoAlloc(this.Parent, frame);
             };
 
             webSocket.OnClosed = (ws, code, msg) =>

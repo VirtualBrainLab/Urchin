@@ -5,6 +5,7 @@ using BestHTTP.Timings;
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace BestHTTP.Core
 {
@@ -42,6 +43,9 @@ namespace BestHTTP.Core
         public readonly DateTime Time;
         public readonly TimeSpan Duration;
 
+        // Headers
+        public readonly Dictionary<string, List<string>> Headers;
+
         public RequestEventInfo(HTTPRequest request, RequestEvents @event)
         {
             this.SourceRequest = request;
@@ -58,6 +62,9 @@ namespace BestHTTP.Core
             this.Name = null;
             this.Time = DateTime.MinValue;
             this.Duration = TimeSpan.Zero;
+
+            // Headers
+            this.Headers = null;
         }
 
         public RequestEventInfo(HTTPRequest request, HTTPRequestStates newState)
@@ -74,6 +81,9 @@ namespace BestHTTP.Core
             this.Name = null;
             this.Time = DateTime.MinValue;
             this.Duration = TimeSpan.Zero;
+
+            // Headers
+            this.Headers = null;
         }
 
         public RequestEventInfo(HTTPRequest request, RequestEvents @event, long progress, long progressLength)
@@ -91,6 +101,9 @@ namespace BestHTTP.Core
             this.Name = null;
             this.Time = DateTime.MinValue;
             this.Duration = TimeSpan.Zero;
+
+            // Headers
+            this.Headers = null;
         }
 
         public RequestEventInfo(HTTPRequest request, byte[] data, int dataLength)
@@ -107,6 +120,9 @@ namespace BestHTTP.Core
             this.Name = null;
             this.Time = DateTime.MinValue;
             this.Duration = TimeSpan.Zero;
+
+            // Headers
+            this.Headers = null;
         }
 
         public RequestEventInfo(HTTPRequest request, string name, DateTime time)
@@ -123,6 +139,9 @@ namespace BestHTTP.Core
             this.Name = name;
             this.Time = time;
             this.Duration = TimeSpan.Zero;
+
+            // Headers
+            this.Headers = null;
         }
 
         public RequestEventInfo(HTTPRequest request, string name, TimeSpan duration)
@@ -139,6 +158,28 @@ namespace BestHTTP.Core
             this.Name = name;
             this.Time = DateTime.Now;
             this.Duration = duration;
+
+            // Headers
+            this.Headers = null;
+        }
+
+        public RequestEventInfo(HTTPRequest request, Dictionary<string, List<string>> headers)
+        {
+            this.SourceRequest = request;
+            this.Event = RequestEvents.Headers;
+            this.State = HTTPRequestStates.Initial;
+
+            this.Progress = this.ProgressLength = 0;
+            this.Data = null;
+            this.DataLength = 0;
+
+            // TimingData
+            this.Name = null;
+            this.Time = DateTime.MinValue;
+            this.Duration = TimeSpan.Zero;
+
+            // Headers
+            this.Headers = headers;
         }
 
         public override string ToString()
@@ -224,7 +265,7 @@ namespace BestHTTP.Core
                             bool reuseBuffer = true;
                             try
                             {
-                                if (source.OnStreamingData != null)
+                                if (source.UseStreaming)
                                     reuseBuffer = source.OnStreamingData(source, response, requestEvent.Data, requestEvent.DataLength);
                             }
                             catch (Exception ex)
@@ -261,6 +302,7 @@ namespace BestHTTP.Core
                         }
                         break;
 
+#if !UNITY_WEBGL || UNITY_EDITOR
                     case RequestEvents.Upgraded:
                         try
                         {
@@ -276,6 +318,7 @@ namespace BestHTTP.Core
                         if (protocol != null)
                             ProtocolEventHelper.AddProtocol(protocol);
                         break;
+#endif
 
                     case RequestEvents.Resend:
                         source.State = HTTPRequestStates.Initial;
@@ -292,7 +335,7 @@ namespace BestHTTP.Core
                             {
                                 var response = source.Response;
                                 if (source.OnHeadersReceived != null && response != null)
-                                    source.OnHeadersReceived(source, response);
+                                    source.OnHeadersReceived(source, response, requestEvent.Headers);
                             }
                             catch (Exception ex)
                             {

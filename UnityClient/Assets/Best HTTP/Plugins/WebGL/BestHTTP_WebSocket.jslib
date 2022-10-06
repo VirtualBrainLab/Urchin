@@ -3,6 +3,7 @@ var Lib_BEST_HTTP_WebGL_WS_Bridge =
 	$ws: {
 		webSocketInstances: {},
 		nextInstanceId : 1,
+        /*UTF8Decoder: new TextDecoder('utf8'),*/
 
 		Set : function(socket) {
 			ws.webSocketInstances[ws.nextInstanceId] = socket;
@@ -155,10 +156,15 @@ var Lib_BEST_HTTP_WebGL_WS_Bridge =
 		return socket.socketImpl.bufferedAmount;
 	},
 
-	WS_Send_String: function (id, str)
+	WS_Send_String: function (id, ptr, pos, length)
 	{
 		var socket = ws.Get(id);
-		var str = UTF8ToString(str);
+
+        var startPtr = ptr + pos;
+        var endPtr = startPtr + length;
+
+        var UTF8Decoder = new TextDecoder('utf8');
+        var str = UTF8Decoder.decode(HEAPU8.subarray ? HEAPU8.subarray(startPtr, endPtr) : new Uint8Array(HEAPU8.slice(startPtr, endPtr)));
 
 		try
 		{

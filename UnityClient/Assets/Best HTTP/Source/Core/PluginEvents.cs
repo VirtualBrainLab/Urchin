@@ -1,7 +1,10 @@
-using BestHTTP.Extensions;
-using BestHTTP.Logger;
 using System;
 using System.Collections.Concurrent;
+
+using BestHTTP.Logger;
+
+// Required for ConcurrentQueue.Clear extension.
+using BestHTTP.Extensions;
 
 namespace BestHTTP.Core
 {
@@ -55,6 +58,9 @@ namespace BestHTTP.Core
 
         public static void EnqueuePluginEvent(PluginEventInfo @event)
         {
+            if (HTTPManager.Logger.Level == Loglevels.All)
+                HTTPManager.Logger.Information("PluginEventHelper", "Enqueue plugin event: " + @event.ToString());
+
             pluginEvents.Enqueue(@event);
         }
 

@@ -10,6 +10,10 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
     {
         private readonly TlsProtocol m_handler;
 
+        public TlsProtocol Protocol { get => this.m_handler; }
+
+        byte[] oneByteBuf = new byte[1];
+
         internal TlsStream(TlsProtocol handler)
         {
             this.m_handler = handler;
@@ -70,9 +74,8 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
 
         public override int ReadByte()
         {
-            byte[] buf = new byte[1];
-            int ret = Read(buf, 0, 1);
-            return ret <= 0 ? -1 : buf[0];
+            int ret = Read(oneByteBuf, 0, 1);
+            return ret <= 0 ? -1 : oneByteBuf[0];
         }
 
         public override long Seek(long offset, SeekOrigin origin)
@@ -92,7 +95,8 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
 
         public override void WriteByte(byte b)
         {
-            Write(new byte[]{ b }, 0, 1);
+            oneByteBuf[0] = b;
+            Write(oneByteBuf, 0, 1);
         }
     }
 }

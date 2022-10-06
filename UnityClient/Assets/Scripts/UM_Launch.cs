@@ -17,6 +17,9 @@ public class UM_Launch : MonoBehaviour
     [SerializeField] private GameObject consolePanel;
     [SerializeField] private TextMeshProUGUI consoleText;
 
+    [SerializeField] private GameObject idPanel;
+    [SerializeField] private GameObject infoPanelText;
+
     [SerializeField] private bool loadDefaults;
 
     // Axes + Grid
@@ -90,7 +93,7 @@ public class UM_Launch : MonoBehaviour
 
     private async void DelayedStart()
     {
-        await modelControl.GetDefaultLoaded();
+        await modelControl.GetDefaultLoadedTask();
         ccfLoaded = true;
 
         foreach (CCFTreeNode node in modelControl.GetDefaultLoadedNodes())
@@ -151,13 +154,16 @@ public class UM_Launch : MonoBehaviour
             _UpdateExploded();
         }
 
+        // Before checking for keydown events, return if the user is typing in the input box
+        if (idPanel.GetComponent<TMP_InputField>().isFocused)
+            return;
+
         // Check for key down events
         if (Input.GetKeyDown(KeyCode.C))
         {
             consolePanel.SetActive(!consolePanel.activeSelf);
         }
 
-        // Check for key down events
         if (Input.GetKeyDown(KeyCode.S))
         {
             // Hacky workaround because the brain controls doesn't attach to the UI element properly
@@ -176,6 +182,11 @@ public class UM_Launch : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.G))
         {
             gridGO.SetActive(!gridGO.activeSelf);
+        }
+
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            idPanel.SetActive(!idPanel.activeSelf);
         }
     }
 
@@ -310,14 +321,9 @@ public class UM_Launch : MonoBehaviour
         Debug.Log(newIdx);
     }
 
-    /// <summary>
-    /// Switch the main camera to perspective (or back to orthographic, the default)
-    /// 
-    /// Note: you can't view the volumetric data in the orthographic camera, hence this setting to switch back and forth
-    /// </summary>
-    /// <param name="perspective"></param>
-    public void SwitchCameraMode(bool perspective)
+    public void UpdateTextColor(bool state)
     {
-        
+        foreach (TMP_Text text in infoPanelText.GetComponentsInChildren<TMP_Text>())
+            text.color = state ? Color.black : Color.white;
     }
 }

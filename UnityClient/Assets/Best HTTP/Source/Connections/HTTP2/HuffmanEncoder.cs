@@ -1,10 +1,10 @@
-﻿#if (!UNITY_WEBGL || UNITY_EDITOR) && !BESTHTTP_DISABLE_ALTERNATE_SSL && !BESTHTTP_DISABLE_HTTP2
+#if (!UNITY_WEBGL || UNITY_EDITOR) && !BESTHTTP_DISABLE_ALTERNATE_SSL && !BESTHTTP_DISABLE_HTTP2
 
 using System;
-using System.Collections.Generic;
 
 namespace BestHTTP.Connections.HTTP2
 {
+    [BestHTTP.PlatformSupport.IL2CPP.Il2CppEagerStaticClassConstruction]
     static class HuffmanEncoder
     {
         public const UInt16 EOS = 256;

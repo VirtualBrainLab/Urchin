@@ -66,11 +66,24 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
         {
             lock (this)
             {
-                if (null != m_securityParameters)
-                    throw new TlsFatalAlert(AlertDescription.internal_error, "Handshake already started");
+                //if (null != m_securityParameters)
+                //    throw new TlsFatalAlert(AlertDescription.internal_error, "Handshake already started");
+
+                var tmp = this.m_securityParameters;
 
                 m_securityParameters = new SecurityParameters();
                 m_securityParameters.m_entity = m_connectionEnd;
+
+                if (tmp != null)
+                {
+                    this.m_securityParameters.IsRenegotiating = true;
+                    this.m_securityParameters.m_secureRenegotiation = tmp.m_secureRenegotiation;
+                    this.m_securityParameters.m_negotiatedVersion = tmp.m_negotiatedVersion;
+
+                    this.m_securityParameters.m_localVerifyData = tmp.m_localVerifyData;
+                    this.m_securityParameters.m_peerVerifyData = tmp.m_peerVerifyData;
+                    this.m_securityParameters.PreRenegotiatingServerCert = tmp.m_peerCertificate;
+                }
             }
 
             peer.NotifyHandshakeBeginning();

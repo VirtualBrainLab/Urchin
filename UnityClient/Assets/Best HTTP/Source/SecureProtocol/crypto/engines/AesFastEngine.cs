@@ -7,6 +7,9 @@ using BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Parameters;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Utilities;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities;
 
+using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
+
 namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Engines
 {
     /**
@@ -38,9 +41,9 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Engines
     /// In an environment where encryption/decryption may be closely observed it should not be used.
     /// </remarks>
 
-    [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.NullChecks, false)]
-    [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.ArrayBoundsChecks, false)]
-    [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.DivideByZeroChecks, false)]
+    
+    
+    
     [BestHTTP.PlatformSupport.IL2CPP.Il2CppEagerStaticClassConstructionAttribute]
     public sealed class AesFastEngine
         : IBlockCipher
@@ -804,7 +807,6 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Engines
                     + BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities.Platform.GetTypeName(parameters));
 
             WorkingKey = GenerateWorkingKey(keyParameter.GetKey(), forEncryption);
-
             this.forEncryption = forEncryption;
         }
 

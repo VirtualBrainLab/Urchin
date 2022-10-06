@@ -14,9 +14,9 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Digests
      * It is interesting to ponder why the, apart from the extra IV, the other difference here from MD5
      * is the "endianness" of the word processing!
      */
-    [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.NullChecks, false)]
-    [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.ArrayBoundsChecks, false)]
-    [BestHTTP.PlatformSupport.IL2CPP.Il2CppSetOption(BestHTTP.PlatformSupport.IL2CPP.Option.DivideByZeroChecks, false)]
+    
+    
+    
     [BestHTTP.PlatformSupport.IL2CPP.Il2CppEagerStaticClassConstructionAttribute]
     public class Sha1Digest
         : GeneralDigest

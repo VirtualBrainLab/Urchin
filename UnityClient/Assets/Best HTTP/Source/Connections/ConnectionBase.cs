@@ -120,5 +120,7 @@ namespace BestHTTP.Connections
         {
             return string.Format("[{0}:{1}]", this.GetHashCode(), this.ServerAddress);
         }
+
+        public virtual bool TestConnection() => true;
     }
 }

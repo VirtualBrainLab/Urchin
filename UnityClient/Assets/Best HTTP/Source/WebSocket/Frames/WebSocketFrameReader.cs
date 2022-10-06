@@ -113,17 +113,13 @@ namespace BestHTTP.WebSocket.Frames
                     throw ExceptionHelper.ServerClosedTCPStream();
             }
 
-            if (Type == WebSocketFrameTypes.Text || Type == WebSocketFrameTypes.Continuation)
-                Data = BufferPool.Get((long)Length, true);
-            else
-                if (Length == 0)
-                    Data = BufferPool.NoData;
-                else
-                    Data = new byte[Length];
-            //Data = Type == WebSocketFrameTypes.Text ? VariableSizedBufferPool.Get((long)Length, true) : new byte[Length];
-
             if (Length == 0L)
+            {
+                Data = BufferPool.NoData;
                 return;
+            }
+
+            Data = BufferPool.Get((long)Length, true);
 
             uint readLength = 0;
 

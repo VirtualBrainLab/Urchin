@@ -5,6 +5,8 @@ using System.Collections;
 using System.IO;
 #if !PORTABLE || NETFX_CORE || DOTNET
 using System.Net.Sockets;
+
+using BestHTTP.Connections.TLS;
 #endif
 
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1;
@@ -1629,6 +1631,10 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
 
             securityParameters.m_exporterMasterSecret = DeriveSecret(securityParameters, phaseSecret, "exp master",
                 serverFinishedTranscriptHash);
+
+            KeyLogFileWriter.WriteLabel(Labels.CLIENT_TRAFFIC_SECRET_0, securityParameters);
+            KeyLogFileWriter.WriteLabel(Labels.SERVER_TRAFFIC_SECRET_0, securityParameters);
+            KeyLogFileWriter.WriteLabel(Labels.EXPORTER_SECRET, securityParameters);
         }
 
         internal static void Establish13PhaseEarly(TlsContext context, byte[] clientHelloTranscriptHash,
@@ -1659,6 +1665,9 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
             Establish13TrafficSecrets(context, serverHelloTranscriptHash, phaseSecret, "c hs traffic", "s hs traffic",
                 recordStream);
 
+            KeyLogFileWriter.WriteLabel(Labels.CLIENT_HANDSHAKE_TRAFFIC_SECRET, securityParameters);
+            KeyLogFileWriter.WriteLabel(Labels.SERVER_HANDSHAKE_TRAFFIC_SECRET, securityParameters);
+            
             securityParameters.m_baseKeyClient = securityParameters.TrafficSecretClient;
             securityParameters.m_baseKeyServer = securityParameters.TrafficSecretServer;
         }
@@ -4543,6 +4552,11 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
                 if (isTlsV13)
                     throw new TlsFatalAlert(AlertDescription.internal_error);
 
+                if (securityParameters.IsRenegotiating)
+                {
+                    throw new TlsFatalAlert(AlertDescription.handshake_failure);
+                }
+
                 // There was no server certificate message; check it's OK
                 keyExchange.SkipServerCredentials();
                 securityParameters.m_tlsServerEndPoint = EmptyBytes;
@@ -4764,6 +4778,48 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
             Array.Copy(marker, 0, randomBlock, randomBlock.Length - marker.Length, marker.Length);
         }
 
+        private static bool areCertificatesEqual(Certificate a, Certificate b)
+        {
+            int length = a.Length;
+            if (b.Length == length)
+            {
+                try
+                {
+                    for (int i = 0; i < length; ++i)
+                    {
+                        TlsCertificate ai = a.GetCertificateAt(i);
+                        TlsCertificate bi = b.GetCertificateAt(i);
+
+                        if (!Arrays.AreEqual(ai.GetEncoded(), bi.GetEncoded()))
+                        {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
+                catch (Exception e)
+                {
+                }
+            }
+            return false;
+        }
+
+        private static bool isSafeRenegotiationServerCertificate(TlsClientContext clientContext, Certificate serverCertificate)
+        {
+            SecurityParameters securityParametersConnection = clientContext.SecurityParameters;
+            if (securityParametersConnection != null)
+            {
+                Certificate previousCertificate = securityParametersConnection.PreRenegotiatingServerCert;
+                if (null != previousCertificate)
+                {
+                    return areCertificatesEqual(previousCertificate, serverCertificate);
+                }
+            }
+
+            return false;
+        }
+
         internal static TlsAuthentication ReceiveServerCertificate(TlsClientContext clientContext, TlsClient client,
             MemoryStream buf)
         {
@@ -4783,6 +4839,12 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Tls
             if (serverCertificate.IsEmpty)
                 throw new TlsFatalAlert(AlertDescription.decode_error);
 
+            if (securityParameters.IsRenegotiating && !isSafeRenegotiationServerCertificate(clientContext, serverCertificate))
+            {
+                throw new TlsFatalAlert(AlertDescription.certificate_unknown, "Server certificate changed unsafely in renegotiation handshake");
+            }
+
+            securityParameters.PreRenegotiatingServerCert = null;
             securityParameters.m_peerCertificate = serverCertificate;
             securityParameters.m_tlsServerEndPoint = endPointHash.ToArray();
 

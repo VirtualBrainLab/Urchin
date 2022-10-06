@@ -127,7 +127,7 @@ namespace BestHTTP.Connections
                     if (payload != BufferSegment.Empty)
                         ms.Write(payload);
 
-                    SupportedProtocols protocol = CurrentRequest.ProtocolHandler == SupportedProtocols.Unknown ? HTTPProtocolFactory.GetProtocolFromUri(CurrentRequest.CurrentUri) : CurrentRequest.ProtocolHandler;
+                    SupportedProtocols protocol = HTTPProtocolFactory.GetProtocolFromUri(CurrentRequest.CurrentUri);
                     CurrentRequest.Response = HTTPProtocolFactory.Get(protocol, CurrentRequest, ms, CurrentRequest.UseStreaming, false);
 
                     CurrentRequest.Response.Receive(payload != BufferSegment.Empty && payload.Count > 0 ? (int)payload.Count : -1, true);

@@ -60,6 +60,7 @@ crashlytics-build.properties
 
 **/Assets/Resources/*
 **/Assets/AddressableAssets/*
+**/Assets/Best HTTP/*
 **/ServerData/*
 **/ServerData.zip
 
@@ -73,5 +74,8 @@ Examples/data/steven/*tif
 Examples/data/gaelle/coverage.npy
 
 unityneuro.egg-info/*
-dist/*
+**/dist/*
 build/*
+
+**/.ipynb_checkpoints/**
+**/imgs/*
