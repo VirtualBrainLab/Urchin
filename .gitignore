@@ -79,3 +79,5 @@ build/*
 
 **/.ipynb_checkpoints/**
 **/imgs/*
+
+urchin-vn/*
