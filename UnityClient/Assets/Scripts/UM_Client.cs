@@ -10,6 +10,13 @@ using System.Threading.Tasks;
 using System.Collections.Specialized;
 using System.Text;
 
+/// <summary>
+/// Entry point for all client-side messages coming from the Python API
+/// Handles messages and tracks creation/destruction of prefab objects
+/// 
+/// TODO:
+///  - needs a refactor to separate neurons/probes/text/areas and put them in their own components
+/// </summary>
 public class UM_Client : MonoBehaviour
 {
     [SerializeField] UM_Launch main;
@@ -18,6 +25,7 @@ public class UM_Client : MonoBehaviour
     [SerializeField] private bool localhost;
 
     // UI
+    [SerializeField] private Canvas uiCanvas;
     [SerializeField] private TextMeshProUGUI idInput;
 
     // VOLUMES
@@ -45,9 +53,6 @@ public class UM_Client : MonoBehaviour
     // NODES
     private List<CCFTreeNode> visibleNodes;
     private int[] missing = { 738, 995 };
-
-    // POSITIONING
-    private Vector3 center = new Vector3(5.7f, 4f, -6.6f);
 
     private string ID;
 
@@ -79,14 +84,14 @@ public class UM_Client : MonoBehaviour
         manager.Socket.On("connect", Connected);
 
         // CCF Areas
-        manager.Socket.On<Dictionary<string, bool>>("SetAreaVisibility", UpdateVisibility);
-        manager.Socket.On<Dictionary<string, string>>("SetAreaColors", UpdateColors);
-        manager.Socket.On<Dictionary<string, float>>("SetAreaIntensity", UpdateIntensity);
-        manager.Socket.On<string>("SetAreaColormap", UpdateVolumeColormap);
-        manager.Socket.On<Dictionary<string, string>>("SetAreaMaterial", UpdateVolumeMaterial);
-        manager.Socket.On<Dictionary<string, float>>("SetAreaAlpha", UpdateAlpha);
-        manager.Socket.On<Dictionary<string, List<float>>>("SetAreaData", UpdateAreaData);
-        manager.Socket.On<int>("SetAreaIndex", UpdateAreaDataIndex);
+        manager.Socket.On<Dictionary<string, bool>>("SetAreaVisibility", SetAreaVisibility);
+        manager.Socket.On<Dictionary<string, string>>("SetAreaColors", SetAreaColors);
+        manager.Socket.On<Dictionary<string, float>>("SetAreaIntensity", SetAreaIntensity);
+        manager.Socket.On<string>("SetAreaColormap", SetAreaColormap);
+        manager.Socket.On<Dictionary<string, string>>("SetAreaMaterial", SetAreaMaterial);
+        manager.Socket.On<Dictionary<string, float>>("SetAreaAlpha", SetAreaAlpha);
+        manager.Socket.On<Dictionary<string, List<float>>>("SetAreaData", SetAreaData);
+        manager.Socket.On<int>("SetAreaIndex", SetAreaIndex);
         manager.Socket.On<string>("LoadDefaultAreas", LoadDefaultAreas);
 
         // 3D Volumes
@@ -234,11 +239,15 @@ public class UM_Client : MonoBehaviour
 
     private void SetCameraTargetArea(string obj)
     {
-        (int ID, bool leftSide, bool rightSide) = GetID(obj);
+        (int ID, bool full, bool leftSide, bool rightSide) = GetID(obj);
         CCFTreeNode node = modelControl.tree.findNode(ID);
         if (node != null)
         {
-            Vector3 center = node.GetMeshCenter(leftSide, rightSide);
+            Vector3 center;
+            if (full)
+                center = node.GetMeshCenterFull();
+            else
+                center = node.GetMeshCenterSided(leftSide);
             cameraControl.SetCameraTarget(center);
         }
         else
@@ -313,7 +322,12 @@ public class UM_Client : MonoBehaviour
     {
         Debug.Log("(Client) Clearing areas");
         foreach (CCFTreeNode node in visibleNodes)
-            node.SetNodeModelVisibility(false, false);
+        {
+            Debug.Log("Clearing: " + node.Name);
+            node.SetNodeModelVisibility_Full(false);
+            node.SetNodeModelVisibility_Left(false);
+            node.SetNodeModelVisibility_Right(false);
+        }
         visibleNodes = new List<CCFTreeNode>();
     }
 
@@ -417,6 +431,7 @@ public class UM_Client : MonoBehaviour
             {
                 // store coordinates in mlapdv       
                 probes[kvp.Key].transform.GetChild(0).localScale = new Vector3(kvp.Value[0], kvp.Value[1], kvp.Value[2]);
+                probes[kvp.Key].transform.GetChild(0).localPosition = new Vector3(0f, kvp.Value[1] / 2, 0f);
             }
             else
                 main.Log("Probe " + kvp.Key + " not found");
@@ -427,11 +442,18 @@ public class UM_Client : MonoBehaviour
     {
         foreach (string probeName in data)
         {
-            GameObject newProbe = Instantiate(probeLinePrefab, probeParent);
-            probes.Add(probeName, newProbe);
-            probeCoordinates.Add(probeName, new Vector3[2]);
-            SetProbePositionAndAngles(probeName);
-            main.Log("Created probe: " + probeName);
+            if (!probes.ContainsKey(probeName))
+            {
+                GameObject newProbe = Instantiate(probeLinePrefab, probeParent);
+                probes.Add(probeName, newProbe);
+                probeCoordinates.Add(probeName, new Vector3[2]);
+                SetProbePositionAndAngles(probeName);
+                main.Log("Created probe: " + probeName);
+            }
+            else
+            {
+                LogError(string.Format("Probe {0} already exists in the scene",probeName));
+            }
         }
     }
 
@@ -526,7 +548,7 @@ public class UM_Client : MonoBehaviour
         }
     }
 
-    private void UpdateVolumeColormap(string data)
+    private void SetAreaColormap(string data)
     {
         main.ChangeColormap(data);
     }
@@ -536,13 +558,14 @@ public class UM_Client : MonoBehaviour
     /// </summary>
     /// <param name="idOrAcronym">An ID number (e.g. 0) or an acronym (e.g. "root")</param>
     /// <returns>(int Allen CCF ID, bool left side model, bool right side model)</returns>
-    private (int, bool, bool) GetID(string idOrAcronym)
+    private (int ID, bool full, bool leftSide, bool rightSide) GetID(string idOrAcronym)
     {
         // Check whether a suffix was included
         int leftIndex = idOrAcronym.IndexOf("-lh");
         int rightIndex = idOrAcronym.IndexOf("-rh");
         bool leftSide = leftIndex > 0;
         bool rightSide = rightIndex > 0;
+        bool full = !(leftSide || rightSide);
 
         //Remove the suffix
         if (leftSide)
@@ -550,34 +573,26 @@ public class UM_Client : MonoBehaviour
         if (rightSide)
             idOrAcronym = idOrAcronym.Substring(0,rightIndex);
 
-        // If neither suffix is present, then we want to control both sides
-        if (!leftSide && !rightSide)
-        {
-            // set both to true
-            leftSide = true;
-            rightSide = true;
-        }
-
         // Lowercase
         string lower = idOrAcronym.ToLower();
 
         // Check for root (special case, which we can't currently handle)
         if (lower.Equals("root") || lower.Equals("void"))
-            return (-1, leftSide, rightSide);
+            return (-1, full, leftSide, rightSide);
 
         // Figure out what the acronym was by asking CCFModelControl
         if (modelControl.IsAcronym(idOrAcronym))
-            return (modelControl.Acronym2ID(idOrAcronym), leftSide, rightSide);
+            return (modelControl.Acronym2ID(idOrAcronym), full, leftSide, rightSide);
         else
         {
             // It wasn't an acronym, so it has to be an integer
             int ret;
             if (int.TryParse(idOrAcronym, out ret))
-                return (ret, leftSide, rightSide);
+                return (ret, full, leftSide, rightSide);
         }
 
         // We failed to figure out what this was
-        return (-1, leftSide, rightSide);
+        return (-1, full, leftSide, rightSide);
     }
 
     ////
@@ -589,17 +604,18 @@ public class UM_Client : MonoBehaviour
     private int areaDataIndex;
     private Dictionary<int, List<float>> areaData;
     private Dictionary<int, (bool, bool)> areaSides;
-    private void UpdateAreaDataIndex(int obj)
+    private void SetAreaIndex(int obj)
     {
         SetAreaDataIndex(obj);
     }
 
-    private void UpdateAreaData(Dictionary<string, List<float>> newAreaData)
+    private void SetAreaData(Dictionary<string, List<float>> newAreaData)
     {
         foreach (KeyValuePair<string, List<float>> kvp in newAreaData)
         {
-            (int ID, bool leftSide, bool rightSide) = GetID(kvp.Key);
+            (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
 
+            Debug.LogWarning("Might be broken with new data loading");
             if (areaData.ContainsKey(ID))
             {
                 areaData[ID] = kvp.Value;
@@ -652,9 +668,9 @@ public class UM_Client : MonoBehaviour
     {
         Task<List<CCFTreeNode>> nodeTask;
         if (whichNodes.Equals("cosmos"))
-            nodeTask = modelControl.LoadCosmosNodes(true);
+            nodeTask = modelControl.LoadCosmosNodes(false);
         else if (whichNodes.Equals("beryl"))
-            nodeTask = modelControl.LoadBerylNodes(true);
+            nodeTask = modelControl.LoadBerylNodes(false);
         else
         {
             main.Log("Failed to load nodes: " + whichNodes);
@@ -666,24 +682,23 @@ public class UM_Client : MonoBehaviour
 
         foreach (CCFTreeNode node in nodeTask.Result)
         {
-            node.SetNodeModelVisibility(true, true);
+            node.SetNodeModelVisibility_Left(true);
+            node.SetNodeModelVisibility_Right(true);
             visibleNodes.Add(node);
-            // There is a bug somewhere that forces us to have to do this, if it gets tracked down this can be removed...
-            main.FixNodeTransformPosition(node);
             // Make sure to fix position before registering!
             main.RegisterNode(node);
         }
     }
 
-    private async void UpdateVolumeMaterial(Dictionary<string, string> data)
+    private async void SetAreaMaterial(Dictionary<string, string> data)
     {
         foreach (KeyValuePair<string, string> kvp in data)
         {
-            (int ID, bool leftSide, bool rightSide) = GetID(kvp.Key);
+            (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
             if (WaitingOnTask(ID))
                 await nodeTasks[ID];
 
-            if (leftSide && rightSide)
+            if (full)
                 modelControl.ChangeMaterial(ID, kvp.Value);
             else if (leftSide)
                 modelControl.ChangeMaterialOneSided(ID, kvp.Value, true);
@@ -692,11 +707,11 @@ public class UM_Client : MonoBehaviour
         }
     }
 
-    private async void UpdateColors(Dictionary<string, string> data)
+    private async void SetAreaColors(Dictionary<string, string> data)
     {
         foreach (KeyValuePair<string, string> kvp in data)
         {
-            (int ID, bool leftSide, bool rightSide) = GetID(kvp.Key);
+            (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
             CCFTreeNode node = modelControl.tree.findNode(ID);
 
             Color newColor = Color.black;
@@ -704,7 +719,7 @@ public class UM_Client : MonoBehaviour
                 if (WaitingOnTask(node.ID))
                     await nodeTasks[node.ID];
 
-                if (leftSide && rightSide)
+                if (full)
                     node.SetColor(newColor, true);
                 else if (leftSide)
                     node.SetColorOneSided(newColor, true, true);
@@ -715,65 +730,75 @@ public class UM_Client : MonoBehaviour
         }
     }
 
-    private async void UpdateVisibility(Dictionary<string, bool> data)
+    private void SetAreaVisibility(Dictionary<string, bool> data)
     {
         foreach (KeyValuePair<string, bool> kvp in data)
         {
-            (int ID, bool leftSide, bool rightSide) = GetID(kvp.Key);
+            (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
             CCFTreeNode node = modelControl.tree.findNode(ID);
 
-            if (node != null && !node.IsLoaded())
+            if (node == null)
+                return;
+
+            if (missing.Contains(node.ID))
             {
-                if (missing.Contains(node.ID))
-                {
-                    LogWarning("The mesh file for area " + node.ID + " does not exist, we can't load it");
-                    continue;
-                }
-                if (nodeTasks.ContainsKey(node.ID))
-                {
-                    main.Log("Node " + node.ID + " is already being loaded, did you send duplicate instructions?");
-                }
-                else
-                {
-                    node.LoadNodeModel(true);
-                    nodeTasks.Add(node.ID, node.GetLoadedTask());
-                }
+                LogWarning("The mesh file for area " + node.ID + " does not exist, we can't load it");
+                continue;
             }
-        }
-
-        await Task.WhenAll(nodeTasks.Values);
-
-        foreach (KeyValuePair<string, bool> kvp in data)
-        {
-            (int ID, bool leftSide, bool rightSide) = GetID(kvp.Key);
-            CCFTreeNode node = modelControl.tree.findNode(ID);
-
-            if (node != null && node.IsLoaded())
+            if (nodeTasks.ContainsKey(node.ID))
             {
+                main.Log("Node " + node.ID + " is already being loaded, did you send duplicate instructions?");
+                continue;
+            }
+
+            bool set = false;
+
+            if (full && node.IsLoaded(true))
+            {
+                node.SetNodeModelVisibility_Full(kvp.Value);
                 visibleNodes.Add(node);
-                // There is a bug somewhere that forces us to have to do this, if it gets tracked down this can be removed...
-                main.FixNodeTransformPosition(node);
-                // Make sure to fix position before registering!
-                main.RegisterNode(node);
-
-                if (leftSide && rightSide)
-                    node.SetNodeModelVisibility(kvp.Value);
-                else if (leftSide)
-                    node.SetNodeModelVisibilityLeft(kvp.Value);
-                else if (rightSide)
-                    node.SetNodeModelVisibilityRight(kvp.Value);
+                set = true;
             }
-            else
-                main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+            if (leftSide && node.IsLoaded(false))
+            {
+                set = true;
+                node.SetNodeModelVisibility_Left(kvp.Value);
+                visibleNodes.Add(node);
+            }
+            if (rightSide && node.IsLoaded(false))
+            {
+                node.SetNodeModelVisibility_Right(kvp.Value);
+                visibleNodes.Add(node);
+                set = true;
+            }
+
+            if (!set)
+                LoadIndividualArea(ID, full, leftSide, rightSide, kvp.Value);
         }
     }
 
-    private async void UpdateAlpha(Dictionary<string, float> data)
+    private async void LoadIndividualArea(int ID, bool full, bool leftSide, bool rightSide, bool visibility)
+    {
+        CCFTreeNode node = modelControl.tree.findNode(ID);
+        visibleNodes.Add(node);
+
+        node.LoadNodeModel(full, leftSide || rightSide);
+        await node.GetLoadedTask(full);
+
+        if (full)
+            node.SetNodeModelVisibility_Full(visibility);
+        if (leftSide)
+            node.SetNodeModelVisibility_Left(visibility);
+        if (rightSide)
+            node.SetNodeModelVisibility_Right(visibility);
+    }
+
+    private async void SetAreaAlpha(Dictionary<string, float> data)
     {
 
         foreach (KeyValuePair<string, float> kvp in data)
         {
-            (int ID, bool leftSide, bool rightSide) = GetID(kvp.Key);
+            (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
             CCFTreeNode node = modelControl.tree.findNode(ID);
 
             if (node != null)
@@ -781,7 +806,7 @@ public class UM_Client : MonoBehaviour
                 if (WaitingOnTask(node.ID))
                     await nodeTasks[node.ID];
 
-                if (leftSide && rightSide)
+                if (full)
                     node.SetShaderProperty("_Alpha", kvp.Value);
                 else if (leftSide)
                     node.SetShaderPropertyOneSided("_Alpha", kvp.Value, true);
@@ -792,12 +817,12 @@ public class UM_Client : MonoBehaviour
                 main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
         }
     }
-    private async void UpdateIntensity(Dictionary<string, float> data)
+    private async void SetAreaIntensity(Dictionary<string, float> data)
     {
 
         foreach (KeyValuePair<string, float> kvp in data)
         {
-            (int ID, bool leftSide, bool rightSide) = GetID(kvp.Key);
+            (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
             CCFTreeNode node = modelControl.tree.findNode(ID);
 
             if (node != null)
@@ -805,7 +830,7 @@ public class UM_Client : MonoBehaviour
                 if (WaitingOnTask(node.ID))
                     await nodeTasks[node.ID];
 
-                if (leftSide && rightSide)
+                if (full)
                     node.SetColor(main.GetColormapColor(kvp.Value), true);
                 else if (leftSide)
                     node.SetColorOneSided(main.GetColormapColor(kvp.Value), true, true);
@@ -896,11 +921,21 @@ public class UM_Client : MonoBehaviour
 
     private void SetTextPositions(Dictionary<string, List<float>> data)
     {
+#if UNITY_EDITOR
         Debug.Log("Setting text positions");
+#endif
+        Vector2 canvasWH = new Vector2(uiCanvas.GetComponent<RectTransform>().rect.width, uiCanvas.GetComponent<RectTransform>().rect.height);
         foreach (KeyValuePair<string, List<float>> kvp in data)
         {
             if (texts.ContainsKey(kvp.Key))
-                texts[kvp.Key].transform.localPosition = new Vector2(kvp.Value[0], kvp.Value[1]);
+            {
+                texts[kvp.Key].transform.localPosition = new Vector2(canvasWH.x * kvp.Value[0] / 2, canvasWH.y * kvp.Value[1] / 2);
+            }
+            else
+            {
+                Debug.Log("Couldn't set position for " + kvp.Key);
+                LogError(string.Format("Couldn't set position of {0}", kvp.Key));
+            }
         }
     } 
      
@@ -925,10 +960,6 @@ public class UM_Client : MonoBehaviour
     {
         main.Log("connected! Login with ID: " + ID);
         UpdateID(ID);
-
-        //manager.Socket.Emit("log", "test log");
-        //manager.Socket.Emit("log-warning", "test warning");
-        //manager.Socket.Emit("log-error", "test error");
     }
 
     private void Log(string msg)

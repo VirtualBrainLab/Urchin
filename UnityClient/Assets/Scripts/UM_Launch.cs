@@ -9,7 +9,6 @@ public class UM_Launch : MonoBehaviour
 {
     [SerializeField] private CCFModelControl modelControl;
     [SerializeField] private BrainCameraController cameraController;
-    [SerializeField] private float maxExplosion = 10f;
 
     [SerializeField] private GameObject settingsPanel;
     [SerializeField] private Transform brainControlsT;
@@ -64,8 +63,6 @@ public class UM_Launch : MonoBehaviour
     [SerializeField] private List<GameObject> cosmosParentObjects;
     private int cosmosParentIdx = 0;
 
-    private bool ccfLoaded;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -94,23 +91,12 @@ public class UM_Launch : MonoBehaviour
     private async void DelayedStart()
     {
         await modelControl.GetDefaultLoadedTask();
-        ccfLoaded = true;
 
         foreach (CCFTreeNode node in modelControl.GetDefaultLoadedNodes())
         {
-            FixNodeTransformPosition(node);
-
             RegisterNode(node);
-            node.SetNodeModelVisibility(true, true);
+            node.SetNodeModelVisibility_Full(true);
         }
-    }
-
-    public void FixNodeTransformPosition(CCFTreeNode node)
-    {
-        // I don't know why we have to do this? For some reason when we load the node models their positions are all offset in space in a weird way... 
-        node.GetNodeTransform().localPosition = Vector3.zero;
-        node.GetNodeTransform().localRotation = Quaternion.identity;
-        node.RightGameObject().transform.localPosition = Vector3.forward * 11.4f;
     }
 
     public void ChangeCosmosIdx(int newIdx)
@@ -193,9 +179,9 @@ public class UM_Launch : MonoBehaviour
     public void RegisterNode(CCFTreeNode node)
     {
         if (!originalTransformPositionsLeft.ContainsKey(node.ID))
-            originalTransformPositionsLeft.Add(node.ID, node.LeftGameObject().transform.localPosition);
+            originalTransformPositionsLeft.Add(node.ID, node.NodeModelLeftGO.transform.localPosition);
         if (!originalTransformPositionsRight.ContainsKey(node.ID))
-            originalTransformPositionsRight.Add(node.ID, node.RightGameObject().transform.localPosition);
+            originalTransformPositionsRight.Add(node.ID, node.NodeModelRightGO.transform.localPosition);
         if (!visibleNodes.ContainsKey(node.ID))
             visibleNodes.Add(node.ID,node);
     }
@@ -284,9 +270,9 @@ public class UM_Launch : MonoBehaviour
     {
         foreach (CCFTreeNode node in visibleNodes.Values)
             if (state)
-                node.SetColorOneSided(node.GetDefaultColor(), false, false);
+                node.SetColorOneSided(node.DefaultColor, true, false);
             else
-                node.SetColorOneSided(node.GetColor(), false, false);
+                node.SetColor(node.DefaultColor);
     }
 
     private void _UpdateExploded()
@@ -298,8 +284,8 @@ public class UM_Launch : MonoBehaviour
         foreach (CCFTreeNode node in visibleNodes.Values)
         {
             int cosmos = modelControl.GetCosmosID(node.ID);
-            Transform nodeTLeft = node.LeftGameObject().transform;
-            Transform nodeTright = node.RightGameObject().transform;
+            Transform nodeTLeft = node.NodeModelLeftGO.transform;
+            Transform nodeTright = node.NodeModelRightGO.transform;
 
             nodeTLeft.localPosition = originalTransformPositionsLeft[node.ID] +
                 cosmosVectors[cosmos] * percentageExploded;

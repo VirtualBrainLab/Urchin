@@ -1,0 +1,12 @@
+{
+    "Show": true,
+    "Dependencies": [],
+    "Components": [
+        {
+            "$type": "Unity.Build.Classic.ClassicBuildProfile, Unity.Build.Classic",
+            "$version": 1,
+            "Platform": "WebGL",
+            "Configuration": 2
+        }
+    ]
+}

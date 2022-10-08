@@ -765,13 +765,14 @@ def set_text_sizes(text_sizes):
 
 def set_text_positions(text_pos):
   """Set the positions of a set of text objects in UI canvas space
+  Bottom left corner is [-1,-1], top right [1,1]
 
-  Note that by default the UI canvas is 800 x 600
+  Text is anchored at the top left corner of its text box.
 
   Parameters
   ----------
   text_pos : dict {string : list of two floats}
-      dictionary of IDs and canvas positions for the top left corner
+      dictionary of IDs and canvas positions relative to the center
       
 	Examples
 	--------

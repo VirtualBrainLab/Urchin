@@ -6024,12 +6024,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 2560, y: 1440}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -12288,7 +12288,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   modelControl: {fileID: 1595768702}
   cameraController: {fileID: 1861690901}
-  maxExplosion: 3
   settingsPanel: {fileID: 1477246862}
   brainControlsT: {fileID: 2085804438}
   consolePanel: {fileID: 971937620}
@@ -12333,7 +12332,6 @@ MonoBehaviour:
   - toon-outline
   - transparent-lit
   - transparent-unlit
-  modelScale: 1
 --- !u!4 &1595768703
 Transform:
   m_ObjectHideFlags: 0
@@ -12361,7 +12359,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de7e19699c62fef4d8e2f16cfb5e8b22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  addressablesStorageRemotePath: https://data.virtualbrainlab.org/AddressablesStorage/0.2.2
+  addressablesStorageRemotePath: https://data.virtualbrainlab.org/AddressablesStorage
   buildVersion: 0.2.2
   delayCatalogLoad: 0
 --- !u!114 &1595768705
@@ -12376,11 +12374,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13968967245d3674eb77f631223a57f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flatironInfoAsset:
-    m_AssetGUID: 
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
 --- !u!95 &1595768708
 Animator:
   serializedVersion: 4
@@ -12416,7 +12409,8 @@ MonoBehaviour:
   main: {fileID: 1595768701}
   modelControl: {fileID: 1595768702}
   cameraControl: {fileID: 1861690901}
-  localhost: 1
+  localhost: 0
+  uiCanvas: {fileID: 858013925}
   idInput: {fileID: 280012555}
   volRenderer: {fileID: 94244070}
   neuronPrefab: {fileID: 7973822280577014711, guid: f3a0350e123573d41a17b28587350ada, type: 3}
@@ -12427,7 +12421,7 @@ MonoBehaviour:
   - sphere
   - cube
   neuronParent: {fileID: 1010559012}
-  probePrefab: {fileID: 0}
+  probePrefab: {fileID: 8943063119080654577, guid: c6cbe13bba479184aa05bff7d11023f5, type: 3}
   probeLinePrefab: {fileID: 2507564506256405100, guid: bbfd294d9a4375144b5214e4196f5d20, type: 3}
   probeParent: {fileID: 1878764715}
   textParent: {fileID: 1648926224}
