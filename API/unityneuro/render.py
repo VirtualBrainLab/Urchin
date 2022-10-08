@@ -61,7 +61,7 @@ def setup(verbose = True, localhost = False, standalone = False):
 		sio.connect('https://um-commserver.herokuapp.com/')
 
 	if not standalone:
-		url = "https://data.virtualbrainlab.org/UnityNeuro/?ID=" + ID
+		url = "https://data.virtualbrainlab.org/Urchin/?ID=" + ID
 		webbrowser.open(url)
 
 def close():

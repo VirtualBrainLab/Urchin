@@ -7,6 +7,12 @@
             "$version": 1,
             "Platform": "WebGL",
             "Configuration": 2
+        },
+        {
+            "$type": "Unity.Build.Common.SceneList, Unity.Build",
+            "$version": 1,
+            "BuildCurrentScene": true,
+            "SceneInfos": []
         }
     ]
 }

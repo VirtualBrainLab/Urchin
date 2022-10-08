@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "unityneuro"
-version = "0.4.2"
+version = "0.4.3"
 authors = [
   { name="Daniel Birman", email="danbirman@gmail.com" },
 ]
