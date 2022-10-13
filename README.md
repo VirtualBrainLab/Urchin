@@ -26,14 +26,12 @@ import unityneuro.render as urn
 urn.setup()
 ```
 
-A few quick examples to get you started.
+## Examples
 
-### Render all Allen CCF areas
-```
-urn.load_beryl_areas()
-```
+Head over to [Examples/basics](https://github.com/VirtualBrainLab/Urchin/tree/main/Examples/basics) to find many tutorials that introduce the functionality in Urchin.
 
-### Load the basic 3D model of the brain and make it transparent
+To get you started, try running the code below to load the root brain model. 
+
 ```
 urn.set_area_visibility({"grey":True})
 urn.set_area_material({"grey":"transparent-lit"})
