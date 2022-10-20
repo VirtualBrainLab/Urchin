@@ -141,12 +141,12 @@ io.on("connection", function (socket) {
   socket.on('SetProbeAngles', function(data) {
     emitToReceiver(socket.id, 'SetProbeAngles', data);
   });
-  socket.on('SetProbeStyle', function(data) {
-    emitToReceiver(socket.id, 'SetProbeStyle', data);
-  });
   socket.on('SetProbeSize', function(data) {
     emitToReceiver(socket.id, 'SetProbeSize', data);
   });
+  socket.on('SetProbeStyle', function(data) {
+    emitToReceiver(socket.id, 'SetProbeStyle', data);
+  })
 
   // Volumes
   socket.on('CreateVolume', function(data) {

@@ -39,8 +39,8 @@ public class UM_Client : MonoBehaviour
     private Dictionary<string, GameObject> neurons;
 
     // PROBES
-    [SerializeField] private GameObject probePrefab;
-    [SerializeField] private GameObject probeLinePrefab;
+    [SerializeField] private List<GameObject> probePrefabs;
+    [SerializeField] private List<string> probePrefabNames;
     [SerializeField] private Transform probeParent;
     private Dictionary<string, GameObject> probes;
     private Dictionary<string, Vector3[]> probeCoordinates;
@@ -117,8 +117,8 @@ public class UM_Client : MonoBehaviour
         manager.Socket.On<Dictionary<string, string>>("SetProbeColors", UpdateProbeColors);
         manager.Socket.On<Dictionary<string, List<float>>>("SetProbePos", UpdateProbePos);
         manager.Socket.On<Dictionary<string, List<float>>>("SetProbeAngles", UpdateProbeAngles);
-        manager.Socket.On<Dictionary<string, string>>("SetProbeStyle", UpdateProbeStyle);
         manager.Socket.On<Dictionary<string, List<float>>>("SetProbeSize", UpdateProbeScale);
+        manager.Socket.On<Dictionary<string, string>>("SetProbeStyle", UpdateProbeStyle);
 
         // Camera
         manager.Socket.On<List<float>>("SetCameraTarget", SetCameraTarget);
@@ -351,7 +351,10 @@ public class UM_Client : MonoBehaviour
 
     private void UpdateProbeStyle(Dictionary<string, string> data)
     {
-        main.Log("Not implemented");
+        foreach (KeyValuePair<string, string> kvp in data)
+        {
+            GameObject probeInScene = probes[kvp.Key];
+        }
     }
 
     private void UpdateProbeAngles(Dictionary<string, List<float>> data)
@@ -444,7 +447,8 @@ public class UM_Client : MonoBehaviour
         {
             if (!probes.ContainsKey(probeName))
             {
-                GameObject newProbe = Instantiate(probeLinePrefab, probeParent);
+                GameObject newProbe = Instantiate(probePrefabs[probePrefabNames.IndexOf("rectangle")], probeParent);
+
                 probes.Add(probeName, newProbe);
                 probeCoordinates.Add(probeName, new Vector3[2]);
                 SetProbePositionAndAngles(probeName);

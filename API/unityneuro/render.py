@@ -411,19 +411,19 @@ def set_probe_angles(probe_angles):
 	"""
 	sio.emit('SetProbeAngles', probe_angles)
 
-# def set_probe_style(probeData):
-# 	"""Set probe rendering style
+def set_probe_style(style):
+	"""Set probe rendering style
 
-# 	Style options are:
-# 		"line"
-# 		"probe-tip"
-# 		"probe-silicon"
-# 		"probe"
+	Style options are:
+		"line"
+    "rectangle"
+		"neuropixels-1.0"
+    "neuropixels-2.4"
 
-# 	Inputs:
-# 	probeData -- dictionary of probe names and string {'p1':'line'}
-# 	"""
-# 	sio.emit('SetProbeStyle', probeData)
+	Inputs:
+	probeData -- dictionary of probe names and string {'p1':'rectangle'}
+	"""
+	sio.emit('SetProbeStyle', style)
 
 def set_probe_size(probe_size):
 	"""Set probe scale in mm units, by default probes are scaled to 70 um wide x 20 um deep x 3840 um tall which is the size of a NP 1.0 probe.

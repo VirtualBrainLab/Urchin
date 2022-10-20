@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2507564506256405103}
   m_Layer: 10
-  m_Name: probePos
+  m_Name: ProbeRectanglePrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
