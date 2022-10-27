@@ -353,7 +353,13 @@ public class UM_Client : MonoBehaviour
     {
         foreach (KeyValuePair<string, string> kvp in data)
         {
-            GameObject probeInScene = probes[kvp.Key];
+            Debug.Log(string.Format("Probe {0} updating to style {1}", kvp.Key, kvp.Value));
+            GameObject probeMainGO = probes[kvp.Key];
+
+            if (probeMainGO.transform.childCount > 0)
+                Destroy(probeMainGO.transform.GetChild(0).gameObject);
+
+            GameObject newPrefabGO = Instantiate(probePrefabs[probePrefabNames.IndexOf(kvp.Value)], probeMainGO.transform);
         }
     }
 
@@ -447,9 +453,12 @@ public class UM_Client : MonoBehaviour
         {
             if (!probes.ContainsKey(probeName))
             {
-                GameObject newProbe = Instantiate(probePrefabs[probePrefabNames.IndexOf("rectangle")], probeParent);
+                GameObject probeMainGO = new GameObject(string.Format("probe_{0}", probeName));
+                probeMainGO.transform.SetParent(probeParent);
 
-                probes.Add(probeName, newProbe);
+                GameObject newProbe = Instantiate(probePrefabs[probePrefabNames.IndexOf("rectangle")], probeMainGO.transform);
+
+                probes.Add(probeName, probeMainGO);
                 probeCoordinates.Add(probeName, new Vector3[2]);
                 SetProbePositionAndAngles(probeName);
                 main.Log("Created probe: " + probeName);

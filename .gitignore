@@ -82,3 +82,6 @@ build/*
 
 urchin-vn/*
 UnityClient/Assets/Best HTTP/*
+
+API/urchin-venv/*
+API/unityneuro.egg-info/*

@@ -10556,7 +10556,7 @@ MonoBehaviour:
   main: {fileID: 1595768701}
   modelControl: {fileID: 1595768702}
   cameraControl: {fileID: 1861690901}
-  localhost: 0
+  localhost: 1
   uiCanvas: {fileID: 858013925}
   idInput: {fileID: 280012555}
   volRenderer: {fileID: 94244070}
@@ -10572,7 +10572,7 @@ MonoBehaviour:
   - {fileID: 2507564506256405100, guid: bbfd294d9a4375144b5214e4196f5d20, type: 3}
   - {fileID: 8943063119080654577, guid: c6cbe13bba479184aa05bff7d11023f5, type: 3}
   - {fileID: 4224311397212708924, guid: 93e9593944e11b5428eba5e611e35552, type: 3}
-  - {fileID: 7198722098024263172, guid: 219b15259f4f3744d90b2defc219a08d, type: 3}
+  - {fileID: 4368194536080577051, guid: 219b15259f4f3744d90b2defc219a08d, type: 3}
   probePrefabNames:
   - rectangle
   - neuropixels-2.4
