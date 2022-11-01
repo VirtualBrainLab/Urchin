@@ -76,8 +76,12 @@ public class UM_Client : MonoBehaviour
     /// </summary>
     void Start()
     {
-
-        string url = localhost ? "http://localhost:5000" : "https://um-commserver.herokuapp.com/";
+        // Only allow localhost when running in the editor
+#if UNITY_EDITOR
+        string url = localhost ? "http://localhost:5000" : "https://urchin-commserver.herokuapp.com/";
+#else
+        string url = "https://urchin-commserver.herokuapp.com/";
+#endif
         Debug.Log("Attempting to connect: " + url);
         manager = localhost ? new SocketManager(new Uri(url)) : new SocketManager(new Uri(url));
 
@@ -270,7 +274,7 @@ public class UM_Client : MonoBehaviour
         cameraControl.SetCameraPan(new Vector2(panXY[0], panXY[1]));
     }
 
-    #region Clear
+#region Clear
 
     private void Clear(string val)
     {
@@ -345,7 +349,7 @@ public class UM_Client : MonoBehaviour
         texts = new Dictionary<string, GameObject>();
     }
 
-    #endregion
+#endregion
 
     // PROBE CONTROLS
 
@@ -856,7 +860,7 @@ public class UM_Client : MonoBehaviour
         return false;
     }
 
-    #region Text
+#region Text
 
     private void CreateText(List<string> data)
     {
@@ -939,7 +943,7 @@ public class UM_Client : MonoBehaviour
         }
     } 
      
-    #endregion
+#endregion
 
     ////
     //// SOCKET FUNCTIONS

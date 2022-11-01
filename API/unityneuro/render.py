@@ -58,7 +58,7 @@ def setup(verbose = True, localhost = False, standalone = False):
 	if localhost:
 		sio.connect('http://localhost:5000')
 	else:
-		sio.connect('https://um-commserver.herokuapp.com/')
+		sio.connect('https://urchin-commserver.herokuapp.com/')
 
 	if not standalone:
 		url = "https://data.virtualbrainlab.org/Urchin/?ID=" + ID
