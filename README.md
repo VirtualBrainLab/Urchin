@@ -44,4 +44,6 @@ For detailed instructions please see the [documentation](https://virtualbrainlab
 
 # Citing
 
-If you use this to make figures for a publication you should cite this repo, email me (dbirman@uw.edu) and I can generate a DOI for the version you are using.
+[![DOI](https://zenodo.org/badge/460577328.svg)](https://zenodo.org/badge/latestdoi/460577328)
+
+If Urchin is used as part of a research project you should cite this repository. We've created a DOI for this purpose on Zenodo. Your citations will help us get grant support for this project in the future!
