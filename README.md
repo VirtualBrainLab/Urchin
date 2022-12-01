@@ -4,7 +4,7 @@ urchin
 
 [![PyPI Version](https://img.shields.io/pypi/v/unityneuro.svg)](https://pypi.org/project/unityneuro/)
 
-Neuroscience Renderer for Unity is a python package that links your analysis scripts to a standalone brain renderer program, to create graphics like the ones below.
+Unity Rendering Creating Helpful Images for Neuroscience (Urchin) is a python package that links your analysis scripts to a standalone brain renderer program, to create graphics like the ones below.
 
 # Gallery
 <p float="left">
@@ -47,3 +47,5 @@ For detailed instructions please see the [documentation](https://virtualbrainlab
 [![DOI](https://zenodo.org/badge/460577328.svg)](https://zenodo.org/badge/latestdoi/460577328)
 
 If Urchin is used as part of a research project you should cite this repository. We've created a DOI for this purpose on Zenodo. Your citations will help us get grant support for this project in the future!
+
+These materials are not sponsored by or affiliated with Unity Technologies or its affiliates. “Unity” is a trademark or registered trademark of Unity Technologies or its affiliates in the U.S. and elsewhere.
