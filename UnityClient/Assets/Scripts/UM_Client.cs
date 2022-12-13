@@ -51,7 +51,7 @@ public class UM_Client : MonoBehaviour
     private Dictionary<string, GameObject> texts;
 
     // NODES
-    private List<CCFTreeNode> visibleNodes;
+    public List<CCFTreeNode> visibleNodes { get; private set; }
     private int[] missing = { 738, 995 };
 
     private string ID;
@@ -145,7 +145,11 @@ public class UM_Client : MonoBehaviour
         manager.Socket.On<string>("Clear", Clear);
 
         // If we are building to WebGL or to Standalone, switch how you acquire the user's ID
-#if UNITY_WEBGL
+#if UNITY_EDITOR
+        ID = "Dan";
+        idInput.text = ID;
+        Debug.Log("Setting ID to: " + ID);
+#elif UNITY_WEBGL
         // get the url
         string appURL = Application.absoluteURL;
         // parse for query strings
@@ -689,7 +693,6 @@ public class UM_Client : MonoBehaviour
             node.SetNodeModelVisibility_Left(true);
             node.SetNodeModelVisibility_Right(true);
             visibleNodes.Add(node);
-            // Make sure to fix position before registering!
             main.RegisterNode(node);
         }
     }
@@ -720,15 +723,22 @@ public class UM_Client : MonoBehaviour
 
             Color newColor = Color.black;
             if (node != null && ColorUtility.TryParseHtmlString(kvp.Value, out newColor))
+            {
                 if (WaitingOnTask(node.ID))
                     await nodeTasks[node.ID];
 
                 if (full)
-                    node.SetColor(newColor, true);
+                {
+                    if (!main.colorLeftOnly)
+                        node.SetColor(newColor, true);
+                    else
+                        node.SetColorOneSided(newColor, true, true);
+                }
                 else if (leftSide)
                     node.SetColorOneSided(newColor, true, true);
-                else if (rightSide)
+                else if (rightSide && !main.colorLeftOnly)
                     node.SetColorOneSided(newColor, false, true);
+            }
             else
                 main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
         }
@@ -760,7 +770,7 @@ public class UM_Client : MonoBehaviour
             if (full && node.IsLoaded(true))
             {
                 node.SetNodeModelVisibility_Full(kvp.Value);
-                visibleNodes.Add(node);
+                main.RegisterNode(node);
                 set = true;
             }
             if (leftSide && node.IsLoaded(false))
@@ -787,7 +797,10 @@ public class UM_Client : MonoBehaviour
         visibleNodes.Add(node);
 
         node.LoadNodeModel(full, leftSide || rightSide);
+
         await node.GetLoadedTask(full);
+
+        main.RegisterNode(node);
 
         if (full)
             node.SetNodeModelVisibility_Full(visibility);
@@ -835,10 +848,15 @@ public class UM_Client : MonoBehaviour
                     await nodeTasks[node.ID];
 
                 if (full)
-                    node.SetColor(main.GetColormapColor(kvp.Value), true);
+                {
+                    if (!main.colorLeftOnly)
+                        node.SetColor(main.GetColormapColor(kvp.Value), true);
+                    else
+                        node.SetColorOneSided(main.GetColormapColor(kvp.Value), true, true);
+                }
                 else if (leftSide)
                     node.SetColorOneSided(main.GetColormapColor(kvp.Value), true, true);
-                else if (rightSide)
+                else if (rightSide && !main.colorLeftOnly)
                     node.SetColorOneSided(main.GetColormapColor(kvp.Value), false, true);
             }
             else
@@ -890,7 +908,6 @@ public class UM_Client : MonoBehaviour
 
     private void SetText(Dictionary<string, string> data)
     {
-        Debug.Log("Setting text");
         foreach (KeyValuePair<string, string> kvp in data)
         {
             if (texts.ContainsKey(kvp.Key))

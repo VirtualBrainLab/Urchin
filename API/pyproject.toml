@@ -9,7 +9,7 @@ version = "0.4.4"
 authors = [
   { name="Daniel Birman", email="danbirman@gmail.com" },
 ]
-description = "Urchin - Unity Renderer for Neuroscience Python API"
+description = "Urchin - Universal Renderer for Neuroscience Python API"
 readme = "README.md"
 license = { file="LICENSE" }
 requires-python = ">=3.7"
