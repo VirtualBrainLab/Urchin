@@ -1,26 +1,47 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class LineRendererManager : MonoBehaviour
 {
     //Keep a dictionary that maps string names to line renderer components 
     private Dictionary<string, LineRenderer> _lineRenderers;
+    [SerializeField] private GameObject _lineRendererPrefab;
 
     private void Awake()
     {
         _lineRenderers = new();
     }
 
+    private void Start()
+    {
+        CreateLine(new List<string> { "l1", "l2" });
+        DeleteLine(new List<string> { "l2" });
+
+        Dictionary<string, List<Vector3>> temp = new();
+        List<Vector3> tempPositions = new();
+        tempPositions.Add(new Vector3(0, 0, 0));
+        tempPositions.Add(new Vector3(1,2,3));
+        tempPositions.Add(new Vector3(4, 4, 4));
+        temp.Add("l1", tempPositions);
+
+        SetLinePosition(temp);
+
+
+        SetLineColor("l1", Color.blue);
+    }
 
     public void CreateLine(List<string> lines)
     {
         //instantiating game object w line renderer component
         foreach(string line in lines)
         {
-            _lineRenderers.Add(line, new GameObject());
+            GameObject tempObject = Instantiate(_lineRendererPrefab);
+            tempObject.name = $"lineRenderer_{line}";
+            _lineRenderers.Add(line, tempObject.GetComponent<LineRenderer>());
             //in theory, creates new entry to the dictionary with the name of the line [line] and associates it with a new Game Object
-            _lineRenderers[line].AddComponent(LineRendererManager)
+            
             //adds the line renderer component to the line renderer manager (actually creates the line of the empty object)
         }
 
@@ -31,17 +52,32 @@ public class LineRendererManager : MonoBehaviour
         //calls destroy (the one specific line)
         foreach(string line in lines)
         {
-            Destroy(_lineRenderers[line]);
+            Destroy(_lineRenderers[line].gameObject);
+            _lineRenderers.Remove(line);
         }
     }
 
     public void SetLinePosition(Dictionary<string, List<Vector3>> linePositions)
     {
         //set line renderer position
-        _lineRenderers[linePositions.Keys].SetPosition(linePositions.Values);
+
+        foreach (string lineName in linePositions.Keys) {
+            LineRenderer tempLine = _lineRenderers[lineName];
+            tempLine.positionCount = linePositions[lineName].Count;
+            tempLine.SetPositions(linePositions[lineName].ToArray());
+        }
     }
-    public void SetLineColor(Dictionary<string, List<Color>> lineColors)
+    public void SetLineColor(Dictionary<string, Color> lineColors)
     {
-        _lineRenderers[lineColors.Keys].SetColors(lineColors.Values);
+        foreach (string lineName in lineColors.Keys)
+        {
+            SetLineColor(lineName, lineColors[lineName]);
+        }
+    }
+
+    public void SetLineColor (string lineName, Color color)
+    {
+        LineRenderer tempLine = _lineRenderers[lineName];
+        tempLine.material.color = color;
     }
 }
