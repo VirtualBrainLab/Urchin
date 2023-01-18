@@ -779,3 +779,61 @@ def set_text_positions(text_pos):
 	>>> urn.set_text_positions({'t1': [400, 300]})
   """
   sio.emit('SetTextPositions', text_pos)
+
+## Line Renderer
+def create_line(line_names):
+	"""Creates lines
+
+  Parameters
+  ----------
+  line_names : list of strings
+	IDs of lines being created
+      
+	Examples
+	--------
+	>>> urn.create_line(['l1', 'l2','l3')
+  """
+	sio.emit('CreateLine', line_names)
+
+def delete_line(line_names):
+	"""Deletes lines
+
+  Parameters
+  ----------
+  line_names : list of strings
+	IDs of lines being deleted
+      
+	Examples
+	--------
+	>>> urn.delete_line(['l1', 'l2')
+  """
+	sio.emit('DeleteLine', line_names)
+
+def set_line_position(line_pos):
+  """Set the position of line renderer
+
+  Parameters
+  ----------
+  line_pos : dict {string : list of three floats}
+      dictionary of IDs and vertex positions of the line
+      
+	Examples
+	--------
+	>>> urn.set_line_position({'l1': [0, 0,0]})
+  """
+  sio.emit('SetLinePosition', line_pos)
+
+def set_line_color(line_color):
+  """Set the position of line renderer
+
+  Parameters
+  ----------
+  line_color : dict {string : color}
+      dictionary of IDs and vertex positions of the line
+      
+	Examples
+	--------
+	>>> urn.set_line_color({'l1': color.blue})
+	##unsure about proper formatting of color above^
+  """
+  sio.emit('SetLineColor', line_color)
