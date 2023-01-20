@@ -791,7 +791,7 @@ def create_line(line_names):
       
 	Examples
 	--------
-	>>> urn.create_line(['l1', 'l2','l3')
+	>>> urn.create_line(['l1', 'l2','l3'])
   """
 	sio.emit('CreateLine', line_names)
 
@@ -805,7 +805,7 @@ def delete_line(line_names):
       
 	Examples
 	--------
-	>>> urn.delete_line(['l1', 'l2')
+	>>> urn.delete_line(['l1', 'l2'])
   """
 	sio.emit('DeleteLine', line_names)
 
@@ -819,7 +819,7 @@ def set_line_position(line_pos):
       
 	Examples
 	--------
-	>>> urn.set_line_position({'l1': [0, 0,0]})
+	>>> urn.set_line_position({'l1': [[0, 0, 0], [1, 1, 1]]})
   """
   sio.emit('SetLinePosition', line_pos)
 
@@ -828,12 +828,12 @@ def set_line_color(line_color):
 
   Parameters
   ----------
-  line_color : dict {string : color}
+  line_color : dict {string : string hex color}
       dictionary of IDs and vertex positions of the line
       
 	Examples
 	--------
-	>>> urn.set_line_color({'l1': color.blue})
-	##unsure about proper formatting of color above^
+	>>> urn.set_line_color({'l1': '#FFFFFF'})
+	
   """
   sio.emit('SetLineColor', line_color)
