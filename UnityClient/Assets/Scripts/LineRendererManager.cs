@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UIElements;
 
 public class LineRendererManager : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class LineRendererManager : MonoBehaviour
 
     private void Start()
     {
-        CreateLine(new List<string> { "l1", "l2" });
+       /* CreateLine(new List<string> { "l1", "l2" });
         DeleteLine(new List<string> { "l2" });
 
         Dictionary<string, List<Vector3>> temp = new();
@@ -29,7 +30,7 @@ public class LineRendererManager : MonoBehaviour
         SetLinePosition(temp);
 
 
-        SetLineColor("l1", Color.blue);
+        SetLineColor("l1", Color.blue);*/
     }
 
     public void CreateLine(List<string> lines)
@@ -57,21 +58,41 @@ public class LineRendererManager : MonoBehaviour
         }
     }
 
-    public void SetLinePosition(Dictionary<string, List<Vector3>> linePositions)
+    public void SetLinePosition(Dictionary<string, List<List<float>>> linePositions)
     {
         //set line renderer position
+        Debug.Log("function got called!");
 
-        foreach (string lineName in linePositions.Keys) {
+        foreach (string lineName in linePositions.Keys) {// running through whole dictionary:
+            List<List<float>> data = linePositions[lineName];
+            Vector3[] posvectors = new Vector3[data.Count];
+            
+            for(int i= 0; i<data.Count; i++)
+            {
+                List<float> position = data[i];
+                Vector3 tempVector = new Vector3(position[0], position[1], position[2]);
+                posvectors[i] = tempVector;
+            }
             LineRenderer tempLine = _lineRenderers[lineName];
             tempLine.positionCount = linePositions[lineName].Count;
-            tempLine.SetPositions(linePositions[lineName].ToArray());
+            tempLine.SetPositions(posvectors);
         }
     }
-    public void SetLineColor(Dictionary<string, Color> lineColors)
+    public void SetLineColor(Dictionary<string, string> lineColors)
     {
         foreach (string lineName in lineColors.Keys)
         {
-            SetLineColor(lineName, lineColors[lineName]);
+            Color newColor;
+            if (ColorUtility.TryParseHtmlString(lineColors[lineName], out newColor))
+            {
+                Debug.Log($"Setting Color of {lineName} to {lineColors[lineName]}");
+                SetLineColor(lineName, newColor);
+            }
+            else
+            {
+                Debug.Log($"Color {lineColors[lineName]} does not exist.");
+            }
+
         }
     }
 

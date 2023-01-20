@@ -50,6 +50,9 @@ public class UM_Client : MonoBehaviour
     [SerializeField] private GameObject textPrefab;
     private Dictionary<string, GameObject> texts;
 
+    //Line Renderer
+    [SerializeField] private LineRendererManager _lineRendererManager;
+
     // NODES
     public List<CCFTreeNode> visibleNodes { get; private set; }
     private int[] missing = { 738, 995 };
@@ -141,12 +144,20 @@ public class UM_Client : MonoBehaviour
         manager.Socket.On<Dictionary<string, int>>("SetTextSizes", SetTextSizes);
         manager.Socket.On<Dictionary<string, List<float>>>("SetTextPositions", SetTextPositions);
 
+        // Line Renderer
+        manager.Socket.On<List<string>>("CreateLine", _lineRendererManager.CreateLine);
+        manager.Socket.On<Dictionary<string, List<List<float>>>>("SetLinePosition", _lineRendererManager.SetLinePosition);
+        manager.Socket.On<List<string>>("DeleteLine", _lineRendererManager.DeleteLine);
+        manager.Socket.On<Dictionary<string, string>>("SetLineColor", _lineRendererManager.SetLineColor);
+
+
+
         // Misc
         manager.Socket.On<string>("Clear", Clear);
 
         // If we are building to WebGL or to Standalone, switch how you acquire the user's ID
 #if UNITY_EDITOR
-        ID = "Dan";
+        ID = "Jasmine Schoch";
         idInput.text = ID;
         Debug.Log("Setting ID to: " + ID);
 #elif UNITY_WEBGL
