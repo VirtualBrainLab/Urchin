@@ -46,8 +46,8 @@ public class PrimitiveMeshManager : MonoBehaviour
     {
         foreach (string meshName in meshPositions.Keys)
         {// running through whole dictionary:
-            
-            Vector3 position = meshPositions[meshName];
+            List<float> data = meshPositions[meshName];
+            Vector3 position = new Vector3 (data[0], data[1], data[2]);
             MeshRenderer tempMesh = _primMeshRenderers[meshName];
             tempMesh.transform.position = position;
         }
@@ -57,7 +57,8 @@ public class PrimitiveMeshManager : MonoBehaviour
     { 
         foreach( string meshName in meshScale.Keys)
         {
-            Vector3 scaleChange = meshScale[meshName];
+            List<float> data = meshScale[meshName];
+            Vector3 scaleChange = new Vector3(data[0], data[1], data[2]);
             MeshRenderer tempMesh = _primMeshRenderers[meshName];
             tempMesh.transform.localScale += scaleChange;
         }
@@ -70,12 +71,12 @@ public class PrimitiveMeshManager : MonoBehaviour
             Color newColor;
             if (ColorUtility.TryParseHtmlString(meshColors[meshName], out newColor))
             {
-                Debug.Log($"Setting Color of {meshName} to {meshColors[meshName]}");
+                //Debug.Log($"Setting Color of {meshName} to {meshColors[meshName]}");
                 SetColor(meshName, newColor);
             }
             else
             {
-                Debug.Log($"Color {meshColors[meshName]} does not exist.");
+                //Debug.Log($"Color {meshColors[meshName]} does not exist.");
             }
         }
     }
