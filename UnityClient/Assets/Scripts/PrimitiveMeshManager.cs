@@ -60,7 +60,7 @@ public class PrimitiveMeshManager : MonoBehaviour
             List<float> data = meshScale[meshName];
             Vector3 scaleChange = new Vector3(data[0], data[1], data[2]);
             MeshRenderer tempMesh = _primMeshRenderers[meshName];
-            tempMesh.transform.localScale += scaleChange;
+            tempMesh.transform.localScale = scaleChange;
         }
     }
 

@@ -824,12 +824,12 @@ def set_line_position(line_pos):
   sio.emit('SetLinePosition', line_pos)
 
 def set_line_color(line_color):
-  """Set the position of line renderer
+  """Set the color of line renderer
 
   Parameters
   ----------
   line_color : dict {string : string hex color}
-      dictionary of IDs and vertex positions of the line
+      dictionary of IDs and new color of the line
       
 	Examples
 	--------
@@ -837,3 +837,75 @@ def set_line_color(line_color):
 	
   """
   sio.emit('SetLineColor', line_color)
+
+  ## Primitive Mesh Renderer
+def create_prim_mesh(mesh_names):
+	"""Creates primitive mesh
+
+  Parameters
+  ----------
+  mesh_names : list of strings
+	IDs of meshes being created
+      
+	Examples
+	--------
+	>>> urn.create_prim_mesh(['cube1','cube2'])
+  """
+	sio.emit('CreateMesh', mesh_names)
+
+def delete_prim_mesh(mesh_names):
+	"""Deletes meshes
+
+  Parameters
+  ----------
+  mesh_names : list of strings
+	IDs of meshes being deleted
+      
+	Examples
+	--------
+	>>> urn.delete_prim_mesh(['cube1'])
+  """
+	sio.emit('DeleteMesh', mesh_names)
+
+def set_mesh_position(mesh_pos):
+  """Set the position of mesh renderer
+
+  Parameters
+  ----------
+  mesh_pos : dict {string : list of three floats}
+      dictionary of IDs and vertex positions of the mesh
+      
+	Examples
+	--------
+	>>> urn.set_mesh_position({'cube1': [1, 2, 3]})
+  """
+  sio.emit('SetPosition', mesh_pos)
+
+def set_mesh_scale(mesh_scale):
+  """Set the scale of mesh renderer
+
+  Parameters
+  ----------
+  mesh_scale : dict {string : list of three floats}
+      dictionary of IDs and new scale of mesh
+      
+	Examples
+	--------
+	>>> urn.set_mesh_scale({'cube1': [3, 3, 3]})
+  """
+  sio.emit('SetScale', mesh_scale)
+
+def set_mesh_color(mesh_color):
+  """Set the color of mesh renderer
+
+  Parameters
+  ----------
+  mesh_color : dict {string : string hex color}
+      dictionary of IDs and new hex color of mesh
+      
+	Examples
+	--------
+	>>> urn.set_mesh_color({'cube1': '#FFFFFF'})
+	
+  """
+  sio.emit('SetColor', mesh_color)
