@@ -44,30 +44,46 @@ public class PrimitiveMeshManager : MonoBehaviour
 
     public void SetPosition(Dictionary<string, List<float>> meshPositions)
     {
-        Debug.Log("function got called!");
-
         foreach (string meshName in meshPositions.Keys)
         {// running through whole dictionary:
             
             Vector3 position = meshPositions[meshName];
             MeshRenderer tempMesh = _primMeshRenderers[meshName];
-            
-          
-            //tempLine.positionCount = meshPositions[meshName].Count;
-            //tempLine.SetPositions(posvectors);
-
-            //NOT FINISHED
+            tempMesh.transform.position = position;
         }
     }
 
-    public void SetScale() 
-    { //TRANSFORM.LOCALSCALE
-    
+    public void SetScale(Dictionary<string, List<float>> meshScale) 
+    { 
+        foreach( string meshName in meshScale.Keys)
+        {
+            Vector3 scaleChange = meshScale[meshName];
+            MeshRenderer tempMesh = _primMeshRenderers[meshName];
+            tempMesh.transform.localScale += scaleChange;
+        }
     }
 
-    public void SetColor()
+    public void SetColor(Dictionary<string,string> meshColors)
     {
+        foreach(string meshName in meshColors.Keys)
+        {
+            Color newColor;
+            if (ColorUtility.TryParseHtmlString(meshColors[meshName], out newColor))
+            {
+                Debug.Log($"Setting Color of {meshName} to {meshColors[meshName]}");
+                SetColor(meshName, newColor);
+            }
+            else
+            {
+                Debug.Log($"Color {meshColors[meshName]} does not exist.");
+            }
+        }
+    }
 
+    private void SetColor(string meshName, Color color)
+    {
+        MeshRenderer tempMesh = _primMeshRenderers[meshName];
+        tempMesh.material.color = color;
     }
 
 }
