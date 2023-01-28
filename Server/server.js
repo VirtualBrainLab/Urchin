@@ -235,6 +235,23 @@ io.on("connection", function (socket) {
       emitToReceiver(socket.id, 'SetLineColor', data);
     });
 
+  // Primitive Mesh Renderer
+  socket.on('CreateMesh', function(data) {
+    emitToReceiver(socket.id, 'CreateMesh', data);
+  });
+  socket.on('DeleteMesh', function(data) {
+    emitToReceiver(socket.id, 'DeleteMesh', data);
+  });
+  socket.on('SetPosition', function(data) {
+    emitToReceiver(socket.id, 'SetPosition', data);
+  });
+  socket.on('SetScale', function(data) {
+    emitToReceiver(socket.id, 'SetScale', data);
+  });
+  socket.on('SetColor', function(data) {
+    emitToReceiver(socket.id, 'SetColor', data);
+  });
+  
   // Clear
   socket.on('Clear', function(data) {
     emitToReceiver(socket.id, 'Clear', data);
