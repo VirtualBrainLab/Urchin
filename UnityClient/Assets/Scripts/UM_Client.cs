@@ -53,6 +53,9 @@ public class UM_Client : MonoBehaviour
     //Line Renderer
     [SerializeField] private LineRendererManager _lineRendererManager;
 
+    //Primitive Mesh Renderer
+    [SerializeField] private PrimitiveMeshManager _primitiveMeshManager; 
+
     // NODES
     public List<CCFTreeNode> visibleNodes { get; private set; }
     private int[] missing = { 738, 995 };
@@ -150,7 +153,12 @@ public class UM_Client : MonoBehaviour
         manager.Socket.On<List<string>>("DeleteLine", _lineRendererManager.DeleteLine);
         manager.Socket.On<Dictionary<string, string>>("SetLineColor", _lineRendererManager.SetLineColor);
 
-
+        //Primitive Mesh Renderer
+        manager.Socket.On<List<string>>("CreateMesh", _primitiveMeshManager.CreateMesh);
+        manager.Socket.On<List<string>>("DeleteMesh", _primitiveMeshManager.DeleteMesh);
+        manager.Socket.On<Dictionary<string, List<float>>>("SetPosition", _primitiveMeshManager.SetPosition);
+        manager.Socket.On<Dictionary<string, List<float>>>("SetScale", _primitiveMeshManager.SetScale);
+        manager.Socket.On<Dictionary<string, string>>("SetColor", _primitiveMeshManager.SetColor);
 
         // Misc
         manager.Socket.On<string>("Clear", Clear);

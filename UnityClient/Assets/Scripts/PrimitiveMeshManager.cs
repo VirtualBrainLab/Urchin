@@ -1,3 +1,4 @@
+using CoordinateSpaces;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,11 +8,11 @@ public class PrimitiveMeshManager : MonoBehaviour
 {
     //Keeping a dictionary mapping names of objects to the game object in schene
     private Dictionary<string, MeshRenderer> _primMeshRenderers;
-    [SerializeField] private GameObject _primMeshManagerPrefab;
+    [SerializeField] private GameObject _cubePrefab;
 
     private void Awake()
     {
-        _primMeshManagerPrefab = new();
+        _primMeshRenderers= new Dictionary<string, MeshRenderer>();
     }
     // Start is called before the first frame update
     void Start() 
@@ -23,7 +24,7 @@ public class PrimitiveMeshManager : MonoBehaviour
     {
         foreach(string mesh in meshes)
         {
-            GameObject tempObject = Instantiate(_primMeshManagerPrefab);
+            GameObject tempObject = Instantiate(_cubePrefab);
             tempObject.name = $"primMesh_{mesh}";
             _primMeshRenderers.Add(mesh, tempObject.GetComponent<MeshRenderer>());
             //creates new entry to dictionary w name meshes[mesh] and associates it w a new Game Object (cube as of 1/25/23)
@@ -49,6 +50,12 @@ public class PrimitiveMeshManager : MonoBehaviour
             List<float> data = meshPositions[meshName];
             Vector3 position = new Vector3 (data[0], data[1], data[2]);
             MeshRenderer tempMesh = _primMeshRenderers[meshName];
+
+            // Example of how a CoordinateSpace could be used to position this mesh
+            // CCFSpace tempCoordinateSpace = new CCFSpace();
+            // Example 1: User passed coordinates in CCF space
+            // Vector3 positionWorld = tempCoordinateSpace.Space2World(position);
+
             tempMesh.transform.position = position;
         }
     }
