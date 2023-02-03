@@ -10220,6 +10220,38 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2090116336}
     m_Modifications:
+    - target: {fileID: 825797536729829355, guid: 78db869fb2ad5f24db11353578ea4d54, type: 3}
+      propertyPath: _probeParentT
+      value: 
+      objectReference: {fileID: 1878764715}
+    - target: {fileID: 825797536729829355, guid: 78db869fb2ad5f24db11353578ea4d54, type: 3}
+      propertyPath: _defaultProbeStyle
+      value: line
+      objectReference: {fileID: 0}
+    - target: {fileID: 825797536729829355, guid: 78db869fb2ad5f24db11353578ea4d54, type: 3}
+      propertyPath: _probePrefabNames.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 825797536729829355, guid: 78db869fb2ad5f24db11353578ea4d54, type: 3}
+      propertyPath: _probePrefabOptions.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 825797536729829355, guid: 78db869fb2ad5f24db11353578ea4d54, type: 3}
+      propertyPath: _probePrefabNames.Array.data[0]
+      value: line
+      objectReference: {fileID: 0}
+    - target: {fileID: 825797536729829355, guid: 78db869fb2ad5f24db11353578ea4d54, type: 3}
+      propertyPath: _probePrefabNames.Array.data[1]
+      value: np24
+      objectReference: {fileID: 0}
+    - target: {fileID: 825797536729829355, guid: 78db869fb2ad5f24db11353578ea4d54, type: 3}
+      propertyPath: _probePrefabOptions.Array.data[0]
+      value: 
+      objectReference: {fileID: 2507564506256405100, guid: bbfd294d9a4375144b5214e4196f5d20, type: 3}
+    - target: {fileID: 825797536729829355, guid: 78db869fb2ad5f24db11353578ea4d54, type: 3}
+      propertyPath: _probePrefabOptions.Array.data[1]
+      value: 
+      objectReference: {fileID: 8943063119080654577, guid: c6cbe13bba479184aa05bff7d11023f5, type: 3}
     - target: {fileID: 1441926275235801578, guid: 78db869fb2ad5f24db11353578ea4d54, type: 3}
       propertyPath: m_Name
       value: Probes

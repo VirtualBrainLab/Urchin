@@ -274,7 +274,7 @@ public class Client : MonoBehaviour
             cameraControl.SetCameraTarget(center);
         }
         else
-            main.Log("Failed to find node to set camera target: " + obj);
+            UM_Launch.Log("Failed to find node to set camera target: " + obj);
     }
 
     private void SetCameraTarget(List<float> mlapdv)
@@ -301,7 +301,7 @@ public class Client : MonoBehaviour
         {
             case "all":
                 ClearNeurons();
-                ClearProbes();
+                _probeManager.ClearProbes();
                 ClearAreas();
                 ClearVolumes();
                 ClearTexts();
@@ -310,7 +310,7 @@ public class Client : MonoBehaviour
                 ClearNeurons();
                 break;
             case "probes":
-                ClearProbes();
+                _probeManager.ClearProbes();
                 break;
             case "areas":
                 ClearAreas();
@@ -330,15 +330,6 @@ public class Client : MonoBehaviour
         foreach (GameObject neuron in neurons.Values)
             Destroy(neuron);
         neurons = new Dictionary<string, GameObject>();
-    }
-
-    private void ClearProbes()
-    {
-        Debug.Log("(Client) Clearing probes");
-        foreach (GameObject probe in probes.Values)
-            Destroy(probe);
-        probes = new Dictionary<string, GameObject>();
-        probeCoordinates = new Dictionary<string, Vector3[]>();
     }
 
     private void ClearAreas()
@@ -372,12 +363,12 @@ public class Client : MonoBehaviour
 
     private void SetVolumeAnnotationColor(Dictionary<string, string> data)
     {
-        main.Log("Not implemented");
+        UM_Launch.Log("Not implemented");
     }
 
     private void SetVolumeSlice(List<float> obj)
     {
-        main.Log("Not implemented");
+        UM_Launch.Log("Not implemented");
     }
 
     // NEURONS
@@ -390,26 +381,26 @@ public class Client : MonoBehaviour
 
     private void UpdateNeuronScale(Dictionary<string, float> data)
     {
-        main.Log("Updating neuron scale");
+        UM_Launch.Log("Updating neuron scale");
         foreach (KeyValuePair<string, float> kvp in data)
             neurons[kvp.Key].transform.localScale = Vector3.one * kvp.Value;
     }
 
     private void UpdateNeuronShape(Dictionary<string, string> data)
     {
-        main.Log("Updating neuron shapes");
+        UM_Launch.Log("Updating neuron shapes");
         foreach (KeyValuePair<string, string> kvp in data)
         {
             if (neuronMeshNames.Contains(kvp.Value))
                 neurons[kvp.Key].GetComponent<MeshFilter>().mesh = neuronMeshList[neuronMeshNames.IndexOf(kvp.Value)];
             else
-                main.Log("Mesh type: " + kvp.Value + " does not exist");
+                UM_Launch.Log("Mesh type: " + kvp.Value + " does not exist");
         }
     }
 
     private void UpdateNeuronColor(Dictionary<string, string> data)
     {
-        main.Log("Updating neuron color");
+        UM_Launch.Log("Updating neuron color");
         foreach (KeyValuePair<string, string> kvp in data)
         {
 
@@ -419,14 +410,14 @@ public class Client : MonoBehaviour
                 neurons[kvp.Key].GetComponent<Renderer>().material.color = newColor;
             }
             else
-                main.Log("Failed to set neuron color to: " + kvp.Value);
+                UM_Launch.Log("Failed to set neuron color to: " + kvp.Value);
         }
     }
 
     // Takes coordinates in ML AP DV in um units
     private void UpdateNeuronPos(Dictionary<string, List<float>> data)
     {
-        main.Log("Updating neuron positions");
+        UM_Launch.Log("Updating neuron positions");
         foreach (KeyValuePair<string, List<float>> kvp in data)
         {
             neurons[kvp.Key].transform.localPosition = new Vector3(-kvp.Value[0]/1000f, -kvp.Value[2]/1000f, kvp.Value[1]/1000f);
@@ -435,7 +426,7 @@ public class Client : MonoBehaviour
 
     private void CreateNeurons(List<string> data)
     {
-        main.Log("Creating neurons");
+        UM_Launch.Log("Creating neurons");
         foreach (string id in data)
         {
             neurons.Add(id, Instantiate(neuronPrefab, neuronParent));
@@ -444,7 +435,7 @@ public class Client : MonoBehaviour
 
     private void DeleteNeurons(List<string> data)
     {
-        main.Log("Deleting neurons");
+        UM_Launch.Log("Deleting neurons");
         foreach (string id in data)
         {
             Destroy(neurons[id]);
@@ -563,7 +554,7 @@ public class Client : MonoBehaviour
                     node.SetColorOneSided(main.GetColormapColor(currentValue), false, true);
             }
             else
-                main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+                UM_Launch.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
         }
     }
 
@@ -577,7 +568,7 @@ public class Client : MonoBehaviour
             nodeTask = modelControl.LoadBerylNodes(false);
         else
         {
-            main.Log("Failed to load nodes: " + whichNodes);
+            UM_Launch.Log("Failed to load nodes: " + whichNodes);
             LogError("Node group " + whichNodes + " does not exist.");
             return;
         }
@@ -636,7 +627,7 @@ public class Client : MonoBehaviour
                     node.SetColorOneSided(newColor, false, true);
             }
             else
-                main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+                UM_Launch.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
         }
     }
 
@@ -657,7 +648,7 @@ public class Client : MonoBehaviour
             }
             if (nodeTasks.ContainsKey(node.ID))
             {
-                main.Log("Node " + node.ID + " is already being loaded, did you send duplicate instructions?");
+                UM_Launch.Log("Node " + node.ID + " is already being loaded, did you send duplicate instructions?");
                 continue;
             }
 
@@ -727,7 +718,7 @@ public class Client : MonoBehaviour
                     node.SetShaderPropertyOneSided("_Alpha", kvp.Value, false);
             }
             else
-                main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+                UM_Launch.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
         }
     }
     private async void SetAreaIntensity(Dictionary<string, float> data)
@@ -756,7 +747,7 @@ public class Client : MonoBehaviour
                     node.SetColorOneSided(main.GetColormapColor(kvp.Value), false, true);
             }
             else
-                main.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+                UM_Launch.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
         }
     }
 

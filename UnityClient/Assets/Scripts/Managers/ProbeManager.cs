@@ -151,6 +151,15 @@ public class ProbeManager : MonoBehaviour
         }
     }
 
+    public void ClearProbes()
+    {
+        Debug.Log("(Client) Clearing probes");
+        foreach (GameObject probe in _probes.Values)
+            Destroy(probe);
+        _probes = new Dictionary<string, GameObject>();
+        _probeCoordinates = new Dictionary<string, Vector3[]>();
+    }
+
     #endregion
 
     #region Private helpers
