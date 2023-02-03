@@ -86,3 +86,5 @@ Examples/bwm_peth/data/*
 
 urchin-venv/*
 API/urchin-venv/*
+Examples/steinmetz_3dvol_test/testwf4.npy
+Examples/bwm_coverage/lab_clusters.csv
