@@ -1,14 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using BestHTTP.SocketIO3;
 using System;
 using System.Linq;
 using TMPro;
-using Unity.Entities;
 using System.Threading.Tasks;
-using System.Collections.Specialized;
-using System.Text;
 
 /// <summary>
 /// Entry point for all client-side messages coming from the Python API
@@ -164,7 +160,7 @@ public class UM_Client : MonoBehaviour
         manager.Socket.On<string>("Clear", Clear);
 
         // If we are building to WebGL or to Standalone, switch how you acquire the user's ID
-#if UNITY_EDITOR && UNITY_EDITOR_WIN
+#if UNITY_EDITOR && UNITY_EDITOR_WIN 
         ID = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
         if (ID.Contains("\\"))
         {

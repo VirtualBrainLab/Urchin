@@ -1,0 +1,179 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &161993171994875575
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 161993171994875572}
+  - component: {fileID: 161993171994875573}
+  - component: {fileID: 161993171994875466}
+  - component: {fileID: 161993171994875574}
+  - component: {fileID: 161993171994875470}
+  - component: {fileID: 161993171994875471}
+  - component: {fileID: 161993171994875467}
+  m_Layer: 0
+  m_Name: main
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &161993171994875572
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161993171994875575}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 44.30603, y: 42.38436, z: -41.827755}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &161993171994875573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161993171994875575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d93ba8ff78b44b64b806ea677c9151d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  heightPerToggle: 20
+  loadBerylDepth: 1
+  overrideNetwork: 1
+  brainRegionMaterials:
+  - {fileID: 2100000, guid: 4fdce846a282bef42af0221c4d4da68d, type: 2}
+  - {fileID: 2100000, guid: 4fdce846a282bef42af0221c4d4da68d, type: 2}
+  - {fileID: 2100000, guid: f105eb238dcc87744a1e76aeecbe1bc0, type: 2}
+  - {fileID: 2100000, guid: 77ae49eeea4656242bf40d119e6f7f0f, type: 2}
+  - {fileID: 2100000, guid: 2a8f9060c91986e4083dd67bf487177b, type: 2}
+  - {fileID: 2100000, guid: 985ea6e720ac003459443e2632bde924, type: 2}
+  - {fileID: 2100000, guid: b8a04b95bf5e0fe4dbdfd3978413393d, type: 2}
+  brainRegionMaterialNames:
+  - default
+  - opaque-lit
+  - opaque-unlit
+  - toon
+  - toon-outline
+  - transparent-lit
+  - transparent-unlit
+--- !u!114 &161993171994875466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161993171994875575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13968967245d3674eb77f631223a57f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &161993171994875574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161993171994875575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01102d1e79ed0f646a707fd0c57cedcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  modelControl: {fileID: 161993171994875573}
+  cameraController: {fileID: 0}
+  client: {fileID: 161993171994875470}
+  settingsPanel: {fileID: 0}
+  brainControlsT: {fileID: 0}
+  consolePanel: {fileID: 0}
+  consoleText: {fileID: 0}
+  idPanel: {fileID: 0}
+  infoPanelText: {fileID: 0}
+  loadDefaults: 0
+  axesGO: {fileID: 0}
+  gridGO: {fileID: 0}
+  percentageExploded: 0
+  cosmosParentObjects:
+  - {fileID: 0}
+  - {fileID: 0}
+--- !u!114 &161993171994875470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161993171994875575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08465a20c95d19143ab4f2d49740530b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  main: {fileID: 161993171994875574}
+  modelControl: {fileID: 161993171994875573}
+  cameraControl: {fileID: 0}
+  localhost: 1
+  uiCanvas: {fileID: 0}
+  idInput: {fileID: 0}
+  volRenderer: {fileID: 0}
+  neuronPrefab: {fileID: 7973822280577014711, guid: f3a0350e123573d41a17b28587350ada, type: 3}
+  neuronMeshList:
+  - {fileID: 10207, guid: 0000000000000000e000000000000000, type: 3}
+  - {fileID: 10202, guid: 0000000000000000e000000000000000, type: 3}
+  neuronMeshNames:
+  - sphere
+  - cube
+  neuronParent: {fileID: 0}
+  probePrefab: {fileID: 8943063119080654577, guid: c6cbe13bba479184aa05bff7d11023f5, type: 3}
+  probeLinePrefab: {fileID: 2507564506256405100, guid: bbfd294d9a4375144b5214e4196f5d20, type: 3}
+  probeParent: {fileID: 0}
+  textParent: {fileID: 0}
+  textPrefab: {fileID: 6770107022373063410, guid: 91207b2304d756945a8e98e4a7c9ec67, type: 3}
+  _lineRendererManager: {fileID: 0}
+  _primitiveMeshManager: {fileID: 0}
+--- !u!95 &161993171994875471
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161993171994875575}
+  m_Enabled: 0
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ba0d1c3e7e6db084cb41f53b268a2592, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &161993171994875467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161993171994875575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de7e19699c62fef4d8e2f16cfb5e8b22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  addressablesStorageRemotePath: https://data.virtualbrainlab.org/AddressablesStorage
+  buildVersion: 0.2.2
+  delayCatalogLoad: 0
