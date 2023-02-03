@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 /// TODO:
 ///  - needs a refactor to separate neurons/probes/text/areas and put them in their own components
 /// </summary>
-public class UM_Client : MonoBehaviour
+public class Client : MonoBehaviour
 {
     [SerializeField] UM_Launch main;
     [SerializeField] CCFModelControl modelControl;
@@ -34,23 +34,19 @@ public class UM_Client : MonoBehaviour
     [SerializeField] private Transform neuronParent;
     private Dictionary<string, GameObject> neurons;
 
-    // PROBES
-    [SerializeField] private GameObject probePrefab;
-    [SerializeField] private GameObject probeLinePrefab;
-    [SerializeField] private Transform probeParent;
-    private Dictionary<string, GameObject> probes;
-    private Dictionary<string, Vector3[]> probeCoordinates;
-
     // TEXT
     [SerializeField] private GameObject textParent;
     [SerializeField] private GameObject textPrefab;
     private Dictionary<string, GameObject> texts;
 
-    //Line Renderer
+    #region Managers
     [SerializeField] private LineRendererManager _lineRendererManager;
+    [SerializeField] private PrimitiveMeshManager _primitiveMeshManager;
+    [SerializeField] private ProbeManager _probeManager;
+    #endregion
+    //Line Renderer
 
     //Primitive Mesh Renderer
-    [SerializeField] private PrimitiveMeshManager _primitiveMeshManager; 
 
     // NODES
     public List<CCFTreeNode> visibleNodes { get; private set; }
@@ -58,7 +54,7 @@ public class UM_Client : MonoBehaviour
 
     private string ID;
 
-    SocketManager manager;
+    private static SocketManager manager;
 
     /// <summary>
     /// Unity internal startup function, initializes internal variables and allocates memory
@@ -66,9 +62,7 @@ public class UM_Client : MonoBehaviour
     private void Awake()
     {
         neurons = new Dictionary<string, GameObject>();
-        probes = new Dictionary<string, GameObject>();
         nodeTasks = new Dictionary<int, Task>();
-        probeCoordinates = new Dictionary<string, Vector3[]>();
         visibleNodes = new List<CCFTreeNode>();
         texts = new Dictionary<string, GameObject>();
     }
@@ -118,13 +112,13 @@ public class UM_Client : MonoBehaviour
         manager.Socket.On<Dictionary<string, string>>("SetNeuronMaterial", UpdateNeuronMaterial);
 
         // Probes
-        manager.Socket.On<List<string>>("CreateProbes", CreateProbes);
-        manager.Socket.On<List<string>>("DeleteProbes", DeleteProbes);
-        manager.Socket.On<Dictionary<string, string>>("SetProbeColors", UpdateProbeColors);
-        manager.Socket.On<Dictionary<string, List<float>>>("SetProbePos", UpdateProbePos);
-        manager.Socket.On<Dictionary<string, List<float>>>("SetProbeAngles", UpdateProbeAngles);
-        manager.Socket.On<Dictionary<string, string>>("SetProbeStyle", UpdateProbeStyle);
-        manager.Socket.On<Dictionary<string, List<float>>>("SetProbeSize", UpdateProbeScale);
+        manager.Socket.On<List<string>>("CreateProbes", _probeManager.CreateProbes);
+        manager.Socket.On<List<string>>("DeleteProbes", _probeManager.DeleteProbes);
+        manager.Socket.On<Dictionary<string, string>>("SetProbeColors", _probeManager.SetProbeColor);
+        manager.Socket.On<Dictionary<string, List<float>>>("SetProbePos", _probeManager.SetProbePosition);
+        manager.Socket.On<Dictionary<string, List<float>>>("SetProbeAngles", _probeManager.SetProbeAngle);
+        manager.Socket.On<Dictionary<string, string>>("SetProbeStyle", _probeManager.SetProbeStyle);
+        manager.Socket.On<Dictionary<string, List<float>>>("SetProbeSize", _probeManager.SetProbeScale);
 
         // Camera
         manager.Socket.On<List<float>>("SetCameraTarget", SetCameraTarget);
@@ -375,125 +369,6 @@ public class UM_Client : MonoBehaviour
     }
 
 #endregion
-
-    // PROBE CONTROLS
-
-    private void UpdateProbeStyle(Dictionary<string, string> data)
-    {
-        main.Log("Not implemented");
-    }
-
-    private void UpdateProbeAngles(Dictionary<string, List<float>> data)
-    {
-        foreach (KeyValuePair<string, List<float>> kvp in data)
-        {
-            if (probes.ContainsKey(kvp.Key))
-            {
-                // store coordinates in mlapdv       
-                probeCoordinates[kvp.Key][1] = new Vector3(kvp.Value[0], kvp.Value[1], kvp.Value[2]);
-                SetProbePositionAndAngles(kvp.Key);
-            }
-            else
-                main.Log("Probe " + kvp.Key + " not found");
-        }
-    }
-
-    private void UpdateProbePos(Dictionary<string, List<float>> data)
-    {
-        foreach (KeyValuePair<string, List<float>> kvp in data)
-        {
-            if (probes.ContainsKey(kvp.Key))
-            {
-                // store coordinates in mlapdv       
-                probeCoordinates[kvp.Key][0] = new Vector3(kvp.Value[0], kvp.Value[1], kvp.Value[2]);
-                SetProbePositionAndAngles(kvp.Key);
-            }
-            else
-                main.Log("Probe " + kvp.Key + " not found");
-        }
-    }
-
-    private void SetProbePositionAndAngles(string probeName)
-    {
-        Vector3 pos = probeCoordinates[probeName][0];
-        Vector3 angles = probeCoordinates[probeName][1];
-        Transform probeT = probes[probeName].transform;
-
-        // reset position and angles
-        probeT.transform.localPosition = Vector3.zero;
-        probeT.localRotation = Quaternion.identity;
-
-        // then translate
-        probeT.Translate(new Vector3(-pos.x / 1000f, -pos.z / 1000f, pos.y / 1000f));
-        // rotate around azimuth first
-        probeT.RotateAround(probeT.position, Vector3.up, -angles.x -90f);
-        // then elevation
-        probeT.RotateAround(probeT.position, probeT.right, angles.y);
-        // then spin
-        probeT.RotateAround(probeT.position, probeT.up, angles.z);
-
-    }
-
-    private void UpdateProbeColors(Dictionary<string, string> data)
-    {
-        foreach (KeyValuePair<string, string> kvp in data)
-        {
-            if (probes.ContainsKey(kvp.Key))
-            {
-                Color newColor;
-                if (ColorUtility.TryParseHtmlString(kvp.Value, out newColor))
-                {
-                    Debug.Log("Setting " + kvp.Key + " to " + kvp.Value);
-                    probes[kvp.Key].GetComponentInChildren<Renderer>().material.color = newColor;
-                }
-            }
-            else
-                main.Log("Probe " + kvp.Key + " not found");
-        }
-    }
-
-    private void UpdateProbeScale(Dictionary<string, List<float>> data)
-    {
-        foreach (KeyValuePair<string, List<float>> kvp in data)
-        {
-            if (probes.ContainsKey(kvp.Key))
-            {
-                // store coordinates in mlapdv       
-                probes[kvp.Key].transform.GetChild(0).localScale = new Vector3(kvp.Value[0], kvp.Value[1], kvp.Value[2]);
-                probes[kvp.Key].transform.GetChild(0).localPosition = new Vector3(0f, kvp.Value[1] / 2, 0f);
-            }
-            else
-                main.Log("Probe " + kvp.Key + " not found");
-        }
-    }
-
-    private void CreateProbes(List<string> data)
-    {
-        foreach (string probeName in data)
-        {
-            if (!probes.ContainsKey(probeName))
-            {
-                GameObject newProbe = Instantiate(probeLinePrefab, probeParent);
-                probes.Add(probeName, newProbe);
-                probeCoordinates.Add(probeName, new Vector3[2]);
-                SetProbePositionAndAngles(probeName);
-                main.Log("Created probe: " + probeName);
-            }
-            else
-            {
-                LogError(string.Format("Probe {0} already exists in the scene",probeName));
-            }
-        }
-    }
-
-    private void DeleteProbes(List<string> data)
-    {
-        foreach (string probeName in data)
-        {
-            Destroy(probes[probeName]);
-            probes.Remove(probeName);
-        }
-    }
 
     private void SetVolumeAnnotationColor(Dictionary<string, string> data)
     {
@@ -988,7 +863,7 @@ public class UM_Client : MonoBehaviour
     ////
     public void UpdateID(string newID)
     {
-        main.Log("Updating ID to : " + newID);
+        UM_Launch.Log("Updating ID to : " + newID);
         ID = newID;
         manager.Socket.Emit("ID", new List<string>() { ID, "receive" });
     }
@@ -1000,25 +875,25 @@ public class UM_Client : MonoBehaviour
 
     private void Connected()
     {
-        main.Log("connected! Login with ID: " + ID);
+        UM_Launch.Log("connected! Login with ID: " + ID);
         UpdateID(ID);
     }
 
-    private void Log(string msg)
+    public static void Log(string msg)
     {
-        main.Log("Sending message to client: " + msg);
+        UM_Launch.Log("Sending message to client: " + msg);
         manager.Socket.Emit("log", msg);
     }
 
-    private void LogWarning(string msg)
+    public static void LogWarning(string msg)
     {
-        main.Log("Sending warning to client: " + msg);
+        UM_Launch.Log("Sending warning to client: " + msg);
         manager.Socket.Emit("log-warning", msg);
     }
 
-    private void LogError(string msg)
+    public static void LogError(string msg)
     {
-        main.Log("Sending error to client: " + msg);
+        UM_Launch.Log("Sending error to client: " + msg);
         manager.Socket.Emit("log-error", msg);
     }
 }

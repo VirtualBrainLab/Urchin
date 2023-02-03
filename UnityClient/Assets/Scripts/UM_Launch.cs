@@ -7,9 +7,13 @@ using UnityEngine;
 
 public class UM_Launch : MonoBehaviour
 {
+    #region Static
+    public static UM_Launch Instance;
+    #endregion
+
     [SerializeField] private CCFModelControl modelControl;
     [SerializeField] private BrainCameraController cameraController;
-    [SerializeField] private UM_Client client;
+    [SerializeField] private Client client;
 
     [SerializeField] private GameObject settingsPanel;
     [SerializeField] private Transform brainControlsT;
@@ -64,6 +68,11 @@ public class UM_Launch : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance == null)
+            Instance = this;
+        else
+            throw new Exception("There should only be on UM_Launch component in the scene");
+
         colormaps = new List<Converter<float, Color>>();
         colormaps.Add(Cool);
         colormaps.Add(Grey);
@@ -248,11 +257,11 @@ public class UM_Launch : MonoBehaviour
         }
     }
 
-    public void Log(string text)
+    public static void Log(string text)
     {
         // Todo: deal with log running off the screen
         Debug.Log(text);
-        consoleText.text += "\n" + text;
+        Instance.consoleText.text += "\n" + text;
     }
 
     public void SetLeftExplodeOnly(bool state)
