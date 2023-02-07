@@ -35,6 +35,7 @@ public class UM_Launch : MonoBehaviour
     [Range(0,1), SerializeField] private float percentageExploded = 0f;
     private float prevPerc = 0f;
     private bool explodeLeftOnly;
+    private bool exploded;
     public bool colorLeftOnly { get; private set; }
 
     private Vector3 center = new Vector3(5.7f, 4f, -6.6f);
@@ -188,11 +189,11 @@ public class UM_Launch : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            AnimateExplode(2f);
+            KeyExplodeImplode(2f);
         }
         if (Input.GetKeyDown(KeyCode.Alpha5))
         {
-            AnimateExplode(5f);
+            KeyExplodeImplode(5f);
         }
     }
 
@@ -345,6 +346,15 @@ public class UM_Launch : MonoBehaviour
     {
         foreach (TMP_Text text in infoPanelText.GetComponentsInChildren<TMP_Text>())
             text.color = state ? Color.black : Color.white;
+    }
+
+    public void KeyExplodeImplode(float explodeTime)
+    {
+        exploded = !exploded;
+        if (exploded)
+            StartCoroutine(AnimateExplodeHelper(explodeTime));
+        else
+            StartCoroutine(AnimateImplodeHelper(explodeTime));
     }
 
     public void AnimateExplode(float explodeTime)
