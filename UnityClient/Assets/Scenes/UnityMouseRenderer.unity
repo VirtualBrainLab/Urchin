@@ -664,6 +664,17 @@ MonoBehaviour:
   volumeLoadingUIGO: {fileID: 669598001}
   volumeLoadingUIText: {fileID: 1886370249}
   cameraControl: {fileID: 1861690900}
+--- !u!114 &116938375 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8530910349071366770, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+  m_PrefabInstance: {fileID: 231208879068536369}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3164e716bd1d6e4ca85bf55b0655741, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &197831418
 GameObject:
   m_ObjectHideFlags: 0
@@ -8956,6 +8967,17 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2072997662}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &2082628423 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 825797536729829355, guid: 78db869fb2ad5f24db11353578ea4d54, type: 3}
+  m_PrefabInstance: {fileID: 3535810127808829419}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01d7c98f724b46f4db70fef03b2c6fba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &2085804438 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7270662322929134335, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
@@ -9411,6 +9433,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 858013925}
     - target: {fileID: 161993171994875470, guid: 8d78849a732a3e54c8a6dfcda3795ec0, type: 3}
+      propertyPath: localhost
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 161993171994875470, guid: 8d78849a732a3e54c8a6dfcda3795ec0, type: 3}
       propertyPath: textParent
       value: 
       objectReference: {fileID: 1648926224}
@@ -9426,6 +9452,10 @@ PrefabInstance:
       propertyPath: neuronParent
       value: 
       objectReference: {fileID: 1010559012}
+    - target: {fileID: 161993171994875470, guid: 8d78849a732a3e54c8a6dfcda3795ec0, type: 3}
+      propertyPath: _probeManager
+      value: 
+      objectReference: {fileID: 2082628423}
     - target: {fileID: 161993171994875470, guid: 8d78849a732a3e54c8a6dfcda3795ec0, type: 3}
       propertyPath: cameraControl
       value: 
@@ -9510,6 +9540,10 @@ PrefabInstance:
       propertyPath: settingsPanel
       value: 
       objectReference: {fileID: 1477246862}
+    - target: {fileID: 161993171994875574, guid: 8d78849a732a3e54c8a6dfcda3795ec0, type: 3}
+      propertyPath: _colormapPanel
+      value: 
+      objectReference: {fileID: 116938375}
     - target: {fileID: 161993171994875574, guid: 8d78849a732a3e54c8a6dfcda3795ec0, type: 3}
       propertyPath: brainControlsT
       value: 
@@ -10007,10 +10041,26 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 231208880084226981, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_Name
+      value: Implode2
+      objectReference: {fileID: 0}
+    - target: {fileID: 231208880084226983, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 231208880084226983, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1595768701}
+    - target: {fileID: 231208880084226983, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: AnimateImplode
+      objectReference: {fileID: 0}
+    - target: {fileID: 231208880084226983, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_FloatArgument
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 231208880150298867, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -10159,10 +10209,26 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1861690900}
+    - target: {fileID: 231208880617230026, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_Name
+      value: Explode2
+      objectReference: {fileID: 0}
+    - target: {fileID: 231208880617230028, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 231208880617230028, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1595768701}
+    - target: {fileID: 231208880617230028, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: AnimateExplode
+      objectReference: {fileID: 0}
+    - target: {fileID: 231208880617230028, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_FloatArgument
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 231208880617230029, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -10178,6 +10244,38 @@ PrefabInstance:
     - target: {fileID: 231208880617230029, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3764308364162813692, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3764308364162813692, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3764308364162813692, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3764308364162813692, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5873102397275390939, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5873102397275390939, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1595768701}
+    - target: {fileID: 5873102397275390939, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: AnimateExplode
+      objectReference: {fileID: 0}
+    - target: {fileID: 5873102397275390939, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_FloatArgument
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7270662321234023859, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
       propertyPath: brainCameraController
@@ -10211,6 +10309,38 @@ PrefabInstance:
       propertyPath: cameraController
       value: 
       objectReference: {fileID: 1861690901}
+    - target: {fileID: 7958904233872172113, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7958904233872172113, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1595768701}
+    - target: {fileID: 7958904233872172113, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: AnimateImplode
+      objectReference: {fileID: 0}
+    - target: {fileID: 7958904233872172113, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_FloatArgument
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8127490540921411728, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8127490540921411728, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8127490540921411728, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8127490540921411728, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
 --- !u!1001 &3535810127808829419

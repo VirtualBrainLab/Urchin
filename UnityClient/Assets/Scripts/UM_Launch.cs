@@ -185,6 +185,15 @@ public class UM_Launch : MonoBehaviour
         {
             idPanel.SetActive(!idPanel.activeSelf);
         }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            AnimateExplode(2f);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            AnimateExplode(5f);
+        }
     }
 
     public void RegisterNode(CCFTreeNode node)
@@ -338,18 +347,17 @@ public class UM_Launch : MonoBehaviour
             text.color = state ? Color.black : Color.white;
     }
 
-    public void AnimateExplode()
+    public void AnimateExplode(float explodeTime)
     {
-        StartCoroutine(AnimateExplodeHelper());
+        StartCoroutine(AnimateExplodeHelper(explodeTime));
     }
-    public void AnimateImplode()
+    public void AnimateImplode(float explodeTime)
     {
-        StartCoroutine(AnimateImplodeHelper());
+        StartCoroutine(AnimateImplodeHelper(explodeTime));
     }
 
-    private IEnumerator AnimateExplodeHelper()
+    private IEnumerator AnimateExplodeHelper(float explodeTime)
     {
-        float explodeTime = 2f;
         float start = Time.realtimeSinceStartup;
         float end = explodeTime + start;
 
@@ -359,9 +367,8 @@ public class UM_Launch : MonoBehaviour
             percentageExploded = Mathf.InverseLerp(start, end, Time.realtimeSinceStartup);
         }
     }
-    private IEnumerator AnimateImplodeHelper()
+    private IEnumerator AnimateImplodeHelper(float explodeTime)
     {
-        float explodeTime = 2f;
         float start = Time.realtimeSinceStartup;
         float end = explodeTime + start;
 

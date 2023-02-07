@@ -633,6 +633,7 @@ public class Client : MonoBehaviour
 
     private void SetAreaVisibility(Dictionary<string, bool> data)
     {
+        Debug.Log("Here");
         foreach (KeyValuePair<string, bool> kvp in data)
         {
             (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
