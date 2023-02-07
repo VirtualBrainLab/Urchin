@@ -14,6 +14,7 @@ public class UM_Launch : MonoBehaviour
     [SerializeField] private CCFModelControl modelControl;
     [SerializeField] private BrainCameraController cameraController;
     [SerializeField] private Client client;
+    [SerializeField] private ColormapPanel _colormapPanel;
 
     [SerializeField] private GameObject settingsPanel;
     [SerializeField] private Transform brainControlsT;
@@ -43,7 +44,7 @@ public class UM_Launch : MonoBehaviour
 
     // Colormaps
     private List<Converter<float, Color>> colormaps;
-    private List<string> colormapOptions = new List<string>{"cool","gray","grey-green","grey-purple","grey-red"};
+    private List<string> colormapOptions = new List<string>{"cool","gray","grey-green","grey-purple","grey-red","grey-rainbow"};
     private Converter<float, Color> activeColormap;
 
     // Starting colors
@@ -79,6 +80,7 @@ public class UM_Launch : MonoBehaviour
         colormaps.Add(GreyGreen);
         colormaps.Add(GreyPurple);
         colormaps.Add(GreyRed);
+        colormaps.Add(GreyRainbow);
         activeColormap = Cool;
 
         originalTransformPositionsLeft = new Dictionary<int, Vector3>();
@@ -207,6 +209,9 @@ public class UM_Launch : MonoBehaviour
             activeColormap = colormaps[colormapOptions.IndexOf(newColormap)];
         else
             Log("Colormap " + newColormap + " not an available option");
+
+        _colormapPanel.SetColormap(activeColormap);
+        _colormapPanel.SetColormapVisibility(true);
     }
 
     // [TODO] Refactor colormaps into their own class
@@ -239,6 +244,20 @@ public class UM_Launch : MonoBehaviour
     {
         perc = CheckColormapRange(perc);
         return GreyGradient(perc, lightred, darkred);
+    }
+
+    public Color GreyRainbow(float perc)
+    {
+        if (perc == 0)
+            return Color.grey;
+        else
+        {
+            // Interpolate rainbow map
+            float red = Mathf.Abs(2f * perc - 0.5f);
+            float green = Mathf.Sin(perc * Mathf.PI);
+            float blue = Mathf.Cos(perc * Mathf.PI / 2);
+            return new Color(red, green, blue);
+        }
     }
 
     public float CheckColormapRange(float perc)

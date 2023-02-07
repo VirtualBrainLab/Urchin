@@ -685,6 +685,8 @@ public class Client : MonoBehaviour
 
         node.LoadNodeModel(full, leftSide || rightSide);
 
+        nodeTasks.Add(ID, node.GetLoadedTask(full));
+
         await node.GetLoadedTask(full);
 
         main.RegisterNode(node);
