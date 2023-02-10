@@ -220,20 +220,20 @@ io.on("connection", function (socket) {
     emitToReceiver(socket.id, 'SetTextPositions', data);
   });
 
-    // Line Renderer
-  
-    socket.on('CreateLine', function(data) {
-      emitToReceiver(socket.id, 'CreateLine', data);
-    });
-    socket.on('DeleteLine', function(data) {
-      emitToReceiver(socket.id, 'DeleteLine', data);
-    });
-    socket.on('SetLinePosition', function(data) {
-      emitToReceiver(socket.id, 'SetLinePosition', data);
-    });
-    socket.on('SetLineColor', function(data) {
-      emitToReceiver(socket.id, 'SetLineColor', data);
-    });
+  // Line Renderer
+
+  socket.on('CreateLine', function(data) {
+    emitToReceiver(socket.id, 'CreateLine', data);
+  });
+  socket.on('DeleteLine', function(data) {
+    emitToReceiver(socket.id, 'DeleteLine', data);
+  });
+  socket.on('SetLinePosition', function(data) {
+    emitToReceiver(socket.id, 'SetLinePosition', data);
+  });
+  socket.on('SetLineColor', function(data) {
+    emitToReceiver(socket.id, 'SetLineColor', data);
+  });
 
   // Primitive Mesh Renderer
   socket.on('CreateMesh', function(data) {

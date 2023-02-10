@@ -9522,6 +9522,14 @@ PrefabInstance:
       propertyPath: _primitiveMeshManager
       value: 
       objectReference: {fileID: 226833741}
+    - target: {fileID: 161993171994875470, guid: 8d78849a732a3e54c8a6dfcda3795ec0, type: 3}
+      propertyPath: neuronMeshList.Array.data[0]
+      value: 
+      objectReference: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+    - target: {fileID: 161993171994875470, guid: 8d78849a732a3e54c8a6dfcda3795ec0, type: 3}
+      propertyPath: neuronMeshList.Array.data[1]
+      value: 
+      objectReference: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
     - target: {fileID: 161993171994875572, guid: 8d78849a732a3e54c8a6dfcda3795ec0, type: 3}
       propertyPath: m_RootOrder
       value: 0
