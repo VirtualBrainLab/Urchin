@@ -62,19 +62,31 @@ public class AreaManager : MonoBehaviour
             {
                 node.SetNodeModelVisibility_Full(kvp.Value);
                 _main.RegisterNode(node);
+                VisibleNodes.Add(node);
                 set = true;
+#if UNITY_EDITOR
+                Debug.Log("Setting full model visibility to true");
+#endif
             }
             if (leftSide && node.IsLoaded(false))
             {
-                set = true;
                 node.SetNodeModelVisibility_Left(kvp.Value);
+                _main.RegisterNode(node);
                 VisibleNodes.Add(node);
+                set = true;
+#if UNITY_EDITOR
+                Debug.Log("Setting left model visibility to true");
+#endif
             }
             if (rightSide && node.IsLoaded(false))
             {
                 node.SetNodeModelVisibility_Right(kvp.Value);
+                _main.RegisterNode(node);
                 VisibleNodes.Add(node);
                 set = true;
+#if UNITY_EDITOR
+                Debug.Log("Setting right model visibility to true");
+#endif
             }
 
             if (!set)
@@ -307,9 +319,13 @@ public class AreaManager : MonoBehaviour
 
     private async void LoadIndividualArea(int ID, bool full, bool leftSide, bool rightSide, bool visibility)
     {
+#if UNITY_EDITOR
+        Debug.Log("Loading model");
+#endif
         CCFTreeNode node = _modelControl.tree.findNode(ID);
         VisibleNodes.Add(node);
 
+        Debug.Log((full, leftSide, rightSide));
         node.LoadNodeModel(full, leftSide || rightSide);
 
         await node.GetLoadedTask(full);

@@ -10226,6 +10226,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 231208880477188379, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 500
+      objectReference: {fileID: 0}
     - target: {fileID: 231208880477188383, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
       propertyPath: cameraController
       value: 
@@ -10699,6 +10703,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Areas
       objectReference: {fileID: 0}
+    - target: {fileID: 3651024807761301884, guid: c125545580f82c24fb18f2f68ae38406, type: 3}
+      propertyPath: _main
+      value: 
+      objectReference: {fileID: 1595768701}
+    - target: {fileID: 3651024807761301884, guid: c125545580f82c24fb18f2f68ae38406, type: 3}
+      propertyPath: _modelControl
+      value: 
+      objectReference: {fileID: 161993173589453260}
     - target: {fileID: 4786867244549708177, guid: c125545580f82c24fb18f2f68ae38406, type: 3}
       propertyPath: m_RootOrder
       value: 3
