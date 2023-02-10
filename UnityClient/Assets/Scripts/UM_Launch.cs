@@ -308,7 +308,7 @@ public class UM_Launch : MonoBehaviour
     public void SetLeftColorOnly(bool state)
     {
         colorLeftOnly = state;
-        foreach (CCFTreeNode node in client.visibleNodes)
+        foreach (CCFTreeNode node in AreaManager.VisibleNodes)
             if (state)
                 node.SetColorOneSided(node.DefaultColor, false, false);
             else
@@ -320,7 +320,7 @@ public class UM_Launch : MonoBehaviour
         cameraController.SetControlBlock(true);
 
         Vector3 flipVector = new Vector3(1f, 1f, -1f);
-        foreach (CCFTreeNode node in client.visibleNodes)
+        foreach (CCFTreeNode node in AreaManager.VisibleNodes)
         {
             int cosmos = modelControl.GetCosmosID(node.ID);
             Transform nodeTLeft = node.NodeModelLeftGO.transform;
