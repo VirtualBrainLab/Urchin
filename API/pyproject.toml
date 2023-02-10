@@ -9,7 +9,7 @@ version = "0.4.4"
 authors = [
   { name="Daniel Birman", email="danbirman@gmail.com" },
 ]
-description = "Urchin - Universal Renderer for Neuroscience Python API"
+description = "Urchin - Universal Renderer Creating Helpful Images for Neuroscience Python API"
 readme = "README.md"
 license = { file="LICENSE" }
 requires-python = ">=3.7"
@@ -25,4 +25,4 @@ dependencies = [
 
 [project.urls]
 "Homepage" = "https://virtualbrainlab.org/03_unity_neuro/01_urn_intro.html"
-"Bug Tracker" = "https://github.com/VirtualBrainLab/UnityNeuroscience/issues"
+"Bug Tracker" = "https://github.com/VirtualBrainLab/Urchin/issues"

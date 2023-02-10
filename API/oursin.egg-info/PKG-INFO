@@ -1,5 +1,5 @@
 Metadata-Version: 2.1
-Name: unityneuro
+Name: oursin
 Version: 0.4.4
 Summary: Urchin - Universal Renderer for Neuroscience Python API
 Author-email: Daniel Birman <danbirman@gmail.com>
@@ -687,4 +687,6 @@ Requires-Python: >=3.7
 Description-Content-Type: text/markdown
 License-File: LICENSE
 
-# Urchin - Unity Renderer for Neuroscience Python API
+# Urchin - Unity Renderer Creating Helpful Images for Neuroscience (Python API)
+
+More details can be found on [our website](https://virtualbrainlab.org/03_unity_neuro/01_urn_intro.html)

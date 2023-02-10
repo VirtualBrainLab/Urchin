@@ -2,7 +2,7 @@
 urchin
 ========================================
 
-[![PyPI Version](https://img.shields.io/pypi/v/unityneuro.svg)](https://pypi.org/project/unityneuro/)
+[![PyPI Version](https://img.shields.io/pypi/v/oursin.svg)](https://pypi.org/project/oursin/)
 
 Urchin (Unity Renderer for Neuroscience) is a python package that links your analysis scripts to a standalone brain renderer program, to create graphics like the ones below.
 
@@ -19,25 +19,25 @@ Urchin (Unity Renderer for Neuroscience) is a python package that links your ana
 
 # Quickstart
 
-To install the package run `pip install unityneuro`. To get started open a Python terminal and run:
+To install the package run `pip install oursin`. To get started open a Python terminal and run:
 
 ```
-import unityneuro.render as urn
-urn.setup()
+import oursin as urchin
+urchin.setup()
 ```
 
 A few quick examples to get you started.
 
 ### Render all Allen CCF areas
 ```
-urn.load_beryl_areas()
+urchin.ccf.load_beryl()
 ```
 
 ### Load the basic 3D model of the brain and make it transparent
 ```
-urn.set_area_visibility({"grey":True})
-urn.set_area_material({"grey":"transparent-lit"})
-urn.set_area_alpha({"grey":0.25})
+urchin.ccf.set_visibility({"grey":True})
+urchin.ccf.set_material({"grey":"transparent-lit"})
+urchin.ccf.set_alpha({"grey":0.25})
 ```
 
 # Documentation
