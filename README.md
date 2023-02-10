@@ -2,7 +2,7 @@
 urchin
 ========================================
 
-[![PyPI Version](https://img.shields.io/pypi/v/unityneuro.svg)](https://pypi.org/project/unityneuro/)
+[![PyPI Version](https://img.shields.io/pypi/v/oursin.svg)](https://pypi.org/project/oursin/)
 
 Universal Renderer Creating Helpful Images for Neuroscience (Urchin) is a python package that links your analysis scripts to a standalone brain renderer program, to create graphics like the ones below.
 
@@ -19,11 +19,11 @@ Universal Renderer Creating Helpful Images for Neuroscience (Urchin) is a python
 
 # Quickstart
 
-To install the package run `pip install unityneuro`. To get started open a Python terminal and run:
+To install the package run `pip install oursin`. To get started open a Python terminal and run:
 
 ```
-import unityneuro.render as urn
-urn.setup()
+import oursin as urchin
+urchin.setup()
 ```
 
 ## Examples
@@ -32,10 +32,16 @@ Head over to [Examples/basics](https://github.com/VirtualBrainLab/Urchin/tree/ma
 
 To get you started, try running the code below to load the root brain model. 
 
+### Render all Allen CCF areas
 ```
-urn.set_area_visibility({"grey":True})
-urn.set_area_material({"grey":"transparent-lit"})
-urn.set_area_alpha({"grey":0.25})
+urchin.ccf.load_beryl()
+```
+
+### Render the root area
+```
+urchin.ccf.set_visibility({"grey":True})
+urchin.ccf.set_material({"grey":"transparent-lit"})
+urchin.ccf.set_alpha({"grey":0.25})
 ```
 
 # Documentation

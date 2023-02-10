@@ -220,6 +220,38 @@ io.on("connection", function (socket) {
     emitToReceiver(socket.id, 'SetTextPositions', data);
   });
 
+  // Line Renderer
+
+  socket.on('CreateLine', function(data) {
+    emitToReceiver(socket.id, 'CreateLine', data);
+  });
+  socket.on('DeleteLine', function(data) {
+    emitToReceiver(socket.id, 'DeleteLine', data);
+  });
+  socket.on('SetLinePosition', function(data) {
+    emitToReceiver(socket.id, 'SetLinePosition', data);
+  });
+  socket.on('SetLineColor', function(data) {
+    emitToReceiver(socket.id, 'SetLineColor', data);
+  });
+
+  // Primitive Mesh Renderer
+  socket.on('CreateMesh', function(data) {
+    emitToReceiver(socket.id, 'CreateMesh', data);
+  });
+  socket.on('DeleteMesh', function(data) {
+    emitToReceiver(socket.id, 'DeleteMesh', data);
+  });
+  socket.on('SetPosition', function(data) {
+    emitToReceiver(socket.id, 'SetPosition', data);
+  });
+  socket.on('SetScale', function(data) {
+    emitToReceiver(socket.id, 'SetScale', data);
+  });
+  socket.on('SetColor', function(data) {
+    emitToReceiver(socket.id, 'SetColor', data);
+  });
+  
   // Clear
   socket.on('Clear', function(data) {
     emitToReceiver(socket.id, 'Clear', data);

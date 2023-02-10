@@ -7,8 +7,14 @@ using UnityEngine;
 
 public class UM_Launch : MonoBehaviour
 {
+    #region Static
+    public static UM_Launch Instance;
+    #endregion
+
     [SerializeField] private CCFModelControl modelControl;
     [SerializeField] private BrainCameraController cameraController;
+    [SerializeField] private Client client;
+    [SerializeField] private ColormapPanel _colormapPanel;
 
     [SerializeField] private GameObject settingsPanel;
     [SerializeField] private Transform brainControlsT;
@@ -29,7 +35,8 @@ public class UM_Launch : MonoBehaviour
     [Range(0,1), SerializeField] private float percentageExploded = 0f;
     private float prevPerc = 0f;
     private bool explodeLeftOnly;
-    private bool colorLeftOnly;
+    private bool exploded;
+    public bool colorLeftOnly { get; private set; }
 
     private Vector3 center = new Vector3(5.7f, 4f, -6.6f);
 
@@ -38,7 +45,7 @@ public class UM_Launch : MonoBehaviour
 
     // Colormaps
     private List<Converter<float, Color>> colormaps;
-    private List<string> colormapOptions = new List<string>{"cool","gray","grey-green","grey-purple","grey-red"};
+    private List<string> colormapOptions = new List<string>{"cool","gray","grey-green","grey-purple","grey-red","grey-rainbow"};
     private Converter<float, Color> activeColormap;
 
     // Starting colors
@@ -57,28 +64,33 @@ public class UM_Launch : MonoBehaviour
     private Dictionary<int, Vector3> originalTransformPositionsRight;
     private Dictionary<int, Vector3> cosmosVectors;
     
-    private Dictionary<int, CCFTreeNode> visibleNodes;
-
     // COSMOS
     [SerializeField] private List<GameObject> cosmosParentObjects;
     private int cosmosParentIdx = 0;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
+        if (Instance == null)
+            Instance = this;
+        else
+            throw new Exception("There should only be on UM_Launch component in the scene");
+
         colormaps = new List<Converter<float, Color>>();
         colormaps.Add(Cool);
         colormaps.Add(Grey);
         colormaps.Add(GreyGreen);
         colormaps.Add(GreyPurple);
         colormaps.Add(GreyRed);
+        colormaps.Add(GreyRainbow);
         activeColormap = Cool;
 
         originalTransformPositionsLeft = new Dictionary<int, Vector3>();
         originalTransformPositionsRight = new Dictionary<int, Vector3>();
+    }
 
-        visibleNodes = new Dictionary<int, CCFTreeNode>();
-
+    // Start is called before the first frame update
+    void Start()
+    {
         modelControl.SetBeryl(true);
         modelControl.LateStart(loadDefaults);
 
@@ -137,7 +149,7 @@ public class UM_Launch : MonoBehaviour
             prevPerc = percentageExploded;
 
             // for each tree node, move it's model away from the 0,0,0 point
-            _UpdateExploded();
+            UpdateExploded();
         }
 
         // Before checking for keydown events, return if the user is typing in the input box
@@ -174,16 +186,26 @@ public class UM_Launch : MonoBehaviour
         {
             idPanel.SetActive(!idPanel.activeSelf);
         }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            KeyExplodeImplode(2f);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            KeyExplodeImplode(5f);
+        }
     }
 
     public void RegisterNode(CCFTreeNode node)
     {
-        if (!originalTransformPositionsLeft.ContainsKey(node.ID))
-            originalTransformPositionsLeft.Add(node.ID, node.NodeModelLeftGO.transform.localPosition);
-        if (!originalTransformPositionsRight.ContainsKey(node.ID))
-            originalTransformPositionsRight.Add(node.ID, node.NodeModelRightGO.transform.localPosition);
-        if (!visibleNodes.ContainsKey(node.ID))
-            visibleNodes.Add(node.ID,node);
+        if (node != null && node.NodeModelLeftGO != null)
+        {
+            if (!originalTransformPositionsLeft.ContainsKey(node.ID))
+                originalTransformPositionsLeft.Add(node.ID, node.NodeModelLeftGO.transform.localPosition);
+            if (!originalTransformPositionsRight.ContainsKey(node.ID))
+                originalTransformPositionsRight.Add(node.ID, node.NodeModelRightGO.transform.localPosition);
+        }
     }
 
     public Color GetColormapColor(float perc)
@@ -197,6 +219,9 @@ public class UM_Launch : MonoBehaviour
             activeColormap = colormaps[colormapOptions.IndexOf(newColormap)];
         else
             Log("Colormap " + newColormap + " not an available option");
+
+        _colormapPanel.SetColormap(activeColormap);
+        _colormapPanel.SetColormapVisibility(true);
     }
 
     // [TODO] Refactor colormaps into their own class
@@ -231,6 +256,20 @@ public class UM_Launch : MonoBehaviour
         return GreyGradient(perc, lightred, darkred);
     }
 
+    public Color GreyRainbow(float perc)
+    {
+        if (perc == 0)
+            return Color.grey;
+        else
+        {
+            // Interpolate rainbow map
+            float red = Mathf.Abs(2f * perc - 0.5f);
+            float green = Mathf.Sin(perc * Mathf.PI);
+            float blue = Mathf.Cos(perc * Mathf.PI / 2);
+            return new Color(red, green, blue);
+        }
+    }
+
     public float CheckColormapRange(float perc)
     {
         return Mathf.Clamp(perc, 0, 1);
@@ -247,41 +286,41 @@ public class UM_Launch : MonoBehaviour
         }
     }
 
-    public void Log(string text)
+    public static void Log(string text)
     {
         // Todo: deal with log running off the screen
         Debug.Log(text);
-        consoleText.text += "\n" + text;
+        Instance.consoleText.text += "\n" + text;
     }
 
     public void SetLeftExplodeOnly(bool state)
     {
         explodeLeftOnly = state;
-        _UpdateExploded();
+        UpdateExploded();
     }
 
     public void UpdateExploded(float newPercExploded)
     {
         percentageExploded = newPercExploded;
-        _UpdateExploded();
+        UpdateExploded();
     }
 
     public void SetLeftColorOnly(bool state)
     {
-        foreach (CCFTreeNode node in visibleNodes.Values)
+        colorLeftOnly = state;
+        foreach (CCFTreeNode node in AreaManager.VisibleNodes)
             if (state)
-                node.SetColorOneSided(node.DefaultColor, true, false);
+                node.SetColorOneSided(node.DefaultColor, false, false);
             else
-                node.SetColor(node.DefaultColor);
+                node.SetColor(node.color);
     }
 
-    private void _UpdateExploded()
+    private void UpdateExploded()
     {
         cameraController.SetControlBlock(true);
 
         Vector3 flipVector = new Vector3(1f, 1f, -1f);
-
-        foreach (CCFTreeNode node in visibleNodes.Values)
+        foreach (CCFTreeNode node in AreaManager.VisibleNodes)
         {
             int cosmos = modelControl.GetCosmosID(node.ID);
             Transform nodeTLeft = node.NodeModelLeftGO.transform;
@@ -290,15 +329,11 @@ public class UM_Launch : MonoBehaviour
             nodeTLeft.localPosition = originalTransformPositionsLeft[node.ID] +
                 cosmosVectors[cosmos] * percentageExploded;
 
-            if (!explodeLeftOnly)
-            {
-                nodeTright.localPosition = originalTransformPositionsRight[node.ID] +
-                    Vector3.Scale(cosmosVectors[cosmos], flipVector) * percentageExploded;
-            }
-            else
-            {
+            if (explodeLeftOnly)
                 nodeTright.localPosition = originalTransformPositionsRight[node.ID];
-            }
+            else
+                nodeTright.localPosition = originalTransformPositionsRight[node.ID] +
+                        Vector3.Scale(cosmosVectors[cosmos], flipVector) * percentageExploded;
         }
     }
 
@@ -311,5 +346,46 @@ public class UM_Launch : MonoBehaviour
     {
         foreach (TMP_Text text in infoPanelText.GetComponentsInChildren<TMP_Text>())
             text.color = state ? Color.black : Color.white;
+    }
+
+    public void KeyExplodeImplode(float explodeTime)
+    {
+        exploded = !exploded;
+        if (exploded)
+            StartCoroutine(AnimateExplodeHelper(explodeTime));
+        else
+            StartCoroutine(AnimateImplodeHelper(explodeTime));
+    }
+
+    public void AnimateExplode(float explodeTime)
+    {
+        StartCoroutine(AnimateExplodeHelper(explodeTime));
+    }
+    public void AnimateImplode(float explodeTime)
+    {
+        StartCoroutine(AnimateImplodeHelper(explodeTime));
+    }
+
+    private IEnumerator AnimateExplodeHelper(float explodeTime)
+    {
+        float start = Time.realtimeSinceStartup;
+        float end = explodeTime + start;
+
+        while (Time.realtimeSinceStartup <= end)
+        {
+            yield return null;
+            percentageExploded = Mathf.InverseLerp(start, end, Time.realtimeSinceStartup);
+        }
+    }
+    private IEnumerator AnimateImplodeHelper(float explodeTime)
+    {
+        float start = Time.realtimeSinceStartup;
+        float end = explodeTime + start;
+
+        while (Time.realtimeSinceStartup <= end)
+        {
+            yield return null;
+            percentageExploded = 1f - Mathf.InverseLerp(start, end, Time.realtimeSinceStartup);
+        }
     }
 }
