@@ -1,7 +1,7 @@
 Metadata-Version: 2.1
 Name: oursin
 Version: 0.4.4
-Summary: Urchin - Universal Renderer for Neuroscience Python API
+Summary: Urchin - Universal Renderer Creating Helpful Images for Neuroscience Python API
 Author-email: Daniel Birman <danbirman@gmail.com>
 License:                     GNU GENERAL PUBLIC LICENSE
                                Version 3, 29 June 2007
@@ -679,7 +679,7 @@ License:                     GNU GENERAL PUBLIC LICENSE
         <https://www.gnu.org/licenses/why-not-lgpl.html>.
         
 Project-URL: Homepage, https://virtualbrainlab.org/03_unity_neuro/01_urn_intro.html
-Project-URL: Bug Tracker, https://github.com/VirtualBrainLab/UnityNeuroscience/issues
+Project-URL: Bug Tracker, https://github.com/VirtualBrainLab/Urchin/issues
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: OS Independent
