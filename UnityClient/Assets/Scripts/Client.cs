@@ -143,6 +143,7 @@ public class Client : MonoBehaviour
         manager.Socket.On<Dictionary<string, List<float>>>("SetPosition", _primitiveMeshManager.SetPosition);
         manager.Socket.On<Dictionary<string, List<float>>>("SetScale", _primitiveMeshManager.SetScale);
         manager.Socket.On<Dictionary<string, string>>("SetColor", _primitiveMeshManager.SetColor);
+        manager.Socket.On<Dictionary<string, string>>("SetMaterial", _primitiveMeshManager.SetMaterial);
 
         // Misc
         manager.Socket.On<string>("Clear", Clear);

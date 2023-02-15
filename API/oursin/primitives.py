@@ -73,3 +73,18 @@ def set_color(mesh_color):
 	
   """
   client.sio.emit('SetColor', mesh_color)
+
+def set_material(mesh_material):
+  """Set the material of mesh renderer
+
+  Parameters
+  ----------
+  mesh_material : dict {string : string}
+      dictionary of object IDs and name of new material
+      
+	Examples
+	--------
+	>>> urn.set_material({'cube1': 'unlit'})
+	
+  """
+  client.sio.emit('SetMaterial', mesh_material)  

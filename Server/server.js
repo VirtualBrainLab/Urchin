@@ -251,6 +251,9 @@ io.on("connection", function (socket) {
   socket.on('SetColor', function(data) {
     emitToReceiver(socket.id, 'SetColor', data);
   });
+  socket.on('SetMaterial', function (data) {
+    emitToReceiver(socket.id, 'SetMaterial', data);
+  });
   
   // Clear
   socket.on('Clear', function(data) {

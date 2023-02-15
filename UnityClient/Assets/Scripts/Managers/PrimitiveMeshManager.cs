@@ -16,6 +16,7 @@ public class PrimitiveMeshManager : MonoBehaviour
     private void Awake()
     {
         _primMeshRenderers= new Dictionary<string, MeshRenderer>();
+        _materialDictionary = new Dictionary<string, Material>();
         if (_materials.Count != _materialNames.Count)
             throw new System.Exception("List of materials and material names must be the same length");
         for(int i = 0; i< _materials.Count; i++)
@@ -105,7 +106,7 @@ public class PrimitiveMeshManager : MonoBehaviour
         tempMesh.material.color = color;
     }
 
-    private void SetMaterial(Dictionary<string, string> meshMaterials)
+    public void SetMaterial(Dictionary<string, string> meshMaterials)
     { 
         foreach(var kvp in meshMaterials)
         {

@@ -45,3 +45,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cubePrefab: {fileID: 4726930313454754357, guid: 3f6d635c59149ac4c9d3308feb79c43b, type: 3}
+  _materials:
+  - {fileID: 2100000, guid: 81bfceea20b892d44b814a1db0c2e7de, type: 2}
+  - {fileID: 2100000, guid: 5b22cd6073dc87b42898caa14b0363e3, type: 2}
+  - {fileID: 2100000, guid: b9f1759fe5f86bf43934752f9440b7fd, type: 2}
+  - {fileID: 2100000, guid: 81bfceea20b892d44b814a1db0c2e7de, type: 2}
+  _materialNames:
+  - default
+  - opaque-lit
+  - transparent-lit
+  - unlit
