@@ -9,10 +9,20 @@ public class PrimitiveMeshManager : MonoBehaviour
     //Keeping a dictionary mapping names of objects to the game object in schene
     private Dictionary<string, MeshRenderer> _primMeshRenderers;
     [SerializeField] private GameObject _cubePrefab;
+    [SerializeField] private List<Material> _materials;
+    [SerializeField] private List<string> _materialNames;
+    private Dictionary<string, Material> _materialDictionary;
 
     private void Awake()
     {
         _primMeshRenderers= new Dictionary<string, MeshRenderer>();
+        if (_materials.Count != _materialNames.Count)
+            throw new System.Exception("List of materials and material names must be the same length");
+        for(int i = 0; i< _materials.Count; i++)
+        {
+            _materialDictionary.Add(_materialNames[i], _materials[i]);
+        }
+
     }
     // Start is called before the first frame update
     void Start() 
@@ -27,6 +37,7 @@ public class PrimitiveMeshManager : MonoBehaviour
             GameObject tempObject = Instantiate(_cubePrefab);
             tempObject.name = $"primMesh_{mesh}";
             _primMeshRenderers.Add(mesh, tempObject.GetComponent<MeshRenderer>());
+            tempObject.GetComponent<MeshRenderer>().material = _materialDictionary["default"];
             //creates new entry to dictionary w name meshes[mesh] and associates it w a new Game Object (cube as of 1/25/23)
             //adds mesh renderer componenet to the mesh renderer manager 
 
@@ -92,6 +103,19 @@ public class PrimitiveMeshManager : MonoBehaviour
     {
         MeshRenderer tempMesh = _primMeshRenderers[meshName];
         tempMesh.material.color = color;
+    }
+
+    private void SetMaterial(Dictionary<string, string> meshMaterials)
+    { 
+        foreach(var kvp in meshMaterials)
+        {
+            Material newMaterial = _materialDictionary[kvp.Value];
+            MeshRenderer tempMesh = _primMeshRenderers[kvp.Key];
+            Color color = tempMesh.material.color;
+            tempMesh.material = newMaterial;
+            tempMesh.material.color = color;
+
+        }
     }
 
 }
