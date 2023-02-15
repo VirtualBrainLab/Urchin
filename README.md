@@ -46,7 +46,7 @@ urchin.ccf.set_alpha({"grey":0.25})
 
 # Documentation
 
-For detailed instructions please see the [documentation](https://virtualbrainlab.org/03_unity_neuro/01_urn_intro.html).
+For detailed instructions please see the [documentation](https://virtualbrainlab.org/urchin/installation_and_use.html).
 
 # Citing
 
