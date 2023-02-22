@@ -3,6 +3,38 @@
 from . import client
 
   ## Primitive Mesh Renderer
+class Primitives:
+
+  def __init__(self,position, scale, color, material):
+    client.sio.emit('CreateMesh', self)
+    if(position == None):
+       position = [0,0,0]
+    self.position = position
+    client.sio.emit('SetPosition', {self: position})
+      
+    if(scale == None):
+      scale = [1,1,1]
+    self.scale = scale
+    client.sio.emit('SetScale', {self: scale})
+      
+    if(color == None):
+      color = '#FFFFFF'
+    self.color = color
+    client.sio.emit('SetColor',{self: color})
+
+    if(material == None):
+       material = 'default'
+    self.material = material
+    client.sio.emit('SetMaterial',{self: material})  
+    
+
+  
+
+
+
+
+
+
 def create(mesh_names):
 	"""Creates primitive mesh
 
