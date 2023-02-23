@@ -4,7 +4,7 @@ from . import client
 
   ## Primitive Mesh Renderer
 class Primitives:
-
+  #Run everytime an object is created, sets the fields to defaults if one is not given, and sends the info to Unity
   def __init__(self,position, scale, color, material):
     client.sio.emit('CreateMesh', self)
     if(position == None):
@@ -26,14 +26,22 @@ class Primitives:
        material = 'default'
     self.material = material
     client.sio.emit('SetMaterial',{self: material})  
+
+  #actually initializes each object(s), does use any parameters other than how many to initialize (uses all defaults)
+  def create(numObjects):
+    if (numObjects == 1)
+      mesh = Primitives()
+      client.sio.emit('CreateMesh', mesh)
+    else:
+      mesh_names = []
+      for(int i=1; i<= numObjects; i++)
+        mesh_names[i] = Primitives()
+      client.sio.emit('CreateMesh', mesh_names)
+
+
+##OLD CODE BELOW
     
-
-  
-
-
-
-
-
+    
 
 def create(mesh_names):
 	"""Creates primitive mesh
