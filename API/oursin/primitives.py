@@ -1,36 +1,47 @@
 """Primitive meshes"""
 
 from . import client
-counter = 0
   ## Primitive Mesh Renderer
+counter = 0
 class Primitive:
   #Run everytime an object is created, sets the fields to defaults if one is not given, and sends the info to Unity
   #id = int index counter
-  def __init__(self,position, scale, color, material, id):
+  def __init__(self,position= [0.0,0.0,0.0], scale= [1,1,1], color= '#FFFFFF', material = 'default'):
+    
+    global counter
     counter +=1
-    self.id = counter
-    client.sio.emit('CreateMesh', self.id)
+    self.id = str(counter)
+    client.sio.emit('CreateMesh', [self.id])
+    print(self.id)
 
-    if(position == None):
-       position = [0,0,0]
+    #if(position == None):
+    #   position = [0,0,0]
     self.position = position
     client.sio.emit('SetPosition', {self.id: position})
       
-    if(scale == None):
-      scale = [1,1,1]
+    #if(scale == None):
+    #  scale c
     self.scale = scale
     client.sio.emit('SetScale', {self.id: scale})
       
-    if(color == None):
-      color = '#FFFFFF'
+    #if(color == None):
+    #  color = '#FFFFFF'
     self.color = color
     client.sio.emit('SetColor',{self.id: color})
+
+    self.material = material
+
+    
+
+  
+
 
   def delete(self):
     client.sio.emit('DeleteMesh', self.id)
   
   def set_position(self, position):
     self.position = position
+   # print({self.id: position})
     client.sio.emit('SetPosition', {self.id: position})
   
   def set_scale(self, scale):
@@ -47,11 +58,12 @@ class Primitive:
 
 
 
+
 #actually initializes each object(s), doesn't use any parameters other than how many to initialize (uses all defaults)
 def create(numObjects):
   prim_names = []
-  for i in range(0, numObjects):
-    prim_names[i] = Primitive()
+  for i in range(numObjects):
+    prim_names.append(Primitive())
   return(prim_names)
 
 def delete(meshes_list):

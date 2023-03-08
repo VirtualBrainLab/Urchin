@@ -138,12 +138,12 @@ public class Client : MonoBehaviour
         manager.Socket.On<Dictionary<string, string>>("SetLineColor", _lineRendererManager.SetLineColor);
 
         //Primitive Mesh Renderer
-        manager.Socket.On<List<int>>("CreateMesh", _primitiveMeshManager.CreateMesh);
-        manager.Socket.On<List<int>>("DeleteMesh", _primitiveMeshManager.DeleteMesh);
-        manager.Socket.On<Dictionary<int, List<float>>>("SetPosition", _primitiveMeshManager.SetPosition);
-        manager.Socket.On<Dictionary<int, List<float>>>("SetScale", _primitiveMeshManager.SetScale);
-        manager.Socket.On<Dictionary<int, string>>("SetColor", _primitiveMeshManager.SetColor);
-        manager.Socket.On<Dictionary<int, string>>("SetMaterial", _primitiveMeshManager.SetMaterial);
+        manager.Socket.On<List<string>>("CreateMesh", _primitiveMeshManager.CreateMesh);
+        manager.Socket.On<List<string>>("DeleteMesh", _primitiveMeshManager.DeleteMesh);
+        manager.Socket.On<Dictionary<string, List<float>>>("SetPosition", _primitiveMeshManager.SetPosition);
+        manager.Socket.On<Dictionary<string, List<float>>>("SetScale", _primitiveMeshManager.SetScale);
+        manager.Socket.On<Dictionary<string, string>>("SetColor", _primitiveMeshManager.SetColor);
+        manager.Socket.On<Dictionary<string, string>>("SetMaterial", _primitiveMeshManager.SetMaterial);
 
         // Misc
         manager.Socket.On<string>("Clear", Clear);
