@@ -37,9 +37,21 @@ class Primitive:
 
 
   def delete(self):
-    client.sio.emit('DeleteMesh', self.id)
+    client.sio.emit('DeleteMesh', [self.id])
   
   def set_position(self, position):
+    """Sets position of mesh object
+
+
+    Parameters
+    ----------
+    position : float list
+    intended position of mesh object
+
+    Examples
+    --------
+    >>> cube_obj.set_position([2,2,2])
+    """
     self.position = position
    # print({self.id: position})
     client.sio.emit('SetPosition', {self.id: position})
@@ -72,22 +84,22 @@ def delete(meshes_list):
 
 def set_positions(meshes_list, positions_list):
   mesh_ids = [x.id for x in meshes_list]
-  mesh_pos = {mesh_ids,positions_list}
+  mesh_pos = {mesh_ids[i]: positions_list[i] for i in range(len(meshes_list))}
   client.sio.emit('SetPosition', mesh_pos)
 
 def set_scales(meshes_list, scales_list):
   mesh_ids = [x.id for x in meshes_list]
-  mesh_scale = {mesh_ids,scales_list}
+  mesh_scale = {mesh_ids[i]: scales_list[i] for i in range(len(meshes_list))}
   client.sio.emit('SetScale', mesh_scale)
 
 def set_colors(meshes_list, colors_list):
   mesh_ids = [x.id for x in meshes_list]
-  mesh_colors = {mesh_ids, colors_list}
+  mesh_colors = {mesh_ids[i]: colors_list[i] for i in range(len(meshes_list))}
   client.sio.emit('SetColor', mesh_colors)
 
 def set_material(meshes_list, materials_list):
   mesh_ids = [x.id for x in meshes_list]
-  mesh_materials = {mesh_ids,materials_list}
+  mesh_materials = {mesh_ids[i]: materials_list[i] for i in range(len(meshes_list))}
   client.sio.emit('SetMaterial', mesh_materials) 
 
 ##OLD CODE BELOW
