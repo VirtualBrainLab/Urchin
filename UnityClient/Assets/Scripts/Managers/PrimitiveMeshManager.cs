@@ -6,7 +6,10 @@ using UnityEngine;
 public class PrimitiveMeshManager : MonoBehaviour
 {
     //Keeping a dictionary mapping names of objects to the game object in schene
-    private Dictionary<string, MeshRenderer> _primMeshRenderers;
+    private Dictionary<string, MeshRenderer> _primMeshRenderers; 
+    //log warning if string id alr exists (containskey())
+    //send warning back to python 
+    //Client.logwarning("message");
     [SerializeField] private GameObject _cubePrefab;
     [SerializeField] private List<Material> _materials;
     [SerializeField] private List<string> _materialNames;
@@ -60,6 +63,8 @@ public class PrimitiveMeshManager : MonoBehaviour
         {// running through whole dictionary:
             List<float> data = meshPositions[meshName];
             Vector3 position = new Vector3 (data[0], data[1], data[2]);
+
+            //CHECK IF KEY MESH NAME EXISTS (IF NOT SEND WARNING)
             MeshRenderer tempMesh = _primMeshRenderers[meshName];
 
             // Example of how a CoordinateSpace could be used to position this mesh
