@@ -26,3 +26,6 @@ from . import colors
 
 # load the atlases
 from .atlas import *
+
+# load warnings module
+import warnings

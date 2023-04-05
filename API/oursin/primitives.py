@@ -7,12 +7,7 @@ class Primitive:
   #Run everytime an object is created, sets the fields to defaults if one is not given, and sends the info to Unity
   #id = int index counter
   def __init__(self,position= [0.0,0.0,0.0], scale= [1,1,1], color= '#FFFFFF', material = 'default'):
-    
-    global counter
-    counter +=1
-    self.id = str(counter)
-    client.sio.emit('CreateMesh', [self.id])
-    print(self.id)
+    self.create()
 
     #if(position == None):
     #   position = [0,0,0]
@@ -30,41 +25,48 @@ class Primitive:
     client.sio.emit('SetColor',{self.id: color})
 
     self.material = material
-
     
 
+    
+  def create(self):
+    global counter
+    counter +=1
+    self.id = str(counter)
+    client.sio.emit('CreateMesh', [self.id])
+    self.in_unity = True
   
 
 
   def delete(self):
     client.sio.emit('DeleteMesh', [self.id])
+    self.in_unity = False
   
   def set_position(self, position):
-    """Sets position of mesh object
-
-
-    Parameters
-    ----------
-    position : float list
-    intended position of mesh object
-
-    Examples
-    --------
-    >>> cube_obj.set_position([2,2,2])
-    """
+    if self.in_unity == False:
+      raise Exception("Object does not exist in Unity, call create method first.")
+    
     self.position = position
    # print({self.id: position})
     client.sio.emit('SetPosition', {self.id: position})
   
   def set_scale(self, scale):
+    if self.in_unity == False:
+      raise Exception("Object does not exist in Unity, call create method first.")
+    
     self.scale = scale
     client.sio.emit('SetScale', {self.id: scale})
   
   def set_color(self, color):
+    if self.in_unity == False:
+      raise Exception("Object does not exist in Unity, call create method first.")
+    
     self.color = color
     client.sio.emit('SetColor',{self.id: color})
 
   def set_material(self, material):
+    if self.in_unity == False:
+      raise Exception("Object does not exist in Unity, call create method first.")
+    
     self.material = material
     client.sio.emit('SetMaterial',{self.id: material})
 
@@ -83,8 +85,22 @@ def delete(meshes_list):
   client.sio.emit('DeleteMesh', mesh_ids)
 
 def set_positions(meshes_list, positions_list):
-  mesh_ids = [x.id for x in meshes_list]
-  mesh_pos = {mesh_ids[i]: positions_list[i] for i in range(len(meshes_list))}
+  mesh_pos = {}
+  for i in range(len(meshes_list)):
+    mesh = meshes_list.id
+    if mesh[i].in_unity:
+      mesh_pos[mesh] = positions_list[i]
+    else:
+      warnings.warn(f"Object with id {mesh} does not exist. Please create object{mesh}.")
+
+
+  #Create for loop adding ids to dict IF exists in Unity
+  #(does not need to throw exception)
+  #use fstrings
+  #warnings.warn("object id num does not exist")#add import to this file if it does not compile
+
+  #mesh_ids = [x.id for x in meshes_list]
+  #mesh_pos = {mesh_ids[i]: positions_list[i] for i in range(len(meshes_list))}
   client.sio.emit('SetPosition', mesh_pos)
 
 def set_scales(meshes_list, scales_list):
