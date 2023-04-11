@@ -192,11 +192,11 @@ io.on("connection", function (socket) {
   socket.on('log', function(data) {
     emitToSender(socket.id, 'log', data);
   });
-  socket.on('warning', function(data) {
-    emitToSender(socket.id, 'warning', data);
+  socket.on('log-warning', function(data) {
+    emitToSender(socket.id, 'log-warning', data);
   });
-  socket.on('error', function(data) {
-    emitToSender(socket.id, 'error', data);
+  socket.on('log-error', function(data) {
+    emitToSender(socket.id, 'log-error', data);
   });
 
   // Text

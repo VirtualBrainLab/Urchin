@@ -17,16 +17,13 @@ def connect():
 def disconnect():
     print("(URN) disconnected from server")
 
-log_messages = True
 @sio.on('log')
 def message(data):
-	if log_messages:
-		print('(Renderer) ' + data)
+	print('(Renderer) ' + data)
 
 @sio.on('log-warning')
 def message(data):
-	if log_messages:
-		print('(Renderer) ' + bcolors.WARNING + data)
+	print('(Renderer) ' + bcolors.WARNING + data)
 
 @sio.on('log-error')
 def message(data):

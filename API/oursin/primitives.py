@@ -1,6 +1,7 @@
 """Primitive meshes"""
 
 from . import client
+import warnings
   ## Primitive Mesh Renderer
 counter = 0
 class Primitive:
@@ -46,7 +47,6 @@ class Primitive:
       raise Exception("Object does not exist in Unity, call create method first.")
     
     self.position = position
-   # print({self.id: position})
     client.sio.emit('SetPosition', {self.id: position})
   
   def set_scale(self, scale):
@@ -87,35 +87,45 @@ def delete(meshes_list):
 def set_positions(meshes_list, positions_list):
   mesh_pos = {}
   for i in range(len(meshes_list)):
-    mesh = meshes_list.id
-    if mesh[i].in_unity:
-      mesh_pos[mesh] = positions_list[i]
+    mesh = meshes_list[i]
+    if mesh.in_unity:
+      mesh_pos[mesh.id] = positions_list[i]
     else:
-      warnings.warn(f"Object with id {mesh} does not exist. Please create object{mesh}.")
+      warnings.warn(f"Object with id {mesh.id} does not exist. Please create object {mesh.id}.")
 
-
-  #Create for loop adding ids to dict IF exists in Unity
-  #(does not need to throw exception)
-  #use fstrings
-  #warnings.warn("object id num does not exist")#add import to this file if it does not compile
-
-  #mesh_ids = [x.id for x in meshes_list]
-  #mesh_pos = {mesh_ids[i]: positions_list[i] for i in range(len(meshes_list))}
   client.sio.emit('SetPosition', mesh_pos)
 
 def set_scales(meshes_list, scales_list):
-  mesh_ids = [x.id for x in meshes_list]
-  mesh_scale = {mesh_ids[i]: scales_list[i] for i in range(len(meshes_list))}
+  mesh_scale = {}
+  for i in range(len(meshes_list)):
+    mesh = meshes_list[i]
+    if mesh.in_unity:
+      mesh_scale[mesh.id] = scales_list[i]
+    else:
+      warnings.warn(f"Object with id {mesh.id} does not exist. Please create object {mesh.id}.")
+
   client.sio.emit('SetScale', mesh_scale)
 
 def set_colors(meshes_list, colors_list):
-  mesh_ids = [x.id for x in meshes_list]
-  mesh_colors = {mesh_ids[i]: colors_list[i] for i in range(len(meshes_list))}
+  mesh_colors = {}
+  for i in range(len(meshes_list)):
+    mesh = meshes_list[i]
+    if mesh.in_unity:
+      mesh_colors[mesh.id] = colors_list[i]
+    else:
+      warnings.warn(f"Object with id {mesh.id} does not exist. Please create object {mesh.id}.")
+
   client.sio.emit('SetColor', mesh_colors)
 
 def set_material(meshes_list, materials_list):
-  mesh_ids = [x.id for x in meshes_list]
-  mesh_materials = {mesh_ids[i]: materials_list[i] for i in range(len(meshes_list))}
+  mesh_materials = {}
+  for i in range(len(meshes_list)):
+    mesh = meshes_list[i]
+    if mesh.in_unity:
+      mesh_materials[mesh.id] = materials_list[i]
+    else:
+      warnings.warn(f"Object with id {mesh.id} does not exist. Please create object {mesh.id}.")  
+      
   client.sio.emit('SetMaterial', mesh_materials) 
 
 ##OLD CODE BELOW

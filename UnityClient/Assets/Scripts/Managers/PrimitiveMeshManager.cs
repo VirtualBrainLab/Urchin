@@ -37,6 +37,9 @@ public class PrimitiveMeshManager : MonoBehaviour
     {
         foreach(string mesh in meshes)
         {
+            if (_primMeshRenderers.ContainsKey(mesh))
+                Client.LogWarning($"Mesh with id = {mesh} already exists.");
+
             GameObject tempObject = Instantiate(_cubePrefab);
             tempObject.name = $"primMesh_{mesh}";
             _primMeshRenderers.Add(mesh, tempObject.GetComponent<MeshRenderer>());
