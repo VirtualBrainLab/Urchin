@@ -64,10 +64,14 @@ public class PrimitiveMeshManager : MonoBehaviour
     {
         foreach (string meshName in meshPositions.Keys)
         {// running through whole dictionary:
+            //if (_primMeshRenderers.ContainsKey(meshName))
+                //Client.LogWarning($"Mesh with id = {meshName} does not exist.");
+
             List<float> data = meshPositions[meshName];
             Vector3 position = new Vector3 (data[0], data[1], data[2]);
 
             //CHECK IF KEY MESH NAME EXISTS (IF NOT SEND WARNING)
+        
             MeshRenderer tempMesh = _primMeshRenderers[meshName];
 
             // Example of how a CoordinateSpace could be used to position this mesh
