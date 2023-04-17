@@ -121,6 +121,8 @@ public class Client : MonoBehaviour
         manager.Socket.On<string>("SetCameraTargetArea", _cameraManager.SetCameraTargetArea);
         manager.Socket.On<float>("SetCameraZoom", _cameraManager.SetCameraZoom);
         manager.Socket.On<List<float>>("SetCameraPan", _cameraManager.SetCameraPan);
+        manager.Socket.On<string>("SetCameraMode", _cameraManager.SetCameraMode);
+        manager.Socket.On("RequestCameraImg", _cameraManager.Screenshot);
 
 
         // Text
@@ -305,6 +307,13 @@ public class Client : MonoBehaviour
     ////
     //// SOCKET FUNCTIONS
     ////
+
+    public static void Emit(string header, object data)
+    {
+        UM_Launch.Log($"Sending {header} message to client");
+        manager.Socket.Emit(header, data);
+    }
+
     public void UpdateID(string newID)
     {
         UM_Launch.Log("Updating ID to : " + newID);

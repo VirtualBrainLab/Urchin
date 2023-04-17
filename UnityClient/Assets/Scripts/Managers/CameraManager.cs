@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +7,7 @@ public class CameraManager : MonoBehaviour
 {
     #region Serialized
     [SerializeField] BrainCameraController _cameraControl;
+    [SerializeField] UM_CameraController _umCameraControl;
     [SerializeField] AreaManager _areaManager;
     [SerializeField] CCFModelControl _modelControl;
     #endregion
@@ -19,6 +21,41 @@ public class CameraManager : MonoBehaviour
     public void SetCameraZoom(float obj)
     {
         _cameraControl.SetZoom(obj);
+    }
+
+    public void SetCameraMode(string mode)
+    {
+        _umCameraControl.SwitchCameraMode(mode.Equals("orthographic"));
+    }
+
+    public void Screenshot()
+    {
+        StartCoroutine(ScreenshotHelper());
+    }
+
+    private IEnumerator ScreenshotHelper()
+    {
+        yield return new WaitForEndOfFrame();
+        var texture = ScreenCapture.CaptureScreenshotAsTexture();
+
+        byte[] data = texture.EncodeToPNG();
+        Debug.Log(data.Length);
+
+        int chunkSize = 1000000; // 1 MB maximum size
+        int nChunks = Mathf.CeilToInt((float)data.Length / chunkSize);
+
+        // tell the client how many messages to expect
+        Client.Emit("ReceiveCameraImgMeta", nChunks);
+
+        // split the texture byte[] into 1000 byte chunks
+        for (int i = 0; i < nChunks; i++)
+        {
+            int cChunkSize = Mathf.Min(chunkSize, data.Length - i * chunkSize);
+            byte[] chunkData = new byte[cChunkSize];
+            Buffer.BlockCopy(data, i * chunkSize, chunkData, 0, cChunkSize);
+            Client.Emit("ReceiveCameraImg", chunkData);
+        }
+
     }
 
     public void SetCameraPosition(List<float> obj)

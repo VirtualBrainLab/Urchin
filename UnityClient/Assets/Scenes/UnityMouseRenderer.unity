@@ -8307,6 +8307,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cameraControl: {fileID: 1861690901}
+  _umCameraControl: {fileID: 1861690900}
   _areaManager: {fileID: 8162835201960326383}
   _modelControl: {fileID: 161993173589453260}
 --- !u!1 &1875325468 stripped
@@ -9472,7 +9473,7 @@ PrefabInstance:
       objectReference: {fileID: 858013925}
     - target: {fileID: 161993171994875470, guid: 8d78849a732a3e54c8a6dfcda3795ec0, type: 3}
       propertyPath: localhost
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 161993171994875470, guid: 8d78849a732a3e54c8a6dfcda3795ec0, type: 3}
       propertyPath: textParent
