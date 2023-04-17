@@ -12,6 +12,8 @@ public class CameraManager : MonoBehaviour
     [SerializeField] CCFModelControl _modelControl;
     #endregion
 
+    private const int SOCKET_IO_MAX_CHUNK_BYTES = 1000000;
+
     #region Public functions
     public void SetCameraRotation(List<float> obj)
     {
@@ -28,6 +30,10 @@ public class CameraManager : MonoBehaviour
         _umCameraControl.SwitchCameraMode(mode.Equals("orthographic"));
     }
 
+    /// <summary>
+    /// Take a single screenshot at the end of this frame and send that to the client
+    /// via the ReceiveCameraImg streaming API
+    /// </summary>
     public void Screenshot()
     {
         StartCoroutine(ScreenshotHelper());
@@ -41,8 +47,7 @@ public class CameraManager : MonoBehaviour
         byte[] data = texture.EncodeToPNG();
         Debug.Log(data.Length);
 
-        int chunkSize = 1000000; // 1 MB maximum size
-        int nChunks = Mathf.CeilToInt((float)data.Length / chunkSize);
+        int nChunks = Mathf.CeilToInt((float)data.Length / SOCKET_IO_MAX_CHUNK_BYTES);
 
         // tell the client how many messages to expect
         Client.Emit("ReceiveCameraImgMeta", nChunks);
@@ -50,9 +55,9 @@ public class CameraManager : MonoBehaviour
         // split the texture byte[] into 1000 byte chunks
         for (int i = 0; i < nChunks; i++)
         {
-            int cChunkSize = Mathf.Min(chunkSize, data.Length - i * chunkSize);
+            int cChunkSize = Mathf.Min(SOCKET_IO_MAX_CHUNK_BYTES, data.Length - i * SOCKET_IO_MAX_CHUNK_BYTES);
             byte[] chunkData = new byte[cChunkSize];
-            Buffer.BlockCopy(data, i * chunkSize, chunkData, 0, cChunkSize);
+            Buffer.BlockCopy(data, i * SOCKET_IO_MAX_CHUNK_BYTES, chunkData, 0, cChunkSize);
             Client.Emit("ReceiveCameraImg", chunkData);
         }
 
