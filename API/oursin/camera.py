@@ -2,6 +2,31 @@
 
 from . import client
 
+from PIL import Image
+import io
+		  
+receive_fname = ''
+receive_count = 0
+receive_data = []
+
+def receive_camera_img_meta(data):
+	global receive_count, receive_data
+	receive_count = int(data)
+	print('(Camera receive meta) ' + str(data))
+
+def receive_camera_img(data):
+  global receive_count, receive_data
+	
+  print(f'(Camera) received {str(len(data))} bytes')
+  receive_data.append(data)
+  receive_count -= 1
+
+  if (receive_count == 0):
+    data_bytes = b''.join(receive_data)
+    receive_data = []
+    Image.open(io.BytesIO(data_bytes)).save(receive_fname)
+    print('(Camera received all data)')
+
 def set_target(camera_target_coordinate):
 	"""Set the camera target coordinate in CCF space in um relative to CCF (0,0,0), without moving the camera. Coordinates can be negative or larger than the CCF space (11400,13200,8000)
 
@@ -83,3 +108,31 @@ def set_pan(pan_x, pan_y):
 	>>> urn.set_pan(3.0, 4.0)
 	"""
 	client.sio.emit('SetCameraPan', [pan_x, pan_y])
+	
+def set_mode(mode):
+	"""Set camera perspective mode
+
+	Parameters
+	----------
+	mode : string
+    mode options "perspective" or "orthographic" (default)
+	
+	Examples
+	--------
+	>>> urn.set_mode('perspective')
+	"""
+	client.sio.emit('SetCameraMode', mode)
+	
+def capture_image(filename):
+	""" Capture a full screenshot and save to filename
+	
+	Note: only supports PNG filetypes, for now
+	
+	Examples
+	--------
+	>>> urn.capture_image('./image.png')
+	"""
+	global receive_fname
+	receive_fname = filename
+	client.sio.emit('RequestCameraImg')
+	

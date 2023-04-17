@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using TMPro;
 using System.Threading.Tasks;
+using System.Collections.Specialized;
 
 /// <summary>
 /// Entry point for all client-side messages coming from the Python API
@@ -120,6 +121,8 @@ public class Client : MonoBehaviour
         manager.Socket.On<string>("SetCameraTargetArea", _cameraManager.SetCameraTargetArea);
         manager.Socket.On<float>("SetCameraZoom", _cameraManager.SetCameraZoom);
         manager.Socket.On<List<float>>("SetCameraPan", _cameraManager.SetCameraPan);
+        manager.Socket.On<string>("SetCameraMode", _cameraManager.SetCameraMode);
+        manager.Socket.On("RequestCameraImg", _cameraManager.Screenshot);
 
 
         // Text
@@ -142,12 +145,13 @@ public class Client : MonoBehaviour
         manager.Socket.On<Dictionary<string, List<float>>>("SetPosition", _primitiveMeshManager.SetPosition);
         manager.Socket.On<Dictionary<string, List<float>>>("SetScale", _primitiveMeshManager.SetScale);
         manager.Socket.On<Dictionary<string, string>>("SetColor", _primitiveMeshManager.SetColor);
+        manager.Socket.On<Dictionary<string, string>>("SetMaterial", _primitiveMeshManager.SetMaterial);
 
         // Misc
         manager.Socket.On<string>("Clear", Clear);
 
         // If we are building to WebGL or to Standalone, switch how you acquire the user's ID
-#if UNITY_EDITOR && UNITY_EDITOR_WIN 
+#if UNITY_EDITOR && UNITY_EDITOR_WIN && !UNITY_WEBGL
         ID = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
         if (ID.Contains("\\"))
         {
@@ -303,6 +307,13 @@ public class Client : MonoBehaviour
     ////
     //// SOCKET FUNCTIONS
     ////
+
+    public static void Emit(string header, object data)
+    {
+        UM_Launch.Log($"Sending {header} message to client");
+        manager.Socket.Emit(header, data);
+    }
+
     public void UpdateID(string newID)
     {
         UM_Launch.Log("Updating ID to : " + newID);

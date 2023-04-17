@@ -2,6 +2,8 @@
 import socketio
 import os
 
+from . import camera
+
 class bcolors:
     WARNING = '\033[93m'
     FAIL = '\033[91m'
@@ -32,6 +34,13 @@ def message(data):
 def message(data):
 	print('(Renderer) ' + bcolors.FAIL + data)
 
+@sio.on('ReceiveCameraImgMeta')
+def receive_camera_img_meta(data):
+	camera.receive_camera_img_meta(data)
+	
+@sio.on('ReceiveCameraImg')
+def receive_camera_img(data):
+  camera.receive_camera_img(data)
 def connected():
 	return sio.connected
 
