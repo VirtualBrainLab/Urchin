@@ -10,9 +10,15 @@ public class CameraManager : MonoBehaviour
     [SerializeField] UM_CameraController _umCameraControl;
     [SerializeField] AreaManager _areaManager;
     [SerializeField] CCFModelControl _modelControl;
+    [SerializeField] RectTransform _cropWindowRT;
     #endregion
 
     private const int SOCKET_IO_MAX_CHUNK_BYTES = 1000000;
+
+    private void Update()
+    {
+        //Debug.Log(_cropWindowRT.rect.position);
+    }
 
     #region Public functions
     public void SetCameraRotation(List<float> obj)
@@ -43,6 +49,7 @@ public class CameraManager : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
         var texture = ScreenCapture.CaptureScreenshotAsTexture();
+        //texture
 
         byte[] data = texture.EncodeToPNG();
         Debug.Log(data.Length);
