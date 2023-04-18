@@ -11,12 +11,12 @@ class Primitive:
     self.create()
 
     
-    position = sanitize_vector3(position)
+    position = utils.sanitize_vector3(position)
     self.position = position
     client.sio.emit('SetPosition', {self.id: position})
       
     
-    scale = sanitize_vector3(scale)
+    scale = utils.sanitize_vector3(scale)
     self.scale = scale
     client.sio.emit('SetScale', {self.id: scale})
       
@@ -78,7 +78,7 @@ class Primitive:
     if self.in_unity == False:
       raise Exception("Object does not exist in Unity, call create method first.")
     
-    position = sanitize_vector3(position)
+    position = utils.sanitize_vector3(position)
     self.position = position
     client.sio.emit('SetPosition', {self.id: position})
   
@@ -97,7 +97,7 @@ class Primitive:
     if self.in_unity == False:
       raise Exception("Object does not exist in Unity, call create method first.")
     
-    scale = sanitize_vector3(scale)
+    scale = utils.sanitize_vector3(scale)
     self.scale = scale
     client.sio.emit('SetScale', {self.id: scale})
   
