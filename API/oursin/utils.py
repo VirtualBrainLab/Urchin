@@ -20,7 +20,7 @@ def sanitize_color(color):
     if isinstance(color, list):#if list
         if isinstance(color[0], float):
             for i in range(len(color)):
-                color[i] = int(255*color[i])
+                color[i] = int(255*color[i]) 
         hex_color = ('{:02X}' * 3).format(color[0], color[1], color[2])
         hex_color = '#' + hex_color
         return(hex_color)
@@ -31,3 +31,9 @@ def sanitize_material(material):
         return(material)
     else:
         raise Exception("Material is not properly passed in as a string. Please pass in material as a string.")
+
+def sanitize_list(input):
+    if isinstance(input,list):
+        return input
+    else:
+        return(list(input))
