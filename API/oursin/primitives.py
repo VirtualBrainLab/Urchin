@@ -147,7 +147,7 @@ class Primitive:
 
 
 #actually initializes each object(s), doesn't use any parameters other than how many to initialize (uses all defaults)
-def create(numObjects):
+def create(num_objects):
   """Creates primitive meshes
 
   Parameters
@@ -159,7 +159,7 @@ def create(numObjects):
 	>>> cubes = urchin.primitives.create(2)
   """
   prim_names = []
-  for i in range(numObjects):
+  for i in range(num_objects):
     prim_names.append(Primitive())
   return(prim_names)
 
