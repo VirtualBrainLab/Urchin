@@ -2,6 +2,8 @@
 
 from . import client
 import warnings
+import utils
+
   ## Primitive Mesh Renderer
 counter = 0
 class Primitive:
@@ -260,7 +262,7 @@ def set_colors(meshes_list, colors_list):
 
   client.sio.emit('SetColor', mesh_colors)
 
-def set_material(meshes_list, materials_list):
+def set_materials(meshes_list, materials_list):
   """Sets materials of mesh renderers
 
   Parameters
