@@ -60,12 +60,12 @@ class Neuron:
 		self.in_unity = False
 
 	def set_position(self, position):
-		"""Set the position of neuron renderer
+		"""Set the position of neuron position in ml/ap/dv coordinates relative to the CCF (0,0,0) point
 		
 		Parameters
 		---------- 
 		position : list of three floats
-			vertex positions of the neuron
+			vertex positions of the neuron relative to the CCF point
 
 		Examples
 		--------
@@ -166,7 +166,7 @@ def create(num_neurons):
 
 	Parameters
 	----------
-	numNeurons : int
+	num_neurons : int
 		number of new neuron objects
 
 	Examples
@@ -196,7 +196,7 @@ def delete(neurons_list):
   client.sio.emit('DeleteNeurons', neurons_ids)
 
 def set_positions(neurons_list, positions_list):
-	"""Set neuron positions
+	"""Set the position of neuron position in ml/ap/dv coordinates relative to the CCF (0,0,0) point
 
 	Parameters
 	----------
