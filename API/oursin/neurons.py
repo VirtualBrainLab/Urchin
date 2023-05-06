@@ -41,9 +41,9 @@ class Neuron:
 		>>>n1 = urchin.neurons.Neuron()
 		"""
 		global counter
+		counter += 1
 		self.id = str(counter)
 		client.sio.emit('CreateNeurons', [self.id])
-		counter += 1
 		self.in_unity = True
 
 	def delete(self):

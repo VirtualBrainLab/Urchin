@@ -37,3 +37,9 @@ def sanitize_list(input):
         return input
     else:
         return(list(input))
+    
+def sanitize_string(string):
+    if isinstance(string, str):
+        return(string)
+    else:
+        raise Exception("Input is not properly passed in as a string. Please pass in input as a string.")

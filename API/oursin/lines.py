@@ -31,9 +31,9 @@ class Line:
     >>>l1 = urchin.lines.Line()
     """
     global counter
+    counter += 1
     self.id = str(counter)
     client.sio.emit('CreateLine', [self.id])
-    counter += 1
     self.in_unity = True
 
   def delete(self):
