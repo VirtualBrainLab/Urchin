@@ -8,8 +8,7 @@ import utils
 counter = 0
 class Camera:
 	def __init__(self, target = [0,0,0], position = [0,0,0], preserve_target = True, rotation = [0,0,0], zoom = 1, pan_x = 3, pan_y = 4):
-		#self.create()
-		self.in_unity = True
+		self.create()
 
 		#in theory, the target value can stand for either coordinate or area? (and taking coordinate as default)
 		target_coordinate = utils.sanitize_vector3(target)
@@ -49,7 +48,7 @@ class Camera:
 		global counter
 		counter += 1
 		self.id = str(counter)
-		client.sio.emit('CreateCamera', [self.id])
+		#client.sio.emit('CreateCamera', [self.id])
 		self.in_unity = True
 
 	def delete(self):
@@ -62,7 +61,7 @@ class Camera:
 		Examples
 		>>>c1.delete()
 		"""
-		client.sio.emit('DeleteCamera', [self.id])
+		#client.sio.emit('DeleteCamera', [self.id])
 		self.in_unity = False
 
 	def set_target_coordinate(self,camera_target_coordinate):
