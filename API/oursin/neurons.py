@@ -42,7 +42,7 @@ class Neuron:
 		"""
 		global counter
 		counter += 1
-		self.id = str(counter)
+		self.id = 'n' + str(counter)
 		client.sio.emit('CreateNeurons', [self.id])
 		self.in_unity = True
 

@@ -45,7 +45,7 @@ class Primitive:
     """
     global counter
     counter +=1
-    self.id = str(counter)
+    self.id = 'prim' + str(counter)
     client.sio.emit('CreateMesh', [self.id])
     self.in_unity = True
   
