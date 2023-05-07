@@ -152,7 +152,7 @@ def create(num_objects):
 
   Parameters
   ----------
-  numObjects : int
+  num_objects : int
     number of primitive objects to be created      
 	Examples
 	--------
@@ -186,7 +186,7 @@ def set_positions(meshes_list, positions_list):
   Parameters
   ----------
   meshes_list : list of mesh objects
-	  list of meshes being deleted
+	  list of meshes being set
   positions_list : list of list of three floats
     vertex positions of each mesh
       
