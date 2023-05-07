@@ -32,7 +32,7 @@ class Line:
     """
     global counter
     counter += 1
-    self.id = str(counter)
+    self.id = 'l' + str(counter)
     client.sio.emit('CreateLine', [self.id])
     self.in_unity = True
 
