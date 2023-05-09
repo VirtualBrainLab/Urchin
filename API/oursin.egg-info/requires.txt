@@ -1,3 +1,3 @@
-python-socketio[client]
-numpy
-PIL
+python-socketio[client]~=5.8.0
+numpy~=1.24.3
+Pillow~=9.5.0
