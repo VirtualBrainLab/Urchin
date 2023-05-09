@@ -24,6 +24,7 @@ TagManager:
   - ProbeAreaText
   - BrainRotatorMiniControls
   - AreaPanel
+  - CropPanel
   layers:
   - Default
   - TransparentFX

@@ -187,6 +187,19 @@ io.on("connection", function (socket) {
   socket.on('SetCameraPan', function(data) {
     emitToReceiver(socket.id, 'SetCameraPan', data);
   });
+  socket.on('SetCameraMode', function(data) {
+    emitToReceiver(socket.id, 'SetCameraMode', data);
+  });
+  socket.on('RequestCameraImg', function(data) {
+    emitToReceiver(socket.id, 'RequestCameraImg', data);
+  });
+  // Camera receive events
+  socket.on('ReceiveCameraImgMeta', function(data) {
+    emitToSender(socket.id, 'ReceiveCameraImgMeta', data);
+  });
+  socket.on('ReceiveCameraImg', function(data) {
+    emitToSender(socket.id, 'ReceiveCameraImg', data);
+  });
 
   // Receiver events
   socket.on('log', function(data) {

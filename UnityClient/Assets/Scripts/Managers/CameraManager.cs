@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,9 +7,18 @@ public class CameraManager : MonoBehaviour
 {
     #region Serialized
     [SerializeField] BrainCameraController _cameraControl;
+    [SerializeField] UM_CameraController _umCameraControl;
     [SerializeField] AreaManager _areaManager;
     [SerializeField] CCFModelControl _modelControl;
+    [SerializeField] RectTransform _cropWindowRT;
     #endregion
+
+    private const int SOCKET_IO_MAX_CHUNK_BYTES = 1000000;
+
+    private void Update()
+    {
+        //Debug.Log(_cropWindowRT.rect.position);
+    }
 
     #region Public functions
     public void SetCameraRotation(List<float> obj)
@@ -19,6 +29,45 @@ public class CameraManager : MonoBehaviour
     public void SetCameraZoom(float obj)
     {
         _cameraControl.SetZoom(obj);
+    }
+
+    public void SetCameraMode(string mode)
+    {
+        _umCameraControl.SwitchCameraMode(mode.Equals("orthographic"));
+    }
+
+    /// <summary>
+    /// Take a single screenshot at the end of this frame and send that to the client
+    /// via the ReceiveCameraImg streaming API
+    /// </summary>
+    public void Screenshot()
+    {
+        StartCoroutine(ScreenshotHelper());
+    }
+
+    private IEnumerator ScreenshotHelper()
+    {
+        yield return new WaitForEndOfFrame();
+        var texture = ScreenCapture.CaptureScreenshotAsTexture();
+        //texture
+
+        byte[] data = texture.EncodeToPNG();
+        Debug.Log(data.Length);
+
+        int nChunks = Mathf.CeilToInt((float)data.Length / SOCKET_IO_MAX_CHUNK_BYTES);
+
+        // tell the client how many messages to expect
+        Client.Emit("ReceiveCameraImgMeta", nChunks);
+
+        // split the texture byte[] into 1000 byte chunks
+        for (int i = 0; i < nChunks; i++)
+        {
+            int cChunkSize = Mathf.Min(SOCKET_IO_MAX_CHUNK_BYTES, data.Length - i * SOCKET_IO_MAX_CHUNK_BYTES);
+            byte[] chunkData = new byte[cChunkSize];
+            Buffer.BlockCopy(data, i * SOCKET_IO_MAX_CHUNK_BYTES, chunkData, 0, cChunkSize);
+            Client.Emit("ReceiveCameraImg", chunkData);
+        }
+
     }
 
     public void SetCameraPosition(List<float> obj)

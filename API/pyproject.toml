@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "oursin"
-version = "0.4.4"
+version = "0.4.7"
 authors = [
   { name="Daniel Birman", email="danbirman@gmail.com" },
 ]
@@ -19,10 +19,11 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-  "python-socketio[client]",
-  "numpy",
+  "python-socketio[client] ~= 5.8.0",
+  "numpy ~= 1.24.3",
+  "Pillow ~= 9.5.0"
 ]
 
 [project.urls]
-"Homepage" = "https://virtualbrainlab.org/03_unity_neuro/01_urn_intro.html"
+"Homepage" = "https://virtualbrainlab.org/urchin/installation_and_use.html"
 "Bug Tracker" = "https://github.com/VirtualBrainLab/Urchin/issues"

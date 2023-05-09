@@ -8,11 +8,5 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/UnityMouseRenderer.unity
     guid: bd25d770bb1b833459c855e1d961223f
-  - enabled: 0
-    path: Assets/Scenes/IBLTest_Latency.unity
-    guid: 97e48f0112ac6c141a472c093b6d7ce1
-  - enabled: 0
-    path: Assets/Scenes/IBL_urchin_mini.unity
-    guid: d54478b98b82861408c1005473f442d0
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: bddae2c99875b74449e08828b6f729ad, type: 2}

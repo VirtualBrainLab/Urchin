@@ -4,12 +4,37 @@ from . import client
 import warnings
 #import utils
 
+from PIL import Image
+import io
+		  
+receive_fname = ''
+receive_count = 0
+receive_data = []
+
+def receive_camera_img_meta(data):
+	global receive_count, receive_data
+	receive_count = int(data)
+	print('(Camera receive meta) ' + str(data))
+
+def receive_camera_img(data):
+  global receive_count, receive_data
+	
+  print(f'(Camera) received {str(len(data))} bytes')
+  receive_data.append(data)
+  receive_count -= 1
+
+  if (receive_count == 0):
+    data_bytes = b''.join(receive_data)
+    receive_data = []
+    Image.open(io.BytesIO(data_bytes)).save(receive_fname)
+    print('(Camera received all data)')
+
+
 ## Camera renderer
 counter = 0
 class Camera:
 	def __init__(self, target = [0,0,0], position = [0,0,0], preserve_target = True, rotation = [0,0,0], zoom = 1, pan_x = 3, pan_y = 4):
 		self.create()
-
 		#in theory, the target value can stand for either coordinate or area? (and taking coordinate as default)
 		target_coordinate = utils.sanitize_vector3(target)
 		self.target = target_coordinate
