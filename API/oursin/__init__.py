@@ -10,6 +10,9 @@ __version__ = "0.4.4"
 from . import client
 from .renderer import *
 
+# load sanitization
+from . import utils
+
 # load the scene controls
 from . import camera
 
@@ -26,6 +29,3 @@ from . import colors
 
 # load the atlases
 from .atlas import *
-
-# load warnings module
-import warnings

@@ -2,7 +2,7 @@
 
 from . import client
 import warnings
-import utils
+from . import utils
 
 
 counter = 0

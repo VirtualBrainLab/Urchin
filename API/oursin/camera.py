@@ -2,7 +2,7 @@
 
 from . import client
 import warnings
-import utils
+#import utils
 
 ## Camera renderer
 counter = 0
