@@ -101,7 +101,7 @@ public class AreaManager : MonoBehaviour
             (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
             CCFTreeNode node = _modelControl.tree.findNode(ID);
 
-            Color newColor = Color.black;
+            Color newColor;
             if (node != null && ColorUtility.TryParseHtmlString(kvp.Value, out newColor))
             {
                 if (WaitingOnTask(node.ID))
