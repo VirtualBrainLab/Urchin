@@ -82,6 +82,7 @@ build/*
 
 urchin-vn/*
 UnityClient/UserSettings/Layouts/default-2021.dwlt
+
 Examples/bwm_peth/data/*
 
 urchin-venv/*
@@ -96,3 +97,5 @@ UnityClient/UserSettings/Layouts/default-2021.dwlt
 
 API/oursin-venv/*
 UnityClient/Assets/Data/ZYE12_phase.mp4
+UnityClient/Assets/Data/ZYE12_phase.mp4.meta
+**/UserSettings/Layouts/*
