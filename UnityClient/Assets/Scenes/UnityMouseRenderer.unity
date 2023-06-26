@@ -10493,6 +10493,10 @@ PrefabInstance:
       propertyPath: brain
       value: 
       objectReference: {fileID: 1690469967}
+    - target: {fileID: 5697262125096797361, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
+      propertyPath: userControllable
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5697262125096797362, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
       propertyPath: _areaManager
       value: 
