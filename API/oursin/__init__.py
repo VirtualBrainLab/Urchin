@@ -10,6 +10,9 @@ __version__ = "0.4.7"
 from . import client
 from .renderer import *
 
+# load sanitization
+from . import utils
+
 # load the scene controls
 from . import camera
 
