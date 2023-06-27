@@ -12,9 +12,7 @@ public class CameraBehavior : MonoBehaviour
     [SerializeField] CCFModelControl _modelControl;
     [SerializeField] RectTransform _cropWindowRT;
 
-    //Keep a dictionary that maps string names to camera components 
-    private Dictionary<string, Camera> _cameras;
-    [SerializeField] private GameObject _cameraPrefab;
+
     #endregion
 
     private const int SOCKET_IO_MAX_CHUNK_BYTES = 1000000;
@@ -24,32 +22,8 @@ public class CameraBehavior : MonoBehaviour
         //Debug.Log(_cropWindowRT.rect.position);
     }
 
-    #region Public functions
-    public void CreateCamera(List<string> cameras)
-    {
-        //instantiating game object w camera component
-        foreach (string camera in cameras)
-        {
-            GameObject tempObject = Instantiate(_cameraPrefab);
-            tempObject.name = $"camera_{camera}";
-            _cameras.Add(camera, tempObject.GetComponent<Camera>());
-            //in theory, creates new entry to the dictionary with the name of the camera [camera] and associates it with a new Game Object
-
-            //adds the camera component to the camera manager (actually creates the camera of the empty object)
-        }
-
-    }
-
-    public void DeleteCamera(List<string> cameras)
-    {
-
-        //calls destroy (the one specific camera)
-        foreach (string camera in cameras)
-        {
-            Destroy(_cameras[camera].gameObject);
-            _cameras.Remove(camera);
-        }
-    }
+      #region Public functions
+    
     public void SetCameraRotation(List<float> obj)
     {
         _cameraControl.SetBrainAxisAngles(new Vector3(obj[1], obj[0], obj[2]));
