@@ -10,6 +10,7 @@ public class CropBehavior : MonoBehaviour, IPointerDownHandler
     {
         Debug.Log("clicked");
         Debug.Log(eventData.position);
+        //Debug.Log(eventData.)
     }
 
 }
