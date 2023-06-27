@@ -1,83 +1,280 @@
+"""Neurons"""
+
 from . import client
+import warnings
+from . import utils
 
-###########
-# NEURONS #
-###########
+## Neurons renderer
+counter = 0
+class Neuron:
+	def __init__(self, position= [0.0,0.0,0.0], color= '#FFFFFF', size= 0.02, shape= 'sphere', material= 'lit-transparent'):
+		self.create()
 
-def create(neuron_names):
+		position = utils.sanitize_vector3(position)
+		self.position = position
+		client.sio.emit('SetNeuronPos', {self.id: position})
+
+		color = utils.sanitize_color(color)
+		self.color = color
+		client.sio.emit('SetNeuronColor',{self.id: color})
+
+		size = utils.sanitize_float(size)
+		self.size = size
+		client.sio.emit('SetNeuronSize',{self.id: size})
+
+		shape = utils.sanitize_string(shape)
+		self.shape = shape
+		client.sio.emit('SetNeuronShape',{self.id: shape})
+
+		material = utils.sanitize_material(material)
+		self.material = material
+		client.sio.emit('SetNeuronMaterial',{self.id: material})
+
+	def create(self):
+		"""Creates neurons
+		
+		Parameters
+		---------- 
+		none
+
+		Examples
+		>>>n1 = urchin.neurons.Neuron()
+		"""
+		global counter
+		counter += 1
+		self.id = 'n' + str(counter)
+		client.sio.emit('CreateNeurons', [self.id])
+		self.in_unity = True
+
+	def delete(self):
+		"""Deletes neurons
+		
+		Parameters
+		---------- 
+		references object being deleted
+
+		Examples
+		>>>n1.delete()
+		"""
+		client.sio.emit('DeleteNeurons', [self.id])
+		self.in_unity = False
+
+	def set_position(self, position):
+		"""Set the position of neuron position in ml/ap/dv coordinates relative to the CCF (0,0,0) point
+		
+		Parameters
+		---------- 
+		position : list of three floats
+			vertex positions of the neuron relative to the CCF point
+
+		Examples
+		--------
+		>>>n1.set_position([2,2,2])
+		"""
+		if self.in_unity == False:
+			raise Exception("Neuron does not exist in Unity, call create method first.")
+		
+		position = utils.sanitize_vector3(position)
+		self.position = position
+		client.sio.emit('SetNeuronPos', {self.id: position})
+
+	def set_size(self, size):
+		"""Set the size of neuron renderer
+		
+		Parameters
+		---------- 
+		size : float
+			size of the neuron
+
+		Examples
+		--------
+		>>>n1.set_size(0.02)
+		"""
+		if self.in_unity == False:
+			raise Exception("Neuron does not exist in Unity, call create method first.")
+		
+		size = utils.sanitize_float(size)
+		self.size = size
+		client.sio.emit('SetNeuronSize', {self.id: size})
+	
+	def set_color(self, color):
+		"""Set the color of neuron renderer
+		
+		Parameters
+		---------- 
+		color : string hex color
+			new hex color of the neuron
+
+		Examples
+		--------
+		>>>n1.set_color('#FFFFFF')
+		"""
+		if self.in_unity == False:
+			raise Exception("Neuron does not exist in Unity, call create method first.")
+		
+		color = utils.sanitize_color(color)
+		self.color = color
+		client.sio.emit('SetNeuronColor', {self.id: color})
+
+	def set_shape(self, shape):
+		"""Set the shape of neuron renderer
+		Options are
+	 	 - 'sphere' (default)
+	 	 - 'cube' better performance when rendering tens of thousands of neurons
+
+		Parameters
+		---------- 
+		shape : string
+			new shape of the neuron
+
+		Examples
+		--------
+		>>>n1.set_shape('sphere')
+		"""
+		if self.in_unity == False:
+			raise Exception("Neuron does not exist in Unity, call create method first.")
+		
+		self.shape = shape
+		client.sio.emit('SetNeuronShape', {self.id: shape})
+
+	def set_material(self, material):
+		"""Set the material of neuron renderer
+		Options are
+	 	- 'lit-transparent' (default)
+	 	- 'lit'
+	 	- 'unlit'
+
+		Parameters
+		---------- 
+		material : string
+			new material of the neuron
+
+		Examples
+		--------
+		>>>n1.set_material('lit-transparent')
+		"""
+		if self.in_unity == False:
+			raise Exception("Neuron does not exist in Unity, call create method first.")
+		
+		self.material = material
+		client.sio.emit('SetNeuronMaterial', {self.id: material})
+
+def create(num_neurons):
 	"""Create neuron objects
 
 	Note: neurons must be created before setting other values
 
 	Parameters
 	----------
-	neuron_names : string list
-		names of the new neuron objects
+	num_neurons : int
+		number of new neuron objects
 
 	Examples
 	--------
-	>>> urn.create(["n1","n2","n3"])
+	>>> neurons = urchin.neurons.create(3)
 	"""
-	client.sio.emit('CreateNeurons', neuron_names)
+	neuron_names = []
+	for i in range(num_neurons):
+		neuron_names.append(Neuron())
+	return neuron_names
 
-def delete(neuron_names):
+def delete(neurons_list):
   """Delete neuron objects
 
   Parameters
   ----------
-  neuron_names : string list
-    names of the neuron objects
+  neuron_names : list of neuron objects
+	list of neurons being deleted
 
   Examples
   --------
-  >>> urn.delete(["n1","n2","n3"])
+  >>> urchin.neurons.delete()
   """
-  client.sio.emit('DeleteNeurons', neuron_names)
+  neurons_list = utils.sanitize_list(neurons_list)
 
-def set_position(neuron_positions):
-	"""Set neuron positions
+  neurons_ids = [x.id for x in neurons_list]
+  client.sio.emit('DeleteNeurons', neurons_ids)
 
-	Parameters
-	----------
-	neuron_positions : dict {string: int list}
-		keys are neuron names, values are ML/AP/DV coordinates in um units relative to CCF (0,0,0)
-
-	Examples
-	--------
-	>>> urn.set_positions({'n1':[500,1500,1800]})
-	"""
-	client.sio.emit('SetNeuronPos', neuron_positions)
-
-def set_size(neuron_sizes):
-	"""Set size of neuron objects in mm units
+def set_positions(neurons_list, positions_list):
+	"""Set the position of neuron position in ml/ap/dv coordinates relative to the CCF (0,0,0) point
 
 	Parameters
 	----------
-	neuron_sizes : dict {string: float}
-		keys are neuron names, values are float size in mm
-		
+	neurons_list : list of neuron objects
+		list of neurons being moved
+	positions : list of list of three floats
+		list of positions of neurons
+
 	Examples
 	--------
-	>>> urn.set_size( {'n1':0.02})
+	>>> urchin.neurons.set_position([n1,n2,n3], [[1,1,1],[2,2,2],[3,3,3]])
 	"""
-	client.sio.emit('SetNeuronSize', neuron_sizes)
+	neurons_list = utils.sanitize_list(neurons_list)
+	positions_list = utils.sanitize_list(positions_list)
 
-def set_color(neuron_colors):
-	"""Set colors of neuron objects
+	neurons_pos = {}
+	for i in range(len(neurons_list)):
+		neuron = neurons_list[i]
+		if neuron.in_unity:
+			neurons_pos[neuron.id] = utils.sanitize_vector3[positions_list[i]]
+		else:
+			warnings.warn(f"Neuron with id {neuron.id} does not exist in Unity, call create method first.")
+	client.sio.emit('SetNeuronPos', neurons_pos)
+
+def set_sizes(neurons_list, sizes_list):
+	"""Set neuron sizes
 
 	Parameters
 	----------
-	neuron_colors : dict {string: string}
-		keys are neuron names, values are hex colors
-		
+	neurons_list : list of neuron objects
+		list of neurons being resized
+	sizes : list of floats
+		list of sizes of neurons
+
 	Examples
 	--------
-	>>> urn.set_color( {'n1':"#FFFFFF"})
+	>>> urchin.neurons.set_size([n1,n2,n3], [0.01,0.02,0.03])
 	"""
-	client.sio.emit('SetNeuronColor', neuron_colors)
+	neurons_list = utils.sanitize_list(neurons_list)
+	sizes_list = utils.sanitize_list(sizes_list)
 
-def set_shape(neuron_shapes):
-	"""Change the mesh used to render neurons
+	neurons_sizes = {}
+	for i in range(len(neurons_list)):
+		neuron = neurons_list[i]
+		if neuron.in_unity:
+			neurons_sizes[neuron.id] = utils.sanitize_float(sizes_list[i])
+		else:
+			warnings.warn(f"Neuron with id {neuron.id} does not exist in Unity, call create method first.")
+	client.sio.emit('SetNeuronSize', neurons_sizes)
+
+def set_colors(neurons_list, colors_list):
+	"""Set neuron colors
+
+	Parameters
+	----------
+	neurons_list : list of neuron objects
+		list of neurons being recolored
+	colors : list of string hex colors
+		list of colors of neurons
+
+	Examples
+	--------
+	>>> urchin.neurons.set_color([n1,n2,n3], ['#FFFFFF','#000000','#FF0000'])
+	"""
+	neurons_list = utils.sanitize_list(neurons_list)
+	colors_list = utils.sanitize_list(colors_list)
+
+	neurons_colors = {}
+	for i in range(len(neurons_list)):
+		neuron = neurons_list[i]
+		if neuron.in_unity:
+			neurons_colors[neuron.id] = utils.sanitize_color(colors_list[i])
+		else:
+			warnings.warn(f"Neuron with id {neuron.id} does not exist in Unity, call create method first.")
+	client.sio.emit('SetNeuronColor', neurons_colors)
+
+def set_shapes(neurons_list, shapes_list):
+	"""Set neuron shapes
 
 	Options are
 	 - 'sphere' (default)
@@ -85,30 +282,55 @@ def set_shape(neuron_shapes):
 
 	Parameters
 	----------
-	neuron_shapes : dict {string: string}
-		keys are neuron names, values are shape strings
+	neurons_list : list of neuron objects
+		list of neurons being reshaped
+	shapes : list of string
+		list of shapes of neurons
 
 	Examples
 	--------
-	>>> urn.set_shape( {'n1':'sphere'})
+	>>> urchin.neurons.set_shape([n1,n2,n3], ['sphere','cube','sphere'])
 	"""
-	client.sio.emit('SetNeuronShape', neuron_shapes)
+	neurons_list = utils.sanitize_list(neurons_list)
+	shapes_list = utils.sanitize_list(shapes_list)
 
-def set_material(neuron_materials):
+	neurons_shapes = {}
+	for i in range(len(neurons_list)):
+		neuron = neurons_list[i]
+		if neuron.in_unity:
+			neurons_shapes[neuron.id] = utils.sanitize_shape(shapes_list[i])
+		else:
+			warnings.warn(f"Neuron with id {neuron.id} does not exist in Unity, call create method first.")
+	client.sio.emit('SetNeuronShape', neurons_shapes)
+
+def set_materials(neurons_list, materials_list):
 	"""Change the material used to render neurons
 
-	Options are
-	- 'lit-transparent' (default)
-	- 'lit'
-	- 'unlit'
+ 	Options are
+ 	- 'lit-transparent' (default)
+ 	- 'lit'
+ 	- 'unlit'
 
 	Parameters
 	----------
-	neuron_materials : dict {string: string}
-		keys are neuron names, values are material strings
+	neurons_list : list of neuron objects
+		list of neurons being rematerialized
+	materials : list of string
+		list of materials of neurons
 
 	Examples
 	--------
-	>>> urn.set_neuron_materials( {'n1':'lit-transparent'})
+	>>> urchin.neurons.set_material([n1,n2,n3], ['lit','unlit','lit'])
 	"""
-	client.sio.emit('SetNeuronMaterial', neuron_materials)
+	neurons_list = utils.sanitize_list(neurons_list)
+	materials_list = utils.sanitize_list(materials_list)
+
+	neurons_materials = {}
+	for i in range(len(neurons_list)):
+		neuron = neurons_list[i]
+		if neuron.in_unity:
+			neurons_materials[neuron.id] = utils.sanitize_material(materials_list[i])
+		else:
+			warnings.warn(f"Neuron with id {neuron.id} does not exist in Unity, call create method first.")
+	client.sio.emit('SetNeuronMaterial', neurons_materials)
+
