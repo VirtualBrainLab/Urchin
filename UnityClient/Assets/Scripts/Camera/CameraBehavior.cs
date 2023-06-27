@@ -12,7 +12,7 @@ public class CameraBehavior : MonoBehaviour
     [SerializeField] CCFModelControl _modelControl;
     [SerializeField] RectTransform _cropWindowRT;
 
-
+    
     #endregion
 
     private const int SOCKET_IO_MAX_CHUNK_BYTES = 1000000;
@@ -22,7 +22,7 @@ public class CameraBehavior : MonoBehaviour
         //Debug.Log(_cropWindowRT.rect.position);
     }
 
-      #region Public functions
+    #region Public functions
     
     public void SetCameraRotation(List<float> obj)
     {
