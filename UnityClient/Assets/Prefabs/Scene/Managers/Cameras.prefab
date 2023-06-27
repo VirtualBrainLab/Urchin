@@ -44,3 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac277b4e6cda5524fbbc9cfd1c488d72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _cameraPrefab: {fileID: 5697262125096797366, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
+  output1: {fileID: 8400000, guid: b7f6bb0f9189acb4b9a29476f18da6b7, type: 2}
+  output2: {fileID: 8400000, guid: 3ec18ee15b3d55943a655547b54df5f0, type: 2}
+  output3: {fileID: 8400000, guid: 6beab1dc65faa2f429cbf24390bc7062, type: 2}
+  output4: {fileID: 8400000, guid: 70d722c7394d2f746a700129510c613e, type: 2}

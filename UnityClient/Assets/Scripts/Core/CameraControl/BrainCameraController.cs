@@ -38,6 +38,8 @@ public class BrainCameraController : MonoBehaviour
 
     private bool blockBrainControl;
 
+    public bool UserControllable;
+
     // auto-rotation
     private bool autoRotate;
     private float autoRotateSpeed = 10.0f;
@@ -68,6 +70,10 @@ public class BrainCameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!UserControllable) {
+            return;
+        }
+
         // Check the scroll wheel and deal with the field of view
         if (!EventSystem.current.IsPointerOverGameObject())
         {

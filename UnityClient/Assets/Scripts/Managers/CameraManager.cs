@@ -7,6 +7,30 @@ public class CameraManager : MonoBehaviour
     //Keep a dictionary that maps string names to camera components 
     private Dictionary<string, Camera> _cameras;
     [SerializeField] private GameObject _cameraPrefab;
+    [SerializeField] private RenderTexture output1;
+    [SerializeField] private RenderTexture output2;
+    [SerializeField] private RenderTexture output3;
+    [SerializeField] private RenderTexture output4;
+
+
+
+    Stack<RenderTexture> textures = new();
+
+    #region Unity functions
+    private void Awake()
+    {
+        textures.Push(output4);
+        textures.Push(output3);
+        textures.Push(output2);
+        textures.Push(output1);
+    }
+    #endregion
+
+
+
+
+
+    #region Public functions
 
     public void CreateCamera(List<string> cameras)
     {
@@ -15,10 +39,11 @@ public class CameraManager : MonoBehaviour
         {
             GameObject tempObject = Instantiate(_cameraPrefab);
             tempObject.name = $"camera_{camera}";
-            _cameras.Add(camera, tempObject.GetComponent<Camera>());
+            Camera cameraComponent = tempObject.GetComponent<Camera>();
+            _cameras.Add(camera, cameraComponent);
             //in theory, creates new entry to the dictionary with the name of the camera [camera] and associates it with a new Game Object
-
             //adds the camera component to the camera manager (actually creates the camera of the empty object)
+            cameraComponent.targetTexture = textures.Pop();
         }
 
     }
@@ -29,6 +54,8 @@ public class CameraManager : MonoBehaviour
         //calls destroy (the one specific camera)
         foreach (string camera in cameras)
         {
+            Camera cameraComponent = _cameras[camera].gameObject.GetComponent<Camera>();
+            textures.Push(cameraComponent.targetTexture);
             Destroy(_cameras[camera].gameObject);
             _cameras.Remove(camera);
         }
@@ -52,4 +79,5 @@ public class CameraManager : MonoBehaviour
     public void SetCameraTarget(Dictionary<string, List<float>> cameraTargetmlapdv) { }
 
     public void SetCameraPan(Dictionary<string, List<float>> cameraPanXY) { }
+    #endregion
 }
