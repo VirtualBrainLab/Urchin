@@ -10566,6 +10566,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2290917540002357934, guid: 819c72893569fa442b7683567f3569d6, type: 3}
+      propertyPath: _cameraPrefab
+      value: 
+      objectReference: {fileID: 5697262125096797366, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
+    - target: {fileID: 5649923108053479168, guid: 819c72893569fa442b7683567f3569d6, type: 3}
+      propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 5708727191346960128, guid: 819c72893569fa442b7683567f3569d6, type: 3}
       propertyPath: m_Name
       value: Lines

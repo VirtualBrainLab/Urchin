@@ -36,7 +36,7 @@ public class Client : MonoBehaviour
     [SerializeField] private AreaManager _areaManager;
     [SerializeField] private TextManager _textManager;
     [SerializeField] private VolumeManager _volumeManager;
-    [SerializeField] private CameraManager _cameraManager;
+    [SerializeField] private CameraBehavior _cameraManager;
     #endregion
 
     // NODES
