@@ -1,6 +1,7 @@
 """Camera"""
 
 from . import client
+from . import utils
 
 from PIL import Image
 import io

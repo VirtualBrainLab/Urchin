@@ -36,7 +36,7 @@ public class Client : MonoBehaviour
     [SerializeField] private AreaManager _areaManager;
     [SerializeField] private TextManager _textManager;
     [SerializeField] private VolumeManager _volumeManager;
-    [SerializeField] private CameraBehavior _cameraManager;
+    [SerializeField] private CameraManager _cameraManager;
     #endregion
 
     // NODES
@@ -115,14 +115,16 @@ public class Client : MonoBehaviour
         manager.Socket.On<Dictionary<string, List<float>>>("SetProbeSize", _probeManager.SetProbeScale);
 
         // Camera
-        manager.Socket.On<List<float>>("SetCameraTarget", _cameraManager.SetCameraTarget);
-        manager.Socket.On<List<float>>("SetCameraPosition", _cameraManager.SetCameraPosition);
-        manager.Socket.On<List<float>>("SetCameraRotation", _cameraManager.SetCameraRotation);
-        manager.Socket.On<string>("SetCameraTargetArea", _cameraManager.SetCameraTargetArea);
-        manager.Socket.On<float>("SetCameraZoom", _cameraManager.SetCameraZoom);
-        manager.Socket.On<List<float>>("SetCameraPan", _cameraManager.SetCameraPan);
-        manager.Socket.On<string>("SetCameraMode", _cameraManager.SetCameraMode);
-        manager.Socket.On("RequestCameraImg", _cameraManager.Screenshot);
+        //manager.Socket.On<List<float>>("SetCameraTarget", _cameraManager.SetCameraTarget);
+        //manager.Socket.On<List<float>>("SetCameraPosition", _cameraManager.SetCameraPosition);
+        //manager.Socket.On<List<float>>("SetCameraRotation", _cameraManager.SetCameraRotation);
+        //manager.Socket.On<string>("SetCameraTargetArea", _cameraManager.SetCameraTargetArea);
+        //manager.Socket.On<float>("SetCameraZoom", _cameraManager.SetCameraZoom);
+        //manager.Socket.On<List<float>>("SetCameraPan", _cameraManager.SetCameraPan);
+        //manager.Socket.On<string>("SetCameraMode", _cameraManager.SetCameraMode);
+        //manager.Socket.On("RequestCameraImg", _cameraManager.Screenshot);
+        manager.Socket.On<List<string>>("CreateCamera", _cameraManager.CreateCamera);
+        manager.Socket.On<List<string>>("DeleteCamera", _cameraManager.DeleteCamera);
 
 
         // Text

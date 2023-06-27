@@ -169,6 +169,12 @@ io.on("connection", function (socket) {
   });
 
   // Camera
+  socket.on('CreateCamera', function(data) {
+    emitToReceiver(socket.id, 'CreateCamera', data);
+  });
+  socket.on('DeleteCamera', function(data) {
+    emitToReceiver(socket.id, 'DeleteCamera', data);
+  });
   socket.on('SetCameraTarget', function(data) {
     emitToReceiver(socket.id, 'SetCameraTarget', data);
   });
