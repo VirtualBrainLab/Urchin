@@ -55,6 +55,10 @@ public class BrainCameraController : MonoBehaviour
         Application.targetFrameRate = 144;
 #endif
 
+        if (brain == null) {
+            brain = GameObject.Find("BrainModel");
+        }
+
         cameraTarget = brain.transform.position;
         initialCameraRotatorPosition = brainCameraRotator.transform.position;
         cameraPositionOffset = Vector3.zero;

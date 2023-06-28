@@ -12,10 +12,33 @@ public class CameraBehavior : MonoBehaviour
     [SerializeField] CCFModelControl _modelControl;
     [SerializeField] RectTransform _cropWindowRT;
 
-    
+    [SerializeField] Camera _orthoCamera;
+    [SerializeField] Camera _perspectiveCamera;
+
     #endregion
 
+    #region Public properties
+
+    private RenderTexture _renderTexture;
+    public RenderTexture RenderTexture
+    {
+        get
+        {
+            return _renderTexture;
+        }
+
+        set
+        {
+            _renderTexture = value;
+            _orthoCamera.targetTexture = _renderTexture;
+            _perspectiveCamera.targetTexture = _renderTexture;
+        }
+    }
+    #endregion
+
+    #region private var
     private const int SOCKET_IO_MAX_CHUNK_BYTES = 1000000;
+    #endregion
 
     private void Update()
     {
@@ -23,6 +46,11 @@ public class CameraBehavior : MonoBehaviour
     }
 
     #region Public functions
+
+    public void SetCameraControl(bool controllable)
+    {
+        _cameraControl.UserControllable = controllable;
+    }
     
     public void SetCameraRotation(List<float> obj)
     {

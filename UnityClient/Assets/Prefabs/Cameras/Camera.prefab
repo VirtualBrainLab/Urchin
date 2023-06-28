@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5697262124586181145}
   - component: {fileID: 5697262124586181144}
-  - component: {fileID: 5697262124586181151}
   - component: {fileID: 5697262124586181150}
   m_Layer: 0
   m_Name: OrthoCamera
@@ -77,14 +76,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &5697262124586181151
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5697262124586181149}
-  m_Enabled: 1
 --- !u!114 &5697262124586181150
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -216,6 +207,8 @@ MonoBehaviour:
   _areaManager: {fileID: 0}
   _modelControl: {fileID: 0}
   _cropWindowRT: {fileID: 0}
+  _orthoCamera: {fileID: 5697262124586181144}
+  _perspectiveCamera: {fileID: 5697262126407426464}
 --- !u!1 &5697262125351160131
 GameObject:
   m_ObjectHideFlags: 0
@@ -456,7 +449,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5697262126407426469}
   - component: {fileID: 5697262126407426464}
-  - component: {fileID: 5697262126407426471}
   - component: {fileID: 5697262126407426470}
   m_Layer: 0
   m_Name: PerspectiveCamera
@@ -523,14 +515,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &5697262126407426471
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5697262126407426468}
-  m_Enabled: 1
 --- !u!114 &5697262126407426470
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -3,7 +3,7 @@
 from . import client
 from . import utils
 
-from PIL import Image
+#from PIL import Image
 import io
 		  
 receive_fname = ''
@@ -34,32 +34,32 @@ class Camera:
 	def __init__(self, target = [0,0,0], position = [0,0,0], preserve_target = True, rotation = [0,0,0], zoom = 1, pan_x = 3, pan_y = 4, mode = "orthographic"):
 		self.create()
 		#in theory, the target value can stand for either coordinate or area? (and taking coordinate as default)
-		target_coordinate = utils.sanitize_vector3(target)
-		self.target = target_coordinate
-		client.sio.emit('SetCameraTarget', {self.id: self.target})
+		# target_coordinate = utils.sanitize_vector3(target)
+		# self.target = target_coordinate
+		# client.sio.emit('SetCameraTarget', {self.id: self.target})
 
-		position = utils.sanitize_vector3(position)
-		self.position = position
-		packet = position.copy()
-		packet.append(preserve_target)
-		client.sio.emit('SetCameraPosition', {self.id: packet})
+		# position = utils.sanitize_vector3(position)
+		# self.position = position
+		# packet = position.copy()
+		# packet.append(preserve_target)
+		# client.sio.emit('SetCameraPosition', {self.id: packet})
 
-		rotation = utils.sanitize_vector3(rotation)
-		self.rotation = rotation
-		client.sio.emit('SetCameraRotation', {self.id: self.rotation})
+		# rotation = utils.sanitize_vector3(rotation)
+		# self.rotation = rotation
+		# client.sio.emit('SetCameraRotation', {self.id: self.rotation})
 
-		self.zoom = zoom
-		client.sio.emit('SetCameraZoom', {self.id: self.zoom})
+		# self.zoom = zoom
+		# client.sio.emit('SetCameraZoom', {self.id: self.zoom})
 
-		# target_area = utils.sanitize_string(target_area)
-		# self.target_area = target_area
-		# client.sio.emit('SetCameraTargetArea', self.target_area)
+		# # target_area = utils.sanitize_string(target_area)
+		# # self.target_area = target_area
+		# # client.sio.emit('SetCameraTargetArea', self.target_area)
 
-		self.pan = [pan_x, pan_y]
-		client.sio.emit('SetCameraPan', {self.id: self.pan})
+		# self.pan = [pan_x, pan_y]
+		# client.sio.emit('SetCameraPan', {self.id: self.pan})
 
-		self.mode = mode
-		client.sio.emit('SetCameraMode', {self.id: self.mode})
+		# self.mode = mode
+		# client.sio.emit('SetCameraMode', {self.id: self.mode})
 
 	def create(self):
 		"""Creates camera
