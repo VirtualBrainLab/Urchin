@@ -3,7 +3,7 @@
 from . import client
 from . import utils
 
-#from PIL import Image
+from PIL import Image
 import io
 		  
 receive_fname = ''
@@ -87,6 +87,8 @@ class Camera:
 		Examples
 		>>>c1.delete()
 		"""
+		if self.in_unity == False:
+			raise Exception("Camera is not created. Please create camera before calling method.")
 		client.sio.emit('DeleteCamera', [self.id])
 		self.in_unity = False
 

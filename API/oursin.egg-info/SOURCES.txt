@@ -11,6 +11,7 @@ oursin/primitives.py
 oursin/probes.py
 oursin/renderer.py
 oursin/text.py
+oursin/utils.py
 oursin/volumes.py
 oursin.egg-info/PKG-INFO
 oursin.egg-info/SOURCES.txt

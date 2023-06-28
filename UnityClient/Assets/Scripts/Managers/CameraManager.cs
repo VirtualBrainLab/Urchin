@@ -32,12 +32,12 @@ public class CameraManager : MonoBehaviour
     }
     private void Start()
     {
-        CreateCamera(new List<string> { "1","2", "3"});
-        float delayInSeconds = 2.0f; // Delay time in seconds
-        SetCameraControl("1");
+        //CreateCamera(new List<string> { "1", "3"});
+        //float delayInSeconds = 2.0f; // Delay time in seconds
+        //SetCameraControl("1");
 
 
-        Invoke("DeleteTest", delayInSeconds);
+        //Invoke("DeleteTest", delayInSeconds);
     }
 
     #endregion
