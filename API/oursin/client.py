@@ -1,6 +1,7 @@
 """Client for communicating with the echo server"""
 import socketio
 import os
+import uuid
 
 from . import camera
 
@@ -8,11 +9,12 @@ class bcolors:
     WARNING = '\033[93m'
     FAIL = '\033[91m'
 
+ID = str(uuid.uuid1())[:8]
+
 sio = socketio.Client()
 @sio.event
 def connect():
 	print("(URN) connected to server")
-	ID = os.getlogin()
 	change_id(ID)
 
 @sio.event

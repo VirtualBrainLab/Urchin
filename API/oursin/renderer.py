@@ -18,8 +18,6 @@ def setup(verbose = True, localhost = False, standalone = False):
 		print("(urchin) Client is already connected")
 		return
 		
-	ID = os.getlogin()
-
 	log_messages = verbose
 
 	if localhost:
@@ -28,7 +26,7 @@ def setup(verbose = True, localhost = False, standalone = False):
 		client.sio.connect('https://urchin-commserver.herokuapp.com/')
 
 	if not standalone:
-		url = "https://data.virtualbrainlab.org/Urchin/?ID=" + ID
+		url = "https://data.virtualbrainlab.org/Urchin/?ID=" + client.ID
 		webbrowser.open(url)
 
 ######################
