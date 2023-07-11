@@ -153,17 +153,8 @@ public class Client : MonoBehaviour
         manager.Socket.On<string>("Clear", Clear);
 
         // If we are building to WebGL or to Standalone, switch how you acquire the user's ID
-#if UNITY_EDITOR && UNITY_EDITOR_WIN && !UNITY_WEBGL
-        ID = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-        if (ID.Contains("\\"))
-        {
-            int idx = ID.IndexOf("\\");
-            ID = ID.Substring(idx + 1, ID.Length - idx - 1);
-        }
-        //ID = "Jasmine Schoch";
-        idInput.text = ID;
-        Debug.Log("Setting ID to: " + ID);
-#elif UNITY_WEBGL
+
+#if UNITY_WEBGL && !UNITY_EDITOR
         // get the url
         string appURL = Application.absoluteURL;
         // parse for query strings
@@ -185,14 +176,10 @@ public class Client : MonoBehaviour
                 }
             }
         }
-#else
-        ID = Environment.UserName;
-        idInput.text = ID;
-        Debug.Log("Setting ID to: " + ID);
 #endif
     }
 
-#region Clear
+    #region Clear
 
     private void Clear(string val)
     {
