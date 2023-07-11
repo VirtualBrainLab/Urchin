@@ -1,5 +1,4 @@
 const express = require("express");
-const socket = require("socket.io");
 const cors = require("cors");
 
 // App setup
@@ -26,6 +25,8 @@ const io = require("socket.io")(server, {
 ID2Socket = {}; // keeps track of all sockets with the same ID
 Socket2ID = {}; // keeps track of the ID of each socket
 Socket2Type = {};
+
+reserved_messages = ['connection','disconnect','ID','ReceiveCameraImgMeta','ReceiveCameraImg','log','log-warning','log-error']
 
 io.on("connection", function (socket) {
   console.log("Client connected with ID: " + socket.id);
@@ -69,136 +70,9 @@ io.on("connection", function (socket) {
   	console.log('All connected clients with ID: ' + ID2Socket[Socket2ID[socket.id]]);
   });
 
-  // The following is simply a list of all events that can be sent by a client and need to be re-emitted to the receivers
-  // no actual functionality is implemented by the echo server
+
+  // Make sure that these receive events are listed in the reserved_messages list
   
-  // CCF Areas
-  socket.on('LoadDefaultAreas', function(data) {
-    emitToReceiver(socket.id, 'LoadDefaultAreas', data);
-  });
-
-  socket.on('SetAreaColors', function(data) {
-  	emitToReceiver(socket.id, 'SetAreaColors', data);
-  });
-  socket.on('SetAreaVisibility', function(data) {
-  	emitToReceiver(socket.id, 'SetAreaVisibility', data);
-  });
-  socket.on('SetAreaIntensity', function(data) {
-    emitToReceiver(socket.id, 'SetAreaIntensity', data);
-  });
-  socket.on('SetAreaColormap', function(data) {
-    emitToReceiver(socket.id, 'SetAreaColormap', data);
-  });
-  socket.on('SetAreaMaterial', function(data) {
-    emitToReceiver(socket.id, 'SetAreaMaterial', data);
-  });
-  socket.on('SetAreaAlpha', function(data) {
-    emitToReceiver(socket.id, 'SetAreaAlpha', data);
-  });
-  socket.on('SetAreaData', function(data) {
-    emitToReceiver(socket.id, 'SetAreaData', data);
-  });
-  socket.on('SetAreaIndex', function(data) {
-    emitToReceiver(socket.id, 'SetAreaIndex', data);
-  });
-  
-  // Neurons
-  socket.on('CreateNeurons', function(data) {
-    emitToReceiver(socket.id, 'CreateNeurons', data);
-  });
-  socket.on('DeleteNeurons', function(data) {
-    emitToReceiver(socket.id, 'DeleteNeurons', data);
-  });
-  socket.on('SetNeuronPos', function(data) {
-    emitToReceiver(socket.id, 'SetNeuronPos', data);
-  });
-  socket.on('SetNeuronSize', function(data) {
-    emitToReceiver(socket.id, 'SetNeuronSize', data);
-  });
-  socket.on('SetNeuronShape', function(data) {
-    emitToReceiver(socket.id, 'SetNeuronShape', data);
-  });
-  socket.on('SetNeuronColor', function(data) {
-    emitToReceiver(socket.id, 'SetNeuronColor', data);
-  });
-  socket.on('SetNeuronMaterial', function(data) {
-    emitToReceiver(socket.id, 'SetNeuronMaterial', data);
-  });
-
-  // Probes
-  socket.on('CreateProbes', function(data) {
-    emitToReceiver(socket.id, 'CreateProbes', data);
-  });
-  socket.on('DeleteProbes', function(data) {
-    emitToReceiver(socket.id, 'DeleteProbes', data);
-  });
-  socket.on('SetProbeColors', function(data) {
-    emitToReceiver(socket.id, 'SetProbeColors', data);
-  });
-  socket.on('SetProbePos', function(data) {
-    emitToReceiver(socket.id, 'SetProbePos', data);
-  });
-  socket.on('SetProbeAngles', function(data) {
-    emitToReceiver(socket.id, 'SetProbeAngles', data);
-  });
-  socket.on('SetProbeStyle', function(data) {
-    emitToReceiver(socket.id, 'SetProbeStyle', data);
-  });
-  socket.on('SetProbeSize', function(data) {
-    emitToReceiver(socket.id, 'SetProbeSize', data);
-  });
-
-  // Volumes
-  socket.on('CreateVolume', function(data) {
-    emitToReceiver(socket.id, 'CreateVolume', data);
-  });
-  socket.on('DeleteVolume', function(data) {
-    emitToReceiver(socket.id, 'DeleteVolume', data);
-  });
-  socket.on('SetVolumeVisibility', function(data) {
-    emitToReceiver(socket.id, 'SetVolumeVisibility', data);
-  });
-  socket.on('SetVolumeData', function(data) {
-    emitToReceiver(socket.id, 'SetVolumeData', data);
-  });
-  socket.on('SetVolumeDataMeta', function(data) {
-    emitToReceiver(socket.id, 'SetVolumeDataMeta', data);
-  });
-  socket.on('SetVolumeColormap', function(data) {
-    emitToReceiver(socket.id, 'SetVolumeColormap', data);
-  });
-
-  // Camera
-  socket.on('CreateCamera', function(data) {
-    emitToReceiver(socket.id, 'CreateCamera', data);
-  });
-  socket.on('DeleteCamera', function(data) {
-    emitToReceiver(socket.id, 'DeleteCamera', data);
-  });
-  socket.on('SetCameraTarget', function(data) {
-    emitToReceiver(socket.id, 'SetCameraTarget', data);
-  });
-  socket.on('SetCameraPosition', function(data) {
-    emitToReceiver(socket.id, 'SetCameraPosition', data);
-  });
-  socket.on('SetCameraRotation', function(data) {
-    emitToReceiver(socket.id, 'SetCameraRotation', data);
-  });
-  socket.on('SetCameraTargetArea', function(data) {
-    emitToReceiver(socket.id, 'SetCameraTargetArea', data);
-  });
-  socket.on('SetCameraZoom', function(data) {
-    emitToReceiver(socket.id, 'SetCameraZoom', data);
-  });
-  socket.on('SetCameraPan', function(data) {
-    emitToReceiver(socket.id, 'SetCameraPan', data);
-  });
-  socket.on('SetCameraMode', function(data) {
-    emitToReceiver(socket.id, 'SetCameraMode', data);
-  });
-  socket.on('RequestCameraImg', function(data) {
-    emitToReceiver(socket.id, 'RequestCameraImg', data);
-  });
   // Camera receive events
   socket.on('ReceiveCameraImgMeta', function(data) {
     emitToSender(socket.id, 'ReceiveCameraImgMeta', data);
@@ -206,7 +80,7 @@ io.on("connection", function (socket) {
   socket.on('ReceiveCameraImg', function(data) {
     emitToSender(socket.id, 'ReceiveCameraImg', data);
   });
-
+  
   // Receiver events
   socket.on('log', function(data) {
     emitToSender(socket.id, 'log', data);
@@ -218,66 +92,13 @@ io.on("connection", function (socket) {
     emitToSender(socket.id, 'log-error', data);
   });
 
-  // Text
-  
-  socket.on('CreateText', function(data) {
-    emitToReceiver(socket.id, 'CreateText', data);
-  });
-  socket.on('DeleteText', function(data) {
-    emitToReceiver(socket.id, 'DeleteText', data);
-  });
-  socket.on('SetTextText', function(data) {
-    emitToReceiver(socket.id, 'SetTextText', data);
-  });
-  socket.on('SetTextColors', function(data) {
-    emitToReceiver(socket.id, 'SetTextColors', data);
-  });
-  socket.on('SetTextSizes', function(data) {
-    emitToReceiver(socket.id, 'SetTextSizes', data);
-  });
-  socket.on('SetTextPositions', function(data) {
-    emitToReceiver(socket.id, 'SetTextPositions', data);
+  // For all remaining events, asssume they are a sender -> receiver broadcast and emit them automatically
+  socket.onAny((eventName, data) => {
+    if (!reserved_messages.includes(eventName)) {
+      emitToReceiver(socket.id, eventName, data);
+    }
   });
 
-  // Line Renderer
-
-  socket.on('CreateLine', function(data) {
-    emitToReceiver(socket.id, 'CreateLine', data);
-  });
-  socket.on('DeleteLine', function(data) {
-    emitToReceiver(socket.id, 'DeleteLine', data);
-  });
-  socket.on('SetLinePosition', function(data) {
-    emitToReceiver(socket.id, 'SetLinePosition', data);
-  });
-  socket.on('SetLineColor', function(data) {
-    emitToReceiver(socket.id, 'SetLineColor', data);
-  });
-
-  // Primitive Mesh Renderer
-  socket.on('CreateMesh', function(data) {
-    emitToReceiver(socket.id, 'CreateMesh', data);
-  });
-  socket.on('DeleteMesh', function(data) {
-    emitToReceiver(socket.id, 'DeleteMesh', data);
-  });
-  socket.on('SetPosition', function(data) {
-    emitToReceiver(socket.id, 'SetPosition', data);
-  });
-  socket.on('SetScale', function(data) {
-    emitToReceiver(socket.id, 'SetScale', data);
-  });
-  socket.on('SetColor', function(data) {
-    emitToReceiver(socket.id, 'SetColor', data);
-  });
-  socket.on('SetMaterial', function (data) {
-    emitToReceiver(socket.id, 'SetMaterial', data);
-  });
-  
-  // Clear
-  socket.on('Clear', function(data) {
-    emitToReceiver(socket.id, 'Clear', data);
-  });
 });
 
 function emitToReceiver(id, event, data) {
