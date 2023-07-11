@@ -242,4 +242,15 @@ class Camera:
 	# 	global receive_fname
 	# 	receive_fname = filename
 	# 	client.sio.emit('RequestCameraImg')
-	
+
+def set_light_rotation(angles):
+    angles = utils.sanitize_vector3(angles)
+    print(angles)
+    print(isinstance(angles,list))
+    client.sio.emit('SetLightRotation', angles)
+
+def set_light_camera(camera_name = None):
+    if (camera_name is None):
+        client.sio.emit('ResetLightLink')
+    else:
+        client.sio.emit('SetLightLink', camera_name)

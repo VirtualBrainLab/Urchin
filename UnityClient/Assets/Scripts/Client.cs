@@ -13,7 +13,7 @@ using System.Collections.Specialized;
 /// </summary>
 public class Client : MonoBehaviour
 {
-    [SerializeField] UM_Launch main;
+    [SerializeField] RendererManager main;
     [SerializeField] CCFModelControl modelControl;
     [SerializeField] private bool localhost;
 
@@ -126,6 +126,10 @@ public class Client : MonoBehaviour
         manager.Socket.On<List<string>>("CreateCamera", _cameraManager.CreateCamera);
         manager.Socket.On<List<string>>("DeleteCamera", _cameraManager.DeleteCamera);
 
+        // Lights
+        manager.Socket.On("ResetLightLink", _cameraManager.SetLightCameraLink);
+        manager.Socket.On<string>("SetLightLink", _cameraManager.SetLightCameraLink);
+        manager.Socket.On<List<float>>("SetLightRotation", _cameraManager.SetLightRotation);
 
         // Text
         manager.Socket.On<List<string>>("CreateText", _textManager.Create);
@@ -231,26 +235,26 @@ public class Client : MonoBehaviour
 
     private void UpdateNeuronScale(Dictionary<string, float> data)
     {
-        UM_Launch.Log("Updating neuron scale");
+        RendererManager.Log("Updating neuron scale");
         foreach (KeyValuePair<string, float> kvp in data)
             neurons[kvp.Key].transform.localScale = Vector3.one * kvp.Value;
     }
 
     private void UpdateNeuronShape(Dictionary<string, string> data)
     {
-        UM_Launch.Log("Updating neuron shapes");
+        RendererManager.Log("Updating neuron shapes");
         foreach (KeyValuePair<string, string> kvp in data)
         {
             if (neuronMeshNames.Contains(kvp.Value))
                 neurons[kvp.Key].GetComponent<MeshFilter>().mesh = neuronMeshList[neuronMeshNames.IndexOf(kvp.Value)];
             else
-                UM_Launch.Log("Mesh type: " + kvp.Value + " does not exist");
+                RendererManager.Log("Mesh type: " + kvp.Value + " does not exist");
         }
     }
 
     private void UpdateNeuronColor(Dictionary<string, string> data)
     {
-        UM_Launch.Log("Updating neuron color");
+        RendererManager.Log("Updating neuron color");
         foreach (KeyValuePair<string, string> kvp in data)
         {
 
@@ -260,14 +264,14 @@ public class Client : MonoBehaviour
                 neurons[kvp.Key].GetComponent<Renderer>().material.color = newColor;
             }
             else
-                UM_Launch.Log("Failed to set neuron color to: " + kvp.Value);
+                RendererManager.Log("Failed to set neuron color to: " + kvp.Value);
         }
     }
 
     // Takes coordinates in ML AP DV in um units
     private void UpdateNeuronPos(Dictionary<string, List<float>> data)
     {
-        UM_Launch.Log("Updating neuron positions");
+        RendererManager.Log("Updating neuron positions");
         foreach (KeyValuePair<string, List<float>> kvp in data)
         {
             neurons[kvp.Key].transform.localPosition = new Vector3(-kvp.Value[0]/1000f, -kvp.Value[2]/1000f, kvp.Value[1]/1000f);
@@ -276,7 +280,7 @@ public class Client : MonoBehaviour
 
     private void CreateNeurons(List<string> data)
     {
-        UM_Launch.Log("Creating neurons");
+        RendererManager.Log("Creating neurons");
         foreach (string id in data)
         {
             neurons.Add(id, Instantiate(neuronPrefab, neuronParent));
@@ -285,7 +289,7 @@ public class Client : MonoBehaviour
 
     private void DeleteNeurons(List<string> data)
     {
-        UM_Launch.Log("Deleting neurons");
+        RendererManager.Log("Deleting neurons");
         foreach (string id in data)
         {
             Destroy(neurons[id]);
@@ -299,13 +303,13 @@ public class Client : MonoBehaviour
 
     public static void Emit(string header, object data)
     {
-        UM_Launch.Log($"Sending {header} message to client");
+        RendererManager.Log($"Sending {header} message to client");
         manager.Socket.Emit(header, data);
     }
 
     public void UpdateID(string newID)
     {
-        UM_Launch.Log("Updating ID to : " + newID);
+        RendererManager.Log("Updating ID to : " + newID);
         ID = newID;
         manager.Socket.Emit("ID", new List<string>() { ID, "receive" });
     }
@@ -317,25 +321,25 @@ public class Client : MonoBehaviour
 
     private void Connected()
     {
-        UM_Launch.Log("connected! Login with ID: " + ID);
+        RendererManager.Log("connected! Login with ID: " + ID);
         UpdateID(ID);
     }
 
     public static void Log(string msg)
     {
-        UM_Launch.Log("Sending message to client: " + msg);
+        RendererManager.Log("Sending message to client: " + msg);
         manager.Socket.Emit("log", msg);
     }
 
     public static void LogWarning(string msg)
     {
-        UM_Launch.Log("Sending warning to client: " + msg);
+        RendererManager.Log("Sending warning to client: " + msg);
         manager.Socket.Emit("log-warning", msg);
     }
 
     public static void LogError(string msg)
     {
-        UM_Launch.Log("Sending error to client: " + msg);
+        RendererManager.Log("Sending error to client: " + msg);
         manager.Socket.Emit("log-error", msg);
     }
 }

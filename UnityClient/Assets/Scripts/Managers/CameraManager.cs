@@ -5,52 +5,36 @@ using UnityEngine;
 
 public class CameraManager : MonoBehaviour
 {
-    //Keep a dictionary that maps string names to camera components 
-    private Dictionary<string, CameraBehavior> _cameras = new(); //directly access the camera nested within the prefab
+    #region Exposed fields
     [SerializeField] private GameObject _cameraPrefab;
-    [SerializeField] private RenderTexture output1;
-    [SerializeField] private RenderTexture output2;
-    [SerializeField] private RenderTexture output3;
-    [SerializeField] private RenderTexture output4;
+    [SerializeField] private RenderTexture _renderTexture1;
+    [SerializeField] private RenderTexture _renderTexture2;
+    [SerializeField] private RenderTexture _renderTexture3;
+    [SerializeField] private RenderTexture _renderTexture4;
     [SerializeField] private CameraBehavior mainCamera;
+    [SerializeField] private LightBehavior _lightBehavior;
+    #endregion
 
-    Stack<RenderTexture> textures = new();
-
- 
-
+    #region Variables
+    private Dictionary<string, CameraBehavior> _cameras; //directly access the camera nested within the prefab
+    private Stack<RenderTexture> textures = new();
+    #endregion
 
     #region Unity functions
     private void Awake()
     {
-        textures.Push(output4);
-        textures.Push(output3);
-        textures.Push(output2);
-        textures.Push(output1);
+        textures.Push(_renderTexture4);
+        textures.Push(_renderTexture3);
+        textures.Push(_renderTexture2);
+        textures.Push(_renderTexture1);
+        _cameras = new();
         _cameras.Add("main", mainCamera);
-
-        
-    }
-    private void Start()
-    {
-        //CreateCamera(new List<string> { "1", "3"});
-        //float delayInSeconds = 2.0f; // Delay time in seconds
-        //SetCameraControl("1");
-
-
-        //Invoke("DeleteTest", delayInSeconds);
     }
 
     #endregion
 
-   
-    private void DeleteTest()
-    {
-        DeleteCamera(new List<string> { "2" });
-    }
 
-
-
-    #region Public functions
+    #region Public camera functions
 
     public void CreateCamera(List<string> cameras)
     {
@@ -112,5 +96,36 @@ public class CameraManager : MonoBehaviour
             //kvp.Value.SetCameraControl(kvp.Key == cameraName);
         }
     }
+    #endregion
+
+    #region Public light functions
+
+    /// <summary>
+    /// Reset the camera-light link to the main camera
+    /// </summary>
+    public void SetLightCameraLink()
+    {
+        _lightBehavior.SetCamera(mainCamera.gameObject);
+    }
+
+    /// <summary>
+    /// Set the camera-light link to a specific camera in the scene
+    /// </summary>
+    /// <param name="newCameraGO"></param>
+    public void SetLightCameraLink(string cameraName)
+    {
+        _lightBehavior.SetCamera(_cameras[cameraName].gameObject);
+    }
+
+    /// <summary>
+    /// Rotate the light in the scene to a specific set of euler angles
+    /// </summary>
+    /// <param name="eulerAngles"></param>
+    public void SetLightRotation(List<float> eulerAngles)
+    {
+        Debug.Log($"Received new light angles");
+        _lightBehavior.SetRotation(new Vector3(eulerAngles[0], eulerAngles[1], eulerAngles[2]));
+    }
+
     #endregion
 }
