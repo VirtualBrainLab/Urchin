@@ -22,8 +22,14 @@ def sanitize_vector3(vector):
     #if statement to check type and then convert to vector3
   if(len(vector)!=3):
     raise Exception(f'Expected a vector3 but received length {len(vector)}.')
+  
+  if isinstance(vector, list):
+      return vector
+  
   if isinstance(vector, tuple) or isinstance(vector, np.ndarray):
-    return(list(vector))#vector3
+      return list(vector)
+  else:
+      raise Exception('Vector3 failed to be coerced properly')
 
 
 
