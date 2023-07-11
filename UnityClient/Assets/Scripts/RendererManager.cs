@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 
-public class UM_Launch : MonoBehaviour
+public class RendererManager : MonoBehaviour
 {
     #region Static
-    public static UM_Launch Instance;
+    public static RendererManager Instance;
     #endregion
 
     [SerializeField] private CCFModelControl modelControl;

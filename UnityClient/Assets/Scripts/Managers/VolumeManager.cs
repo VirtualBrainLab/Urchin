@@ -44,12 +44,12 @@ public class VolumeManager : MonoBehaviour
     }
     public void SetAnnotationColor(Dictionary<string, string> data)
     {
-        UM_Launch.Log("Not implemented");
+        RendererManager.Log("Not implemented");
     }
 
     public void SetSlice(List<float> obj)
     {
-        UM_Launch.Log("Not implemented");
+        RendererManager.Log("Not implemented");
     }
 
     public void Clear()

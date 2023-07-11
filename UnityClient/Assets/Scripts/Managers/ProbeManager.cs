@@ -55,7 +55,7 @@ public class ProbeManager : MonoBehaviour
                 _probes.Add(probeName, newProbe);
                 _probeCoordinates.Add(probeName, new Vector3[2]);
                 SetProbePositionAndAngles(probeName);
-                UM_Launch.Log("Created probe: " + probeName);
+                RendererManager.Log("Created probe: " + probeName);
             }
             else
             {
@@ -87,7 +87,7 @@ public class ProbeManager : MonoBehaviour
                 }
             }
             else
-                UM_Launch.Log("Probe " + kvp.Key + " not found");
+                RendererManager.Log("Probe " + kvp.Key + " not found");
         }
     }
 
@@ -102,7 +102,7 @@ public class ProbeManager : MonoBehaviour
                 SetProbePositionAndAngles(kvp.Key);
             }
             else
-                UM_Launch.Log("Probe " + kvp.Key + " not found");
+                RendererManager.Log("Probe " + kvp.Key + " not found");
         }
     }
 
@@ -117,7 +117,7 @@ public class ProbeManager : MonoBehaviour
                 SetProbePositionAndAngles(kvp.Key);
             }
             else
-                UM_Launch.Log("Probe " + kvp.Key + " not found");
+                RendererManager.Log("Probe " + kvp.Key + " not found");
         }
     }
 
@@ -147,7 +147,7 @@ public class ProbeManager : MonoBehaviour
                 _probes[kvp.Key].transform.GetChild(0).localPosition = new Vector3(0f, kvp.Value[1] / 2, 0f);
             }
             else
-                UM_Launch.Log("Probe " + kvp.Key + " not found");
+                RendererManager.Log("Probe " + kvp.Key + " not found");
         }
     }
 

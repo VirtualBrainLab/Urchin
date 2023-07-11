@@ -7,7 +7,7 @@ public class AreaManager : MonoBehaviour
 {
     #region Serialized fields
     [SerializeField] private CCFModelControl _modelControl;
-    [SerializeField] private UM_Launch _main;
+    [SerializeField] private RendererManager _main;
     #endregion
 
     #region static
@@ -52,7 +52,7 @@ public class AreaManager : MonoBehaviour
             }
             if (_nodeTasks.ContainsKey(node.ID))
             {
-                UM_Launch.Log("Node " + node.ID + " is already being loaded, did you send duplicate instructions?");
+                RendererManager.Log("Node " + node.ID + " is already being loaded, did you send duplicate instructions?");
                 continue;
             }
 
@@ -120,7 +120,7 @@ public class AreaManager : MonoBehaviour
                     node.SetColorOneSided(newColor, false, true);
             }
             else
-                UM_Launch.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+                RendererManager.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
         }
     }
 
@@ -161,7 +161,7 @@ public class AreaManager : MonoBehaviour
                     node.SetShaderPropertyOneSided("_Alpha", kvp.Value, false);
             }
             else
-                UM_Launch.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+                RendererManager.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
         }
     }
 
@@ -225,7 +225,7 @@ public class AreaManager : MonoBehaviour
                     node.SetColorOneSided(_main.GetColormapColor(kvp.Value), false, true);
             }
             else
-                UM_Launch.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+                RendererManager.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
         }
     }
 
@@ -239,7 +239,7 @@ public class AreaManager : MonoBehaviour
             nodeTask = _modelControl.LoadBerylNodes(false);
         else
         {
-            UM_Launch.Log("Failed to load nodes: " + defaultName);
+            RendererManager.Log("Failed to load nodes: " + defaultName);
             Client.LogError("Node group " + defaultName + " does not exist.");
             return;
         }
@@ -364,7 +364,7 @@ public class AreaManager : MonoBehaviour
                     node.SetColorOneSided(_main.GetColormapColor(currentValue), false, true);
             }
             else
-                UM_Launch.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+                RendererManager.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
         }
     }
 

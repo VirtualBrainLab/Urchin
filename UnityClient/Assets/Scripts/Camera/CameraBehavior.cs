@@ -128,7 +128,7 @@ public class CameraBehavior : MonoBehaviour
             _cameraControl.SetCameraTarget(center);
         }
         else
-            UM_Launch.Log("Failed to find node to set camera target: " + obj);
+            RendererManager.Log("Failed to find node to set camera target: " + obj);
     }
 
     public void SetCameraTarget(List<float> mlapdv)
