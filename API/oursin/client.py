@@ -57,4 +57,4 @@ def change_id(newID):
 		New ID to connect with
 	"""
 	sio.emit('ID',[newID,"send"])
-	print("Login sent with ID: " + newID)
+	print(f'Login sent with ID: {newID}, copy this ID into the renderer to connect.')
