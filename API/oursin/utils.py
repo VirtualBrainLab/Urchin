@@ -1,12 +1,29 @@
 """Sanitizing inputs to send through API"""
 import numpy as np
 
-def sanitize_vector3(input):
-#if statement to check type and then convert to vector3
-    if(len(input)!=3):
-        raise Exception("Did not recieve proper number of inputs, please pass in 3 arguments.")
-    if isinstance(input, tuple) or isinstance(input, np.ndarray):
-        return(list(input))#vector3
+def sanitize_vector3(vector):
+  """Guarantee that a vector is a vector 3, or raise an exception
+
+  Parameters
+  ----------
+  input : any
+      arbitrary input parameter
+
+  Returns
+  -------
+  list
+      vector3 as a list [x,y,z]
+
+  Raises
+  ------
+  Exception
+      Failed to coerce input to a length 3 list
+  """
+    #if statement to check type and then convert to vector3
+  if(len(vector)!=3):
+    raise Exception(f'Expected a vector3 but received length {len(vector)}.')
+  if isinstance(vector, tuple) or isinstance(vector, np.ndarray):
+    return(list(vector))#vector3
 
 
 
@@ -38,6 +55,11 @@ def sanitize_color(color):
     else:
         raise Exception('Failed to re-format color input as a hex code. Please enter either an RGB list or tuple, or a hex code')
 
+def sanitize_float(value):
+    if isinstance(value, float):
+        return value
+    else:
+        raise Exception("Parameter needs to be passed as a float.")
 
 def sanitize_material(material):
     if isinstance(material, str):
