@@ -8,8 +8,6 @@ public class CameraBehavior : MonoBehaviour
     #region Serialized
     [SerializeField] BrainCameraController _cameraControl;
     [SerializeField] UM_CameraController _umCameraControl;
-    //[SerializeField] AreaManager _areaManager;
-    //[SerializeField] CCFModelControl _modelControl;
     [SerializeField] RectTransform _cropWindowRT;
 
     [SerializeField] Camera _orthoCamera;

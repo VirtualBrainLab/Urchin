@@ -31,7 +31,7 @@ def receive_camera_img(data):
 ## Camera renderer
 counter = 0
 class Camera:
-	def __init__(self, target = [0,0,0], position = [0,0,0], preserve_target = True, rotation = [0,0,0], zoom = 1, pan_x = 3, pan_y = 4, mode = "orthographic"):
+	def __init__(self, target = [0,0,0], position = [0,0,0], preserve_target = True, rotation = [0,0,0], zoom = 1, pan_x = 3, pan_y = 4, mode = "orthographic", controllable = False):
 		self.create()
 		#in theory, the target value can stand for either coordinate or area? (and taking coordinate as default)
 		# target_coordinate = utils.sanitize_vector3(target)
@@ -102,7 +102,7 @@ class Camera:
 
 		Examples
 		--------
-		>>>c1.set_target([500,1500,1000])
+		>>>c1.set_target_coordinate([500,1500,1000])
 		"""
 		if self.in_unity == False:
 			raise Exception("Camera is not created. Please create camera before calling method.")
@@ -229,6 +229,24 @@ class Camera:
 			raise Exception("Camera is not created. Please create camera before calling method.")
 		self.mode = mode
 		client.sio.emit('SetCameraMode', {self.id: mode})
+
+	def set_controllable(self):
+		"""Sets camera to controllable
+
+		Parameters
+		----------
+		self
+		
+		Examples
+		--------
+		>>> c1.set_controllable()
+		"""
+		if self.in_unity == False:
+			raise Exception("Camera is not created. Please create camera before calling method.")
+		self.controllable = True
+		client.sio.emit('SetCameraControl', self.id)
+		
+
 
 	# def capture_image(filename):
 	# 	""" Capture a full screenshot and save to filename

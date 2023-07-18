@@ -122,6 +122,7 @@ public class Client : MonoBehaviour
         manager.Socket.On<Dictionary<string, float>>("SetCameraZoom", _cameraManager.SetCameraZoom);
         manager.Socket.On<Dictionary<string, List<float>>>("SetCameraPan", _cameraManager.SetCameraPan);
         manager.Socket.On<Dictionary<string, string>>("SetCameraMode", _cameraManager.SetCameraMode);
+        manager.Socket.On<string>("SetCameraControl", _cameraManager.SetCameraControl);
         //manager.Socket.On("RequestCameraImg", _cameraManager.Screenshot);
         manager.Socket.On<Dictionary<string, float>>("SetCameraYAngle", _cameraManager.SetCameraYAngle);
         manager.Socket.On<string>("SetCameraControl", _cameraManager.SetCameraControl);
