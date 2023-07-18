@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ public class AreaManager : MonoBehaviour
 
     #region static
     public static HashSet<CCFTreeNode> VisibleNodes { get; private set; }
+    public static AreaManager Instance;
     #endregion
 
     private Dictionary<int, Task> _nodeTasks;
@@ -30,6 +32,10 @@ public class AreaManager : MonoBehaviour
         _areaSides = new();
         _areaData = new();
         VisibleNodes = new();
+
+        if (Instance != null)
+            throw new Exception("Only one AreaManager can exist in the scene!");
+        Instance = this;
     }
     #endregion
 
