@@ -2,6 +2,7 @@ using BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities.IO.Pem;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.SceneView;
 
 public class CameraManager : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private RenderTexture _renderTexture4;
     [SerializeField] private CameraBehavior mainCamera;
     [SerializeField] private LightBehavior _lightBehavior;
+    [SerializeField] private AreaManager _areaManager;
+    [SerializeField] private CCFModelControl _modelControl;
     #endregion
 
     #region Variables
@@ -34,17 +37,22 @@ public class CameraManager : MonoBehaviour
     #endregion
 
 
-    #region Public camera functions
+     #region Public camera functions
 
     public void CreateCamera(List<string> cameras)
     {
         //instantiating game object w camera component
         foreach (string camera in cameras)
         {
+#if UNITY_EDITOR
+            Debug.Log($"{camera} created");
+#endif
             GameObject tempObject = Instantiate(_cameraPrefab);
             tempObject.name = $"camera_{camera}";
             CameraBehavior cameraBehavior = tempObject.GetComponent<CameraBehavior>();
             cameraBehavior.RenderTexture = textures.Pop();
+            cameraBehavior.AreaManager = _areaManager;
+            cameraBehavior.ModelControl = _modelControl;
             // Get all Camera components attached to children of the script's GameObject (since there are multiple)
             _cameras.Add(camera, cameraBehavior);
         }
@@ -61,23 +69,86 @@ public class CameraManager : MonoBehaviour
     }
 
     //each function below works by first checking if camera exits in dictionary, and then calling cameraBehavior function
-    public void SetCameraRotation(Dictionary<string, List<float>> cameraRotation) { }
+    public void SetCameraRotation(Dictionary<string, List<float>> cameraRotation) {
+        foreach (var kvp in cameraRotation)
+        {
+            if (_cameras.ContainsKey(kvp.Key)) {
+                _cameras[kvp.Key].SetCameraRotation(kvp.Value);
+            }
+        }
+    }
 
-    public void SetCameraZoom(Dictionary<string, float> cameraZoom) { }
+    public void SetCameraZoom(Dictionary<string, float> cameraZoom) {
+        foreach (var kvp in cameraZoom)
+        {
+            if (_cameras.ContainsKey(kvp.Key))
+            {
+                _cameras[kvp.Key].SetCameraZoom(kvp.Value);
+            }
+        }
+    }
 
-    public void SetCameraMode(Dictionary<string, string> cameraMode) { }
+    public void SetCameraMode(Dictionary<string, string> cameraMode) {
+        foreach (var kvp in cameraMode)
+        {
+            if (_cameras.ContainsKey(kvp.Key))
+            {
+                _cameras[kvp.Key].SetCameraMode(kvp.Value);
+            }
+        }
+    }
 
     public void Screenshot() { }
 
-    public void SetCameraPosition(Dictionary<string, List<float>> cameraPosition) { }
+    public void SetCameraPosition(Dictionary<string, List<float>> cameraPosition) {
+        foreach (var kvp in cameraPosition)
+        {
+            if (_cameras.ContainsKey(kvp.Key))
+            {
+                _cameras[kvp.Key].SetCameraPosition(kvp.Value);
+            }
+        }
+    }
 
-    public void SetCameraYAngle(Dictionary<string, float> cameraYAngle) { }
+    public void SetCameraYAngle(Dictionary<string, float> cameraYAngle) {
+        foreach (var kvp in cameraYAngle)
+        {
+            if (_cameras.ContainsKey(kvp.Key))
+            {
+                _cameras[kvp.Key].SetCameraYAngle(kvp.Value);
+            }
+        }
+    }
 
-    public void SetCameraTargetArea(Dictionary<string, string> cameraTargetArea) { }
+    public void SetCameraTargetArea(Dictionary<string, string> cameraTargetArea) {
+        foreach (var kvp in cameraTargetArea)
+        {
+            if (_cameras.ContainsKey(kvp.Key))
+            {
+                _cameras[kvp.Key].SetCameraTargetArea(kvp.Value);
+            }
+        }
+    }
 
-    public void SetCameraTarget(Dictionary<string, List<float>> cameraTargetmlapdv) { }
+    public void SetCameraTarget(Dictionary<string, List<float>> cameraTargetmlapdv) {
+        foreach (var kvp in cameraTargetmlapdv)
+        {
+            if (_cameras.ContainsKey(kvp.Key))
+            {
+                _cameras[kvp.Key].SetCameraTarget(kvp.Value);
+            }
+        }
+    }
 
-    public void SetCameraPan(Dictionary<string, List<float>> cameraPanXY) { }
+    public void SetCameraPan(Dictionary<string, List<float>> cameraPanXY) {
+        foreach (var kvp in cameraPanXY)
+        {
+            if (_cameras.ContainsKey(kvp.Key))
+            {
+                _cameras[kvp.Key].SetCameraPan(kvp.Value);
+            }
+        }
+    }
 
     public void SetCameraControl(string cameraName)
     {

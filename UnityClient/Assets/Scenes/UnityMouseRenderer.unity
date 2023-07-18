@@ -9419,7 +9419,7 @@ PrefabInstance:
       objectReference: {fileID: 858013925}
     - target: {fileID: 161993171994875470, guid: 8d78849a732a3e54c8a6dfcda3795ec0, type: 3}
       propertyPath: localhost
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 161993171994875470, guid: 8d78849a732a3e54c8a6dfcda3795ec0, type: 3}
       propertyPath: textParent
@@ -11080,9 +11080,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1861690902}
     - target: {fileID: 6248354589462390461, guid: 819c72893569fa442b7683567f3569d6, type: 3}
+      propertyPath: _areaManager
+      value: 
+      objectReference: {fileID: 8162835201960326383}
+    - target: {fileID: 6248354589462390461, guid: 819c72893569fa442b7683567f3569d6, type: 3}
       propertyPath: _cameraPrefab
       value: 
       objectReference: {fileID: 5697262125096797366, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
+    - target: {fileID: 6248354589462390461, guid: 819c72893569fa442b7683567f3569d6, type: 3}
+      propertyPath: _modelControl
+      value: 
+      objectReference: {fileID: 161993173589453260}
     - target: {fileID: 6248354589462390461, guid: 819c72893569fa442b7683567f3569d6, type: 3}
       propertyPath: _lightBehavior
       value: 

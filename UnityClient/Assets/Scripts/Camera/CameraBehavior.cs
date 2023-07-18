@@ -8,8 +8,8 @@ public class CameraBehavior : MonoBehaviour
     #region Serialized
     [SerializeField] BrainCameraController _cameraControl;
     [SerializeField] UM_CameraController _umCameraControl;
-    [SerializeField] AreaManager _areaManager;
-    [SerializeField] CCFModelControl _modelControl;
+    //[SerializeField] AreaManager _areaManager;
+    //[SerializeField] CCFModelControl _modelControl;
     [SerializeField] RectTransform _cropWindowRT;
 
     [SerializeField] Camera _orthoCamera;
@@ -17,9 +17,13 @@ public class CameraBehavior : MonoBehaviour
 
     #endregion
 
-    #region Public properties
+ 
 
+    public AreaManager AreaManager;
+    public CCFModelControl ModelControl;
     private RenderTexture _renderTexture;
+   
+
     public RenderTexture RenderTexture
     {
         get
@@ -34,8 +38,6 @@ public class CameraBehavior : MonoBehaviour
             _perspectiveCamera.targetTexture = _renderTexture;
         }
     }
-    #endregion
-
     #region private var
     private const int SOCKET_IO_MAX_CHUNK_BYTES = 1000000;
     #endregion
@@ -116,8 +118,8 @@ public class CameraBehavior : MonoBehaviour
 
     public void SetCameraTargetArea(string obj)
     {
-        (int ID, bool full, bool leftSide, bool rightSide) = _areaManager.GetID(obj);
-        CCFTreeNode node = _modelControl.tree.findNode(ID);
+        (int ID, bool full, bool leftSide, bool rightSide) = AreaManager.GetID(obj);
+        CCFTreeNode node = ModelControl.tree.findNode(ID);
         if (node != null)
         {
             Vector3 center;

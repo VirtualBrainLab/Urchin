@@ -115,14 +115,16 @@ public class Client : MonoBehaviour
         manager.Socket.On<Dictionary<string, List<float>>>("SetProbeSize", _probeManager.SetProbeScale);
 
         // Camera
-        //manager.Socket.On<List<float>>("SetCameraTarget", _cameraManager.SetCameraTarget);
-        //manager.Socket.On<List<float>>("SetCameraPosition", _cameraManager.SetCameraPosition);
-        //manager.Socket.On<List<float>>("SetCameraRotation", _cameraManager.SetCameraRotation);
-        //manager.Socket.On<string>("SetCameraTargetArea", _cameraManager.SetCameraTargetArea);
-        //manager.Socket.On<float>("SetCameraZoom", _cameraManager.SetCameraZoom);
-        //manager.Socket.On<List<float>>("SetCameraPan", _cameraManager.SetCameraPan);
-        //manager.Socket.On<string>("SetCameraMode", _cameraManager.SetCameraMode);
+        manager.Socket.On<Dictionary<string, List<float>>>("SetCameraTarget", _cameraManager.SetCameraTarget);
+        manager.Socket.On<Dictionary<string, List<float>>>("SetCameraPosition", _cameraManager.SetCameraPosition);
+        manager.Socket.On<Dictionary<string, List<float>>>("SetCameraRotation", _cameraManager.SetCameraRotation);
+        manager.Socket.On<Dictionary<string, string>>("SetCameraTargetArea", _cameraManager.SetCameraTargetArea);
+        manager.Socket.On<Dictionary<string, float>>("SetCameraZoom", _cameraManager.SetCameraZoom);
+        manager.Socket.On<Dictionary<string, List<float>>>("SetCameraPan", _cameraManager.SetCameraPan);
+        manager.Socket.On<Dictionary<string, string>>("SetCameraMode", _cameraManager.SetCameraMode);
         //manager.Socket.On("RequestCameraImg", _cameraManager.Screenshot);
+        manager.Socket.On<Dictionary<string, float>>("SetCameraYAngle", _cameraManager.SetCameraYAngle);
+        manager.Socket.On<string>("SetCameraControl", _cameraManager.SetCameraControl);
         manager.Socket.On<List<string>>("CreateCamera", _cameraManager.CreateCamera);
         manager.Socket.On<List<string>>("DeleteCamera", _cameraManager.DeleteCamera);
 
