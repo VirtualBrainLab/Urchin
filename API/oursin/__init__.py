@@ -23,6 +23,7 @@ from . import primitives
 from . import probes
 from . import text
 from . import volumes
+from . import fov
 
 # load the colors
 from . import colors

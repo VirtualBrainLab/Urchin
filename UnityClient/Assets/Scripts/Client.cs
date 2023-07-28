@@ -37,6 +37,8 @@ public class Client : MonoBehaviour
     [SerializeField] private TextManager _textManager;
     [SerializeField] private VolumeManager _volumeManager;
     [SerializeField] private CameraManager _cameraManager;
+    [SerializeField] private FOVManager _fovManager;//TODO
+
     #endregion
 
     // NODES
@@ -154,6 +156,17 @@ public class Client : MonoBehaviour
         manager.Socket.On<Dictionary<string, List<float>>>("SetScale", _primitiveMeshManager.SetScale);
         manager.Socket.On<Dictionary<string, string>>("SetColor", _primitiveMeshManager.SetColor);
         manager.Socket.On<Dictionary<string, string>>("SetMaterial", _primitiveMeshManager.SetMaterial);
+
+        // Calcium FOV Renderer
+        manager.Socket.On<List<string>>("CreateFOV", _fovManager.Create);
+        manager.Socket.On<List<string>>("DeleteFOV", _fovManager.Delete);
+        manager.Socket.On<Dictionary<string, List<List<float>>>>("SetFOVPos", _fovManager.SetPosition);
+        //manager.Socket.On<Dictionary<string, float>>("SetFOVOffset", _fovManager.SetOffset);
+        //manager.Socket.On<List<object>>("SetFOVTextureDataMetaInit", _fovManager.SetTextureDataMetaInit);
+        //manager.Socket.On<List<object>>("SetFOVTextureDataMeta", _fovManager.SetTextureDataMeta);
+        //manager.Socket.On<byte[]>("SetFOVTextureData", _fovManager.SetTextureData);
+        manager.Socket.On<Dictionary<string, bool>>("SetFOVVisibility", _fovManager.SetVisibility);
+
 
         // Misc
         manager.Socket.On<string>("Clear", Clear);
