@@ -16,6 +16,7 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private LightBehavior _lightBehavior;
     [SerializeField] private AreaManager _areaManager;
     [SerializeField] private CCFModelControl _modelControl;
+    [SerializeField] private Canvas _uiCanvas;
     #endregion
 
     #region Variables
@@ -94,6 +95,10 @@ public class CameraManager : MonoBehaviour
             if (_cameras.ContainsKey(kvp.Key))
             {
                 _cameras[kvp.Key].SetCameraMode(kvp.Value);
+            }
+
+            if (kvp.Key == "main") {
+                _uiCanvas.worldCamera = _cameras[kvp.Key].ActiveCamera;
             }
         }
     }

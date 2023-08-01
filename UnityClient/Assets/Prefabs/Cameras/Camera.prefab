@@ -64,7 +64,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 16383
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -188,6 +188,7 @@ MonoBehaviour:
   cameraController: {fileID: 5697262125096797361}
   orthoCamera: {fileID: 5697262124586181144}
   perspectiveCamera: {fileID: 5697262126407426464}
+  Orthographic: 0
 --- !u!114 &5697262125096797362
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -202,11 +203,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cameraControl: {fileID: 5697262125096797361}
   _umCameraControl: {fileID: 5697262125096797360}
-  _areaManager: {fileID: 0}
-  _modelControl: {fileID: 0}
   _cropWindowRT: {fileID: 0}
   _orthoCamera: {fileID: 5697262124586181144}
   _perspectiveCamera: {fileID: 5697262126407426464}
+  AreaManager: {fileID: 0}
+  ModelControl: {fileID: 0}
 --- !u!1 &5697262126407426468
 GameObject:
   m_ObjectHideFlags: 0
@@ -271,7 +272,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 16383
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

@@ -36,6 +36,21 @@ public class CameraBehavior : MonoBehaviour
             _perspectiveCamera.targetTexture = _renderTexture;
         }
     }
+
+    public Camera ActiveCamera
+    {
+        get
+        {
+            if (_umCameraControl.Orthographic)
+            {
+                return _orthoCamera;
+            }
+            else
+            {
+                return _perspectiveCamera;
+            }
+        }
+    }
     #region private var
     private const int SOCKET_IO_MAX_CHUNK_BYTES = 1000000;
     #endregion
