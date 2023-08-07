@@ -30,9 +30,10 @@ def receive_camera_img(data):
 
 ## Camera renderer
 counter = 0
+
 class Camera:
-	def __init__(self, target = [0,0,0], position = [0,0,0], preserve_target = True, rotation = [0,0,0], zoom = 1, pan_x = 3, pan_y = 4, mode = "orthographic", controllable = False):
-		self.create()
+	def __init__(self, target = [0,0,0], position = [0,0,0], preserve_target = True, rotation = [0,0,0], zoom = 1, pan_x = 3, pan_y = 4, mode = "orthographic", controllable = False, main = False):
+		self.create(main=main)
 		#in theory, the target value can stand for either coordinate or area? (and taking coordinate as default)
 		# target_coordinate = utils.sanitize_vector3(target)
 		# self.target = target_coordinate
@@ -61,7 +62,7 @@ class Camera:
 		# self.mode = mode
 		# client.sio.emit('SetCameraMode', {self.id: self.mode})
 
-	def create(self):
+	def create(self,main):
 		"""Creates camera
 		
 		Parameters
@@ -71,11 +72,15 @@ class Camera:
 		Examples
 		>>>c1 = urchin.camera.Camera()
 		"""
-		global counter
-		counter += 1
-		self.id = str(counter)
-		client.sio.emit('CreateCamera', [self.id])
-		self.in_unity = True
+		if(main):
+			self.id = "main"
+			self.in_unity = True
+		else:
+			global counter
+			counter += 1
+			self.id = str(counter)
+			client.sio.emit('CreateCamera', [self.id])
+			self.in_unity = True
 
 	def delete(self):
 		"""Deletes camera
@@ -272,3 +277,5 @@ def set_light_camera(camera_name = None):
         client.sio.emit('ResetLightLink')
     else:
         client.sio.emit('SetLightLink', camera_name)
+	
+main = Camera(main = True)
