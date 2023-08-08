@@ -10,25 +10,25 @@ class Neuron:
 	def __init__(self, position= [0.0,0.0,0.0], color= '#FFFFFF', size= 0.02, shape= 'sphere', material= 'lit-transparent'):
 		self.create()
 
-		position = utils.sanitize_vector3(position)
-		self.position = position
-		client.sio.emit('SetNeuronPos', {self.id: position})
+		# position = utils.sanitize_vector3(position)
+		# self.position = position
+		# client.sio.emit('SetNeuronPos', {self.id: position})
 
-		color = utils.sanitize_color(color)
-		self.color = color
-		client.sio.emit('SetNeuronColor',{self.id: color})
+		# color = utils.sanitize_color(color)
+		# self.color = color
+		# client.sio.emit('SetNeuronColor',{self.id: color})
 
-		size = utils.sanitize_float(size)
-		self.size = size
-		client.sio.emit('SetNeuronSize',{self.id: size})
+		# size = utils.sanitize_float(size)
+		# self.size = size
+		# client.sio.emit('SetNeuronSize',{self.id: size})
 
-		shape = utils.sanitize_string(shape)
-		self.shape = shape
-		client.sio.emit('SetNeuronShape',{self.id: shape})
+		# shape = utils.sanitize_string(shape)
+		# self.shape = shape
+		# client.sio.emit('SetNeuronShape',{self.id: shape})
 
-		material = utils.sanitize_material(material)
-		self.material = material
-		client.sio.emit('SetNeuronMaterial',{self.id: material})
+		# material = utils.sanitize_material(material)
+		# self.material = material
+		# client.sio.emit('SetNeuronMaterial',{self.id: material})
 
 	def create(self):
 		"""Creates neurons
@@ -207,7 +207,7 @@ def set_positions(neurons_list, positions_list):
 
 	Examples
 	--------
-	>>> urchin.neurons.set_position([n1,n2,n3], [[1,1,1],[2,2,2],[3,3,3]])
+	>>> urchin.neurons.set_positions([n1,n2,n3], [[1,1,1],[2,2,2],[3,3,3]])
 	"""
 	neurons_list = utils.sanitize_list(neurons_list)
 	positions_list = utils.sanitize_list(positions_list)
@@ -233,7 +233,7 @@ def set_sizes(neurons_list, sizes_list):
 
 	Examples
 	--------
-	>>> urchin.neurons.set_size([n1,n2,n3], [0.01,0.02,0.03])
+	>>> urchin.neurons.set_sizes([n1,n2,n3], [0.01,0.02,0.03])
 	"""
 	neurons_list = utils.sanitize_list(neurons_list)
 	sizes_list = utils.sanitize_list(sizes_list)
@@ -259,7 +259,7 @@ def set_colors(neurons_list, colors_list):
 
 	Examples
 	--------
-	>>> urchin.neurons.set_color([n1,n2,n3], ['#FFFFFF','#000000','#FF0000'])
+	>>> urchin.neurons.set_colors([n1,n2,n3], ['#FFFFFF','#000000','#FF0000'])
 	"""
 	neurons_list = utils.sanitize_list(neurons_list)
 	colors_list = utils.sanitize_list(colors_list)
@@ -289,7 +289,7 @@ def set_shapes(neurons_list, shapes_list):
 
 	Examples
 	--------
-	>>> urchin.neurons.set_shape([n1,n2,n3], ['sphere','cube','sphere'])
+	>>> urchin.neurons.set_shapes([n1,n2,n3], ['sphere','cube','sphere'])
 	"""
 	neurons_list = utils.sanitize_list(neurons_list)
 	shapes_list = utils.sanitize_list(shapes_list)
@@ -320,7 +320,7 @@ def set_materials(neurons_list, materials_list):
 
 	Examples
 	--------
-	>>> urchin.neurons.set_material([n1,n2,n3], ['lit','unlit','lit'])
+	>>> urchin.neurons.set_materials([n1,n2,n3], ['lit','unlit','lit'])
 	"""
 	neurons_list = utils.sanitize_list(neurons_list)
 	materials_list = utils.sanitize_list(materials_list)
