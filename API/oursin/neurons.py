@@ -216,7 +216,7 @@ def set_positions(neurons_list, positions_list):
 	for i in range(len(neurons_list)):
 		neuron = neurons_list[i]
 		if neuron.in_unity:
-			neurons_pos[neuron.id] = utils.sanitize_vector3[positions_list[i]]
+			neurons_pos[neuron.id] = utils.sanitize_vector3(positions_list[i])
 		else:
 			warnings.warn(f"Neuron with id {neuron.id} does not exist in Unity, call create method first.")
 	client.sio.emit('SetNeuronPos', neurons_pos)
