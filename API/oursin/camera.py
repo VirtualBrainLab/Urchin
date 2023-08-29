@@ -160,6 +160,76 @@ class Camera:
 		self.rotation = rotation
 		client.sio.emit('SetCameraRotation', {self.id: rotation})
 
+	def set_rotation_axial(self, bool=True):
+		"""Set the camera to the standard axial view. Does not change the window, only the rotation.
+		Parameters
+		----------
+		bool : boolean
+			default true, the above view
+
+		Examples
+		--------
+		>>> c1.set_rotation_axial(True)
+		"""
+		if self.in_unity == False:
+			raise Exception("Camera is not created. Please create camera before calling method.")
+		
+		if bool:
+			rotation = [0,0,0]
+		else:
+			rotation = [0,-180,0]
+		rotation = utils.sanitize_vector3(rotation)
+		self.rotation = rotation
+		client.sio.emit('SetCameraRotation', {self.id: rotation})
+
+	
+	def set_rotation_coronal(self, bool=True):
+		"""Set the camera to the standard coronal view. Does not change the window, only the rotation.
+		Parameters
+		----------
+		bool : boolean
+			default true, the back view
+
+		Examples
+		--------
+		>>> c1.set_rotation_coronal(True)
+		"""
+		if self.in_unity == False:
+			raise Exception("Camera is not created. Please create camera before calling method.")
+		
+		if bool:
+			rotation = [90,0,0]
+		else:
+			rotation = [90,-180,0]
+		rotation = utils.sanitize_vector3(rotation)
+		self.rotation = rotation
+		client.sio.emit('SetCameraRotation', {self.id: rotation})
+
+	
+	def set_rotation_sagittal(self, bool=True):
+		"""Set the camera to the standard sagittal view. Does not change the window, only the rotation.
+		Parameters
+		----------
+		bool : boolean
+			default true, the left view
+
+		Examples
+		--------
+		>>> c1.set_rotation_sagittal(True)
+		"""
+		if self.in_unity == False:
+			raise Exception("Camera is not created. Please create camera before calling method.")
+		
+		if bool:
+			rotation = [90,-90,0]
+		else:
+			rotation = [90,90,0]
+		rotation = utils.sanitize_vector3(rotation)
+		self.rotation = rotation
+		client.sio.emit('SetCameraRotation', {self.id: rotation})
+
+
+
 	def set_zoom(self,zoom):
 		"""Set the camera zoom. 
 
