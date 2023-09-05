@@ -35,6 +35,8 @@ jobs:
           python-version-file: API/pyproject.toml
           # cache: 'pip'
 
+      - name: Install
+        run: pip install API/.
       # Install dependencies (if any). They will be cached with saved for next time with the cache command above
 
       # 3.4.3. Run tests (execute arbitrary commands in shell)

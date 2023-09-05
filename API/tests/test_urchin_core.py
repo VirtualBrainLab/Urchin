@@ -17,4 +17,4 @@ class TestClass(TestCase):
         
         self.assertEqual(urchin.utils.sanitize_vector3((1,2,3)), [1,2,3])
         
-        # self.assertRaises(Exception, urchin.utils.sanitize_vector3((1,2)))
+        self.assertRaises(Exception, urchin.utils.sanitize_vector3, (1,2))
