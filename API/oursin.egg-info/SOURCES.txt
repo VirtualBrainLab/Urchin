@@ -5,6 +5,7 @@ setup.cfg
 oursin/__init__.py
 oursin/camera.py
 oursin/client.py
+oursin/fov.py
 oursin/lines.py
 oursin/neurons.py
 oursin/primitives.py
