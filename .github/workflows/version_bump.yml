@@ -1,0 +1,82 @@
+name: Version Bump
+
+on:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  version_bump:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # 3.4.1. Checkout code
+      - name: 🛎 Checkout
+        uses: actions/checkout@v3
+
+      # 3.4.2. Install and setup Python
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+
+      # 3.4.2. Install and setup Python
+      - name: Install toml
+        run: |
+          pip install toml
+
+
+      - name: Check for commit message
+        id: commit
+        run: |
+          commit_message=$(git log -1 --pretty=%B)
+          echo "::set-output name=commit_message::$commit_message"
+
+      - name: Extract current version from API/pyproject.toml
+        id: extract-version
+        run: |
+          version=$(python -c "import toml; print(toml.load('API/pyproject.toml')['project']['version'])")
+          echo "Current version: $version"
+          echo "::set-output name=current_version::$version"
+
+      - name: Bump Version
+        id: bump
+        run: |
+          version="${{ steps.extract-version.outputs.current_version }}"
+          commit_message="${{ steps.commit.outputs.commit_message }}"
+
+          if [[ "$commit_message" == *"[major]"* ]]; then
+            IFS='.' read -ra version_parts <<< "$version"
+            major=$((version_parts[0] + 1))
+            minor=0
+            patch=0
+          elif [[ "$commit_message" == *"[minor]"* ]]; then
+            IFS='.' read -ra version_parts <<< "$version"
+            major="${version_parts[0]}"
+            minor=$((version_parts[1] + 1))
+            patch=0
+          elif [[ "$commit_message" == *"[patch]"* ]]; then
+            IFS='.' read -ra version_parts <<< "$version"
+            major="${version_parts[0]}"
+            minor="${version_parts[1]}"
+            patch=$((version_parts[2] + 1))
+          else
+            echo "No version bump specified in commit message"
+            exit 1
+          fi
+
+          new_version="$major.$minor.$patch"
+          echo "Bumping version to $new_version"
+
+          # Update API/pyproject.toml with the new version
+          python -c "import toml; config = toml.load('API/pyproject.toml'); config['project']['version'] = '$new_version'; f = open('API/pyproject.toml', 'w'); toml.dump(config, f); f.close()"
+
+      - name: Commit and Push
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "<>"
+          git add API/pyproject.toml
+          git commit -m "Bump version to $new_version"
+          git push origin HEAD:main
