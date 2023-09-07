@@ -64,7 +64,7 @@ jobs:
             patch=$((version_parts[2] + 1))
           else
             echo "No version bump specified in commit message"
-            exit 1
+            exit 0
           fi
 
           new_version="$major.$minor.$patch"
