@@ -46,6 +46,8 @@ jobs:
         run: |
           version="${{ steps.extract-version.outputs.current_version }}"
           commit_message="${{ steps.commit.outputs.commit_message }}"
+          
+          echo "::set-output name=commit::true"
 
           if [[ "$commit_message" == *"[major]"* ]]; then
             IFS='.' read -ra version_parts <<< "$version"
@@ -64,7 +66,7 @@ jobs:
             patch=$((version_parts[2] + 1))
           else
             echo "No version bump specified in commit message"
-            exit 0
+            echo "::set-output name=commit::false"
           fi
 
           new_version="$major.$minor.$patch"
@@ -75,8 +77,10 @@ jobs:
 
       - name: Commit and Push
         run: |
-          git config user.name "GitHub Actions"
-          git config user.email "<>"
-          git add API/pyproject.toml
-          git commit -m "Bump version to $new_version"
-          git push origin HEAD:main
+          if [[ "$commit" == "true" ]]; then
+            git config user.name "GitHub Actions"
+            git config user.email "<>"
+            git add API/pyproject.toml
+            git commit -m "Bump version to $new_version"
+            git push origin HEAD:main
+          fi
