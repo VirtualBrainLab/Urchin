@@ -19,12 +19,14 @@ public class SceneInfoManager : MonoBehaviour
         Vector3 target = cameraController.GetCameraTarget();
         Vector3 angles = cameraController.GetAngles();
         float zoom = cameraController.GetZoom();
+
+        // Note angles y/x flipped so that yaw/pitch/spin is correct
         cameraText.text = string.Format("camera target ({0},{1},{2}); camera rotation ({3},{4},{5})\nzoom: {6}",
             Mathf.Round(target.x*100)/100,
             Mathf.Round(target.y*100)/100,
             Mathf.Round(target.z*100)/100,
-            Mathf.RoundToInt(angles.x),
             Mathf.RoundToInt(angles.y),
+            Mathf.RoundToInt(angles.x),
             Mathf.RoundToInt(angles.z),
             zoom);
 

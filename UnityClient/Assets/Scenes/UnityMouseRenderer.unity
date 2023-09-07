@@ -6052,6 +6052,17 @@ Transform:
   m_Father: {fileID: 1716532781}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1463353686 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5076698394702019361, guid: 819c72893569fa442b7683567f3569d6, type: 3}
+  m_PrefabInstance: {fileID: 5708727189667669680}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be8deb1d448e6fc4699aef6a399423a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1469330506
 GameObject:
   m_ObjectHideFlags: 0
@@ -9430,6 +9441,10 @@ PrefabInstance:
       propertyPath: textParent
       value: 
       objectReference: {fileID: 1648926224}
+    - target: {fileID: 161993171994875470, guid: 8d78849a732a3e54c8a6dfcda3795ec0, type: 3}
+      propertyPath: _fovManager
+      value: 
+      objectReference: {fileID: 1463353686}
     - target: {fileID: 161993171994875470, guid: 8d78849a732a3e54c8a6dfcda3795ec0, type: 3}
       propertyPath: probeParent
       value: 
