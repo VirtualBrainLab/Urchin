@@ -19,7 +19,7 @@ def setup(verbose = True, localhost = False, standalone = False):
 	"""
 
 	if client.connected():
-		print("(urchin) Client is already connected")
+		print(f'(urchin) Client is already connected. Use ID: {client.ID}')
 		return
 		
 	log_messages = verbose
