@@ -1,7 +1,11 @@
 import webbrowser
 import os
+from IPython.display import Javascript
 
 from . import client
+
+def is_running_in_colab():
+	return True #'google.colab' in str(get_ipython())
 
 def setup(verbose = True, localhost = False, standalone = False):
 	"""Connect the Unity Renderer for Neuroscience Python API to the web-based (or standalone) viewer
@@ -26,8 +30,19 @@ def setup(verbose = True, localhost = False, standalone = False):
 		client.sio.connect('https://urchin-commserver.herokuapp.com/')
 
 	if not standalone:
-		url = "https://data.virtualbrainlab.org/Urchin/?ID=" + client.ID
-		webbrowser.open(url)
+		#To open browser window:
+		url = f'https://data.virtualbrainlab.org/Urchin/?ID={client.ID}'
+		if not is_running_in_colab():
+			webbrowser.open(url)
+		else:
+			# Specify window features
+			window_features = "width=1200,height=800,toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes"
+			# Use the window.open function with window features
+			javascript_code = f'window.open("{url}", "_blank", "{window_features}");'
+			# Display the JavaScript code to open the new window
+			display(Javascript(javascript_code))
+
+			
 
 ######################
 # CLEAR #
