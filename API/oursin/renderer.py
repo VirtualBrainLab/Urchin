@@ -5,7 +5,7 @@ from IPython.display import Javascript
 from . import client
 
 def is_running_in_colab():
-	return True #'google.colab' in str(get_ipython())
+	return 'google.colab' in str(get_ipython())
 
 def setup(verbose = True, localhost = False, standalone = False):
 	"""Connect the Unity Renderer for Neuroscience Python API to the web-based (or standalone) viewer
