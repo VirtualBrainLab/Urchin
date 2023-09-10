@@ -1,11 +1,20 @@
 import webbrowser
 import os
-from IPython.display import Javascript
+
+notebook = False
+try:
+	from IPython import get_ipython
+	if get_ipython() is not None:
+		from IPython.display import Javascript
+		notebook = True
+except ImportError:
+	# You are not running in a Jupyter Notebook
+	pass
 
 from . import client
 
 def is_running_in_colab():
-	return 'google.colab' in str(get_ipython())
+	return not notebook or 'google.colab' in str(get_ipython())
 
 def setup(verbose = True, localhost = False, standalone = False):
 	"""Connect the Unity Renderer for Neuroscience Python API to the web-based (or standalone) viewer
