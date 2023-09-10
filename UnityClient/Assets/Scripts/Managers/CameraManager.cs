@@ -1,8 +1,6 @@
-using BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities.IO.Pem;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.SceneView;
 
 public class CameraManager : MonoBehaviour
 {

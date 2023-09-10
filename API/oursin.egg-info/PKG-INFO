@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: oursin
-Version: 0.4.8
+Version: 0.4.9
 Summary: Urchin - Universal Renderer Creating Helpful Images for Neuroscience Python API
 Author-email: Daniel Birman <danbirman@gmail.com>
 License:                     GNU GENERAL PUBLIC LICENSE
@@ -686,6 +686,9 @@ Classifier: Operating System :: OS Independent
 Requires-Python: >=3.7
 Description-Content-Type: text/markdown
 License-File: LICENSE
+Requires-Dist: python-socketio[client]<5.10,>=5.8
+Requires-Dist: numpy<1.26.0,>=1.24.3
+Requires-Dist: Pillow<10.1,>=9.5
 
 # Urchin - Unity Renderer Creating Helpful Images for Neuroscience (Python API)
 
