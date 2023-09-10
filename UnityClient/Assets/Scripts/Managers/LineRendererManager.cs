@@ -6,9 +6,16 @@ using UnityEngine.UIElements;
 
 public class LineRendererManager : MonoBehaviour
 {
+    #region Public
+    [SerializeField] private GameObject _lineRendererPrefabGO;
+    [SerializeField] private Transform _lineRendererParentT;
+    #endregion
+
+    #region Private
+
+    #endregion
     //Keep a dictionary that maps string names to line renderer components 
     private Dictionary<string, LineRenderer> _lineRenderers;
-    [SerializeField] private GameObject _lineRendererPrefab;
 
     private void Awake()
     {
@@ -17,20 +24,19 @@ public class LineRendererManager : MonoBehaviour
 
     private void Start()
     {
-       /* CreateLine(new List<string> { "l1", "l2" });
-        DeleteLine(new List<string> { "l2" });
+        //CreateLine(new List<string> { "l1", "l2" });
+        //DeleteLine(new List<string> { "l2" });
 
-        Dictionary<string, List<Vector3>> temp = new();
-        List<Vector3> tempPositions = new();
-        tempPositions.Add(new Vector3(0, 0, 0));
-        tempPositions.Add(new Vector3(1,2,3));
-        tempPositions.Add(new Vector3(4, 4, 4));
-        temp.Add("l1", tempPositions);
+        //Dictionary<string, List<List<float>>> temp = new();
+        //List<List<float>> tempPositions = new();
+        //tempPositions.Add(new List<float>() { 0, 0, 0 });
+        //tempPositions.Add(new List<float>() { 13200, 11400, 8000 });
+        //temp.Add("l1", tempPositions);
 
-        SetLinePosition(temp);
+        //SetLinePosition(temp);
 
 
-        SetLineColor("l1", Color.blue);*/
+        //SetLineColor("l1", Color.blue);
     }
 
     public void CreateLine(List<string> lines)
@@ -38,7 +44,7 @@ public class LineRendererManager : MonoBehaviour
         //instantiating game object w line renderer component
         foreach(string line in lines)
         {
-            GameObject tempObject = Instantiate(_lineRendererPrefab);
+            GameObject tempObject = Instantiate(_lineRendererPrefabGO, _lineRendererParentT);
             tempObject.name = $"lineRenderer_{line}";
             _lineRenderers.Add(line, tempObject.GetComponent<LineRenderer>());
             //in theory, creates new entry to the dictionary with the name of the line [line] and associates it with a new Game Object
@@ -70,8 +76,7 @@ public class LineRendererManager : MonoBehaviour
             for(int i= 0; i<data.Count; i++)
             {
                 List<float> position = data[i];
-                Vector3 tempVector = new Vector3(position[0], position[1], position[2]);
-                posvectors[i] = tempVector;
+                posvectors[i] = new Vector3(-position[0] / 1000f, -position[2] / 1000f, position[1] / 1000f) + _lineRendererParentT.position;
             }
             LineRenderer tempLine = _lineRenderers[lineName];
             tempLine.positionCount = linePositions[lineName].Count;
