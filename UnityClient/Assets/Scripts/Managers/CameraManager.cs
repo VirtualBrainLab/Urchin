@@ -62,12 +62,6 @@ public class CameraManager : MonoBehaviour
 
     }
 
-    private void UpdateVisibleUI()
-    {
-        for (int i = 0; i < _cameraUIGOs.Count; i++)
-            _cameraUIGOs[i].SetActive(i < _cameras.Count);
-    }
-
     public void DeleteCamera(List<string> cameraNames)
     {
         foreach (string cameraName in cameraNames)
@@ -77,6 +71,12 @@ public class CameraManager : MonoBehaviour
             _cameras.Remove(cameraName);
         }
         UpdateVisibleUI();
+    }
+
+    private void UpdateVisibleUI()
+    {
+        for (int i = 0; i < _cameraUIGOs.Count; i++)
+            _cameraUIGOs[i].SetActive(i < (_cameras.Count-1));
     }
 
     //each function below works by first checking if camera exits in dictionary, and then calling cameraBehavior function
