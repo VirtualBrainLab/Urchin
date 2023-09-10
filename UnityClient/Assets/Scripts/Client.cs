@@ -226,6 +226,9 @@ public class Client : MonoBehaviour
             case "texts":
                 _textManager.Clear();
                 break;
+            case "primitives":
+                _primitiveMeshManager.Clear();
+                break;
         }
     }
 

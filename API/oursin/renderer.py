@@ -77,3 +77,8 @@ def clear_texts():
 	"""Clear all text
 	"""
 	client.sio.emit('Clear', 'texts')
+
+def clear_primitives():
+	"""Clear all primitives
+	"""
+	client.sio.emit('Clear','primitives')

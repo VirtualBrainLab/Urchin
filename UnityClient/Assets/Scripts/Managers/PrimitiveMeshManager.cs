@@ -43,6 +43,15 @@ public class PrimitiveMeshManager : MonoBehaviour
         }
     }
 
+    public void Clear()
+    {
+        foreach (var kvp in _primMeshRenderers)
+        {
+            Destroy(kvp.Value.gameObject);
+        }
+        _primMeshRenderers.Clear();
+    }
+
     public void DeleteMesh(List<string> meshes)
     {
         foreach (string mesh in meshes)
