@@ -160,11 +160,11 @@ class Camera:
 		self.rotation = rotation
 		client.sio.emit('SetCameraRotation', {self.id: rotation})
 
-	def set_rotation_axial(self, bool=True):
+	def set_rotation_axial(self, above=True):
 		"""Set the camera to the standard axial view. Does not change the window, only the rotation.
 		Parameters
 		----------
-		bool : boolean
+		above : boolean
 			default true, the above view
 
 		Examples
@@ -174,7 +174,7 @@ class Camera:
 		if self.in_unity == False:
 			raise Exception("Camera is not created. Please create camera before calling method.")
 		
-		if bool:
+		if above:
 			rotation = [0,0,0]
 		else:
 			rotation = [0,-180,0]
@@ -183,7 +183,7 @@ class Camera:
 		client.sio.emit('SetCameraRotation', {self.id: rotation})
 
 	
-	def set_rotation_coronal(self, bool=True):
+	def set_rotation_coronal(self, back=True):
 		"""Set the camera to the standard coronal view. Does not change the window, only the rotation.
 		Parameters
 		----------
@@ -197,7 +197,7 @@ class Camera:
 		if self.in_unity == False:
 			raise Exception("Camera is not created. Please create camera before calling method.")
 		
-		if bool:
+		if back:
 			rotation = [90,0,0]
 		else:
 			rotation = [90,-180,0]
@@ -206,7 +206,7 @@ class Camera:
 		client.sio.emit('SetCameraRotation', {self.id: rotation})
 
 	
-	def set_rotation_sagittal(self, bool=True):
+	def set_rotation_sagittal(self, left=True):
 		"""Set the camera to the standard sagittal view. Does not change the window, only the rotation.
 		Parameters
 		----------
@@ -220,7 +220,7 @@ class Camera:
 		if self.in_unity == False:
 			raise Exception("Camera is not created. Please create camera before calling method.")
 		
-		if bool:
+		if left:
 			rotation = [90,-90,0]
 		else:
 			rotation = [90,90,0]
