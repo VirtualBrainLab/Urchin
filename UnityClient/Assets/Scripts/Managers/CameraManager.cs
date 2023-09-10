@@ -15,6 +15,8 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private AreaManager _areaManager;
     [SerializeField] private CCFModelControl _modelControl;
     [SerializeField] private Canvas _uiCanvas;
+
+    [SerializeField] private List<GameObject> _cameraUIGOs;
     #endregion
 
     #region Variables
@@ -54,8 +56,16 @@ public class CameraManager : MonoBehaviour
             cameraBehavior.ModelControl = _modelControl;
             // Get all Camera components attached to children of the script's GameObject (since there are multiple)
             _cameras.Add(camera, cameraBehavior);
-        }
 
+        }
+        UpdateVisibleUI();
+
+    }
+
+    private void UpdateVisibleUI()
+    {
+        for (int i = 0; i < _cameraUIGOs.Count; i++)
+            _cameraUIGOs[i].SetActive(i < _cameras.Count);
     }
 
     public void DeleteCamera(List<string> cameraNames)
@@ -64,7 +74,9 @@ public class CameraManager : MonoBehaviour
         {
             textures.Push(_cameras[cameraName].RenderTexture);
             GameObject.Destroy(_cameras[cameraName].gameObject);
+            _cameras.Remove(cameraName);
         }
+        UpdateVisibleUI();
     }
 
     //each function below works by first checking if camera exits in dictionary, and then calling cameraBehavior function
