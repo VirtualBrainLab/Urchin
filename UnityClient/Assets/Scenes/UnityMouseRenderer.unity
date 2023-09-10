@@ -736,7 +736,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   volumeLoadingUIGO: {fileID: 669598001}
   volumeLoadingUIText: {fileID: 1886370249}
-  cameraControl: {fileID: 1861690900}
+  cameraControl: {fileID: 0}
 --- !u!114 &116938375 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8530910349071366770, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
@@ -8376,17 +8376,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5697262125096797367, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
   m_PrefabInstance: {fileID: 5697262125661659812}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1861690900 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5697262125096797360, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
-  m_PrefabInstance: {fileID: 5697262125661659812}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf0c77e40c3a7324b9517bc6860758d3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1861690901 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5697262125096797361, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
@@ -9638,6 +9627,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1875325468}
     - target: {fileID: 161993171994875574, guid: 8d78849a732a3e54c8a6dfcda3795ec0, type: 3}
+      propertyPath: _uiCanvas
+      value: 
+      objectReference: {fileID: 858013925}
+    - target: {fileID: 161993171994875574, guid: 8d78849a732a3e54c8a6dfcda3795ec0, type: 3}
       propertyPath: consoleText
       value: 
       objectReference: {fileID: 1782345597}
@@ -9665,6 +9658,10 @@ PrefabInstance:
       propertyPath: cameraController
       value: 
       objectReference: {fileID: 1861690901}
+    - target: {fileID: 161993171994875574, guid: 8d78849a732a3e54c8a6dfcda3795ec0, type: 3}
+      propertyPath: _mainCameraBehavior
+      value: 
+      objectReference: {fileID: 1861690902}
     - target: {fileID: 161993171994875574, guid: 8d78849a732a3e54c8a6dfcda3795ec0, type: 3}
       propertyPath: cosmosParentObjects.Array.data[0]
       value: 
@@ -9926,9 +9923,21 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 231208878954284792, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 231208878954284792, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1861690900}
+      objectReference: {fileID: 1595768701}
+    - target: {fileID: 231208878954284792, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetMainCameraMode
+      objectReference: {fileID: 0}
+    - target: {fileID: 231208878954284792, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: RendererManager, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 231208878954284793, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -10356,7 +10365,7 @@ PrefabInstance:
     - target: {fileID: 231208880554599245, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1861690900}
+      objectReference: {fileID: 0}
     - target: {fileID: 231208880617230026, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
       propertyPath: m_Name
       value: Explode2
@@ -11183,7 +11192,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5697262125096797360, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
 --- !u!1001 &5708727189667669680
 PrefabInstance:

@@ -7,7 +7,6 @@ public class CameraBehavior : MonoBehaviour
 {
     #region Serialized
     [SerializeField] BrainCameraController _cameraControl;
-    [SerializeField] UM_CameraController _umCameraControl;
     [SerializeField] RectTransform _cropWindowRT;
 
     [SerializeField] Camera _orthoCamera;
@@ -41,7 +40,7 @@ public class CameraBehavior : MonoBehaviour
     {
         get
         {
-            if (_umCameraControl.Orthographic)
+            if (_orthoCamera.isActiveAndEnabled)
             {
                 return _orthoCamera;
             }
@@ -79,7 +78,24 @@ public class CameraBehavior : MonoBehaviour
 
     public void SetCameraMode(string mode)
     {
-        _umCameraControl.SwitchCameraMode(mode.Equals("orthographic"));
+        SetCameraMode(mode.Equals("orthographic"));
+    }
+
+    public void SetCameraMode(bool orthographic)
+    {
+        if (orthographic)
+        {
+            _orthoCamera.gameObject.SetActive(true);
+            _perspectiveCamera.gameObject.SetActive(false);
+
+            _cameraControl.SetCamera(_orthoCamera);
+        }
+        else
+        {
+            _orthoCamera.gameObject.SetActive(false);
+            _perspectiveCamera.gameObject.SetActive(true);
+            _cameraControl.SetCamera(_perspectiveCamera);
+        }
     }
 
     /// <summary>

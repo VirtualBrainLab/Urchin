@@ -13,6 +13,8 @@ public class RendererManager : MonoBehaviour
 
     [SerializeField] private CCFModelControl modelControl;
     [SerializeField] private BrainCameraController cameraController;
+    [SerializeField] private CameraBehavior _mainCameraBehavior;
+    [SerializeField] private Canvas _uiCanvas;
     [SerializeField] private Client client;
     [SerializeField] private ColormapPanel _colormapPanel;
 
@@ -364,6 +366,12 @@ public class RendererManager : MonoBehaviour
     public void AnimateImplode(float explodeTime)
     {
         StartCoroutine(AnimateImplodeHelper(explodeTime));
+    }
+
+    public void SetMainCameraMode(bool orthographic)
+    {
+        _mainCameraBehavior.SetCameraMode(orthographic);
+        _uiCanvas.worldCamera = _mainCameraBehavior.ActiveCamera;
     }
 
     private IEnumerator AnimateExplodeHelper(float explodeTime)
