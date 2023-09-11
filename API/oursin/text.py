@@ -8,12 +8,12 @@ from . import utils
 
 counter = 0
 class Text:
-  def __init__(self, text = "", color = "#FFFFFF", size = 12, positon = [0,0]):
+  def __init__(self, text = "", color = "#FFFFFF", font_size = 12, position = [0,0]):
     self.create()
 
-    text = utils.sanitize_string(text)
-    self.text = text
-    client.sio.emit('SetTextText',{self.id: text})
+    self.set_text(text)
+
+    self.set_font_size(font_size)
 
     color = utils.sanitize_color(color)
     self.color = color
@@ -92,7 +92,7 @@ class Text:
     self.color = text_color
     client.sio.emit('SetTextColors',{self.id: text_color})
 
-  def set_size(self,text_size):
+  def set_font_size(self,text_size):
     """Set the font size of a set of text objects
 
     Parameters
@@ -129,3 +129,95 @@ class Text:
     position = utils.sanitize_list(position)
     self.position = position
     client.sio.emit('SetTextPositions',{self.id: position})
+
+
+def create(n):
+  """Create n text objects with default parameters
+
+  Parameters
+  ----------
+  n : int
+      number of text objects
+  """
+  text_list = []
+  for i in range(n):
+    text_list.append(Text())
+  return text_list
+
+def set_texts(text_list, str_list):
+  """Set the string value of multiple text objects
+
+  Parameters
+  ----------
+  text_list : list of Text
+      Text objects
+  str_list : _type_
+      _description_
+  """
+  text_list = utils.sanitize_list(text_list)
+  str_list = utils.sanitize_list(str_list, len(text_list))
+
+  text_strs = {}
+  for i, text in enumerate(text_list):
+    text_strs[text.id] = str_list[i]
+  
+  client.sio.emit('SetTextText',text_strs)
+
+def set_positions(text_list, pos_list):
+  """Set the positions of multiple text objects
+
+  Positions are [0,1] relative to the edges of the screen
+
+  Parameters
+  ----------
+  text_list : list of Text
+      Text objects
+  pos_list : list of float
+      [0,0] top left [1,1] bottom right
+  """
+  text_list = utils.sanitize_list(text_list)
+  pos_list = utils.sanitize_list(pos_list, len(text_list))
+
+  text_poss = {}
+  for i, text in enumerate(text_list):
+    text_poss[text.id] = pos_list[i]
+  
+  client.sio.emit('SetTextPositions',text_poss)
+
+def set_font_sizes(text_list, font_size_list):
+  """_summary_
+
+  Parameters
+  ----------
+  text_list : list of Text
+      Text objects
+  font_size_list : _type_
+      _description_
+  """
+  text_list = utils.sanitize_list(text_list)
+  font_size_list = utils.sanitize_list(font_size_list, len(text_list))
+
+  text_font_sizes = {}
+  for i, text in enumerate(text_list):
+    text_font_sizes[text.id] = font_size_list[i]
+  
+  client.sio.emit('SetTextSizes',text_font_sizes)
+
+def set_colors(text_list, color_list):
+  """_summary_
+
+  Parameters
+  ----------
+  text_list : list of Text
+      Text objects
+  color_list : _type_
+      _description_
+  """
+  text_list = utils.sanitize_list(text_list)
+  color_list = utils.sanitize_list(color_list, len(text_list))
+
+  text_colors = {}
+  for i, text in enumerate(text_list):
+    text_colors[text.id] = color_list[i]
+  
+  client.sio.emit('SetTextColors',text_colors)

@@ -73,7 +73,11 @@ def sanitize_material(material):
     else:
         raise Exception("Material is not properly passed in as a string. Please pass in material as a string.")
 
-def sanitize_list(input):
+def sanitize_list(input, length=0):
+    # resize to match list size
+    if length > 0 and len(input) != length:
+        input = input * length
+
     if isinstance(input,list):
         return input
     else:
