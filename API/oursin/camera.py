@@ -5,35 +5,60 @@ from . import utils
 
 from PIL import Image
 import io
+import json
+import numpy as np
 		  
-receive_fname = ''
-receive_count = 0
-receive_data = []
+receive_fnames = {}
+receive_totalBytes = {}
+receive_bytes = {}
 
-def receive_camera_img_meta(data):
-	global receive_count, receive_data
-	receive_count = int(data)
-	print('(Camera receive meta) ' + str(data))
+def receive_camera_img_meta(data_str):
+	global receive_totalBytes
 
-def receive_camera_img(data):
-  global receive_count, receive_data
+	data = json.loads(data_str)
+
+	name = data["name"]
+	totalBytes = data["totalBytes"]
+
+	receive_totalBytes[name] = totalBytes
+	receive_bytes[name] = bytearray()
+
+	print(f'(Camera receive meta) {name} receiving {totalBytes} bytes')
+
+def receive_camera_img(data_str):
+	global receive_totalBytes, receive_bytes
+
+	data = json.loads(data_str)
+
+	name = data["name"]
+	byte_data = bytes(data["data"])
+
+	receive_bytes[name] = receive_bytes[name] + byte_data
+
+	print(f'(Camera receive) {name} receiving {len(byte_data)} bytes')
 	
-  print(f'(Camera) received {str(len(data))} bytes')
-  receive_data.append(data)
-  receive_count -= 1
+	if len(receive_bytes[name]) == receive_totalBytes[name]:
+		Image.open(io.BytesIO(receive_bytes[name])).save(receive_fnames[name])
 
-  if (receive_count == 0):
-    data_bytes = b''.join(receive_data)
-    receive_data = []
-    Image.open(io.BytesIO(data_bytes)).save(receive_fname)
-    print('(Camera received all data)')
+		print(f'(Camera receive) {name} complete')
+		del receive_fnames[name]
+		del receive_totalBytes[name]
+		del receive_bytes[name]
 
 ## Camera renderer
 counter = 0
 
 class Camera:
-	def __init__(self, target = [0,0,0], position = [0,0,0], preserve_target = True, rotation = [0,0,0], zoom = 1, pan_x = 3, pan_y = 4, mode = "orthographic", controllable = False, main = False):
-		self.create(main=main)
+	def __init__(self, target = [0,0,0], position = [0,0,0], preserve_target = True, rotation = [0,0,0], zoom = 1, pan_x = 3, pan_y = 4, mode = "orthographic", controllable = False, main = False):		
+		if(main):
+			self.id = "CameraMain"
+			self.in_unity = True
+		else:
+			global counter
+			counter += 1
+			self.id = f'Camera{counter}'
+			client.sio.emit('CreateCamera', [self.id])
+			self.in_unity = True
 		#in theory, the target value can stand for either coordinate or area? (and taking coordinate as default)
 		# target_coordinate = utils.sanitize_vector3(target)
 		# self.target = target_coordinate
@@ -72,15 +97,6 @@ class Camera:
 		Examples
 		>>>c1 = urchin.camera.Camera()
 		"""
-		if(main):
-			self.id = "main"
-			self.in_unity = True
-		else:
-			global counter
-			counter += 1
-			self.id = str(counter)
-			client.sio.emit('CreateCamera', [self.id])
-			self.in_unity = True
 
 	def delete(self):
 		"""Deletes camera
@@ -294,7 +310,7 @@ class Camera:
 		Parameters
 		----------
 		mode : string
-		mode options "perspective" or "orthographic" (default)
+			"perspective" or "orthographic" (default)
 		
 		Examples
 		--------
@@ -307,10 +323,6 @@ class Camera:
 
 	def set_controllable(self):
 		"""Sets camera to controllable
-
-		Parameters
-		----------
-		self
 		
 		Examples
 		--------
@@ -321,20 +333,21 @@ class Camera:
 		self.controllable = True
 		client.sio.emit('SetCameraControl', self.id)
 		
+	def screenshot(self, filename, size=[1024,768]):
+		"""Capture a screenshot
 
-
-	# def capture_image(filename):
-	# 	""" Capture a full screenshot and save to filename
-		
-	# 	Note: only supports PNG filetypes, for now
-		
-	# 	Examples
-	# 	--------
-	# 	>>> urn.capture_image('./image.png')
-	# 	"""
-	# 	global receive_fname
-	# 	receive_fname = filename
-	# 	client.sio.emit('RequestCameraImg')
+		Parameters
+		----------
+		filename: string
+			Filename to save to, relative to local path
+		size : list, optional
+			Size of the screenshot, by default [1024,768]
+		"""
+		global receive_fnames
+		print(self.id)
+		print(filename)
+		receive_fnames[self.id] = filename
+		client.sio.emit('RequestCameraImg', json.dumps({"name":self.id, "size":size}))
 
 def set_light_rotation(angles):
     angles = utils.sanitize_vector3(angles)

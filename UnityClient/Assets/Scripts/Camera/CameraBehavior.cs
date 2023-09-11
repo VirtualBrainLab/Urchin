@@ -14,7 +14,7 @@ public class CameraBehavior : MonoBehaviour
 
     #endregion
 
- 
+    public string Name;
 
     public AreaManager AreaManager;
     public CCFModelControl ModelControl;
@@ -99,37 +99,75 @@ public class CameraBehavior : MonoBehaviour
     }
 
     /// <summary>
-    /// Take a single screenshot at the end of this frame and send that to the client
-    /// via the ReceiveCameraImg streaming API
+    /// Take a screenshot and send it back via the ReceiveCameraImgMeta and ReceiveCameraImg messages
     /// </summary>
-    public void Screenshot()
+    /// <param name="size"></param>
+    public void Screenshot(int[] size)
     {
-        StartCoroutine(ScreenshotHelper());
+        StartCoroutine(ScreenshotHelper(size));
     }
 
-    private IEnumerator ScreenshotHelper()
+    /// <summary>
+    /// Capture the output from this camera into a texture
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator ScreenshotHelper(int[] size)
     {
+        Debug.Log($"{size[0]},{size[1]}");
+
+        RenderTexture originalTexture = ActiveCamera.targetTexture;
+
+        RenderTexture captureTexture = new RenderTexture(size[0], size[1], 24);
+        ActiveCamera.targetTexture = captureTexture;
+
         yield return new WaitForEndOfFrame();
-        var texture = ScreenCapture.CaptureScreenshotAsTexture();
-        //texture
 
-        byte[] data = texture.EncodeToPNG();
-        Debug.Log(data.Length);
+        // Save to Texture2D
+        Texture2D screenshotTexture = new Texture2D(size[0], size[1], TextureFormat.RGB24, false);
+        RenderTexture.active = captureTexture;
+        screenshotTexture.ReadPixels(new Rect(0, 0, size[0], size[1]), 0, 0);
+        screenshotTexture.Apply();
 
-        int nChunks = Mathf.CeilToInt((float)data.Length / SOCKET_IO_MAX_CHUNK_BYTES);
+        // return the camera
+        ActiveCamera.targetTexture = originalTexture;
+        RenderTexture.active = null;
+        captureTexture.Release();
 
-        // tell the client how many messages to expect
-        Client.Emit("ReceiveCameraImgMeta", nChunks);
+        // Convert to PNG
+        byte[] bytes = screenshotTexture.EncodeToPNG();
 
-        // split the texture byte[] into 1000 byte chunks
+        // Build the messages and send them
+        ScreenshotReturnMeta meta = new();
+        meta.name = Name;
+        meta.totalBytes = bytes.Length;
+        Client.Emit("ReceiveCameraImgMeta", JsonUtility.ToJson(meta));
+
+        int nChunks = Mathf.CeilToInt((float)bytes.Length / (float)SOCKET_IO_MAX_CHUNK_BYTES);
+
         for (int i = 0; i < nChunks; i++)
         {
-            int cChunkSize = Mathf.Min(SOCKET_IO_MAX_CHUNK_BYTES, data.Length - i * SOCKET_IO_MAX_CHUNK_BYTES);
-            byte[] chunkData = new byte[cChunkSize];
-            Buffer.BlockCopy(data, i * SOCKET_IO_MAX_CHUNK_BYTES, chunkData, 0, cChunkSize);
-            Client.Emit("ReceiveCameraImg", chunkData);
-        }
+            ScreenshotChunk chunk = new();
+            chunk.name = Name;
 
+            int cChunkSize = Mathf.Min(SOCKET_IO_MAX_CHUNK_BYTES, bytes.Length - i * SOCKET_IO_MAX_CHUNK_BYTES);
+            chunk.data = new byte[cChunkSize];
+            Buffer.BlockCopy(bytes, i * SOCKET_IO_MAX_CHUNK_BYTES, chunk.data, 0, cChunkSize);
+            Client.Emit("ReceiveCameraImg", JsonUtility.ToJson(chunk));
+        }
+    }
+
+    [Serializable]
+    private struct ScreenshotReturnMeta
+    {
+        public string name;
+        public int totalBytes;
+    }
+
+    [Serializable]
+    private struct ScreenshotChunk
+    {
+        public string name;
+        public byte[] data;
     }
 
     public void SetCameraPosition(List<float> obj)

@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CameraManager : MonoBehaviour
@@ -32,7 +34,9 @@ public class CameraManager : MonoBehaviour
         textures.Push(_renderTexture2);
         textures.Push(_renderTexture1);
         _cameras = new();
-        _cameras.Add("main", mainCamera);
+        _cameras.Add("CameraMain", mainCamera);
+
+        mainCamera.Name = "CameraMain";
     }
 
     #endregion
@@ -40,22 +44,29 @@ public class CameraManager : MonoBehaviour
 
      #region Public camera functions
 
-    public void CreateCamera(List<string> cameras)
+    public void CreateCamera(List<string> cameraNames)
     {
         //instantiating game object w camera component
-        foreach (string camera in cameras)
+        foreach (string cameraName in cameraNames)
         {
+            if (_cameras.Keys.Contains(cameraName))
+            {
+                Client.LogWarning($"Camera {cameraName} was created twice. The camera will not be re-created");
+                continue;
+            }
+
 #if UNITY_EDITOR
-            Debug.Log($"{camera} created");
+            Debug.Log($"{cameraName} created");
 #endif
             GameObject tempObject = Instantiate(_cameraPrefab);
-            tempObject.name = $"camera_{camera}";
+            tempObject.name = $"camera_{cameraName}";
             CameraBehavior cameraBehavior = tempObject.GetComponent<CameraBehavior>();
             cameraBehavior.RenderTexture = textures.Pop();
             cameraBehavior.AreaManager = _areaManager;
             cameraBehavior.ModelControl = _modelControl;
+            cameraBehavior.Name = cameraName;
             // Get all Camera components attached to children of the script's GameObject (since there are multiple)
-            _cameras.Add(camera, cameraBehavior);
+            _cameras.Add(cameraName, cameraBehavior);
 
         }
         UpdateVisibleUI();
@@ -113,7 +124,12 @@ public class CameraManager : MonoBehaviour
         }
     }
 
-    public void Screenshot() { }
+    public void Screenshot(string data)
+    {
+        ScreenshotData screenshotData = JsonUtility.FromJson<ScreenshotData>(data);
+
+        _cameras[screenshotData.name].Screenshot(screenshotData.size);
+    }
 
     public void SetCameraPosition(Dictionary<string, List<float>> cameraPosition) {
         foreach (var kvp in cameraPosition)
@@ -213,5 +229,15 @@ public class CameraManager : MonoBehaviour
         _lightBehavior.SetRotation(new Vector3(eulerAngles[0], eulerAngles[1], eulerAngles[2]));
     }
 
+    #endregion
+
+    #region JSON data definitions
+
+    [Serializable]
+    private struct ScreenshotData
+    {
+        public string name;
+        public int[] size;
+    }
     #endregion
 }
