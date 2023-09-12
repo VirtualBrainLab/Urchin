@@ -28,7 +28,7 @@ urchin.setup()
 
 ## Examples
 
-Head over to [Examples/basics](https://github.com/VirtualBrainLab/Urchin/tree/main/Examples/basics) to find many tutorials that introduce the functionality in Urchin.
+Head over to [urchin-examples/basics](https://github.com/VirtualBrainLab/urchin-examples/tree/colab/basics) to find tutorials that introduce the functionality in Urchin.
 
 To get you started, try running the code below to load the root brain model. 
 
@@ -38,6 +38,7 @@ urchin.ccf.load_beryl()
 ```
 
 ### Render the root area
+
 ```
 urchin.ccf.set_visibility({"grey":True})
 urchin.ccf.set_material({"grey":"transparent-lit"})
