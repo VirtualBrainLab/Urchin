@@ -155,7 +155,7 @@ class Probe:
 			raise Exception("Object does not exist in Unity, call create method first.")
 		probe_scale = utils.sanitize_vector3(probe_scale)
 		self.scale = probe_scale
-		client.sio.emit('SetProbeSize', {self.id,probe_scale})
+		client.sio.emit('SetProbeSize', {self.id:probe_scale})
 
 	
 def create(num_objects):
@@ -241,7 +241,7 @@ def set_positions(probes_list, positions_list):
 		else:
 			warnings.warn(f"Object with id {probe.id} does not exist. Please create object {probe.id}.")
 
-	client.sio.emit('SetPosition', probe_pos)
+	client.sio.emit('SetProbePos', probe_pos)
 
 def set_angles(probes_list, angles_list):
 	"""Set probe azimuth/elevation/spin angles in degrees
@@ -317,7 +317,7 @@ def set_scales(probes_list, scales_list):
 		
 	Examples
 	--------
-	>>> urchin.probes.set_scales(probes,[0.070, 3.840, 0.020])
+	>>> urchin.probes.set_scales(probes,[[0.070, 3.840, 0.020],[0.070, 3.840, 0.020]])
 	"""
 	probes_list = utils.sanitize_list(probes_list)
 	scales_list = utils.sanitize_list(scales_list)
