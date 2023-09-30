@@ -2,7 +2,7 @@
 urchin
 ========================================
 
-[![PyPI Version](https://img.shields.io/pypi/v/oursin.svg)](https://pypi.org/project/oursin/)
+[![PyPI Version](https://img.shields.io/pypi/v/oursin.svg)](https://pypi.org/project/oursin/) [![Downloads](https://static.pepy.tech/badge/oursin)](https://pepy.tech/project/oursin)
 
 Universal Renderer Creating Helpful Images for Neuroscience (Urchin) is a python package that links your analysis scripts to a standalone brain renderer program, to create graphics like the ones below.
 
