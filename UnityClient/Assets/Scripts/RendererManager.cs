@@ -11,7 +11,6 @@ public class RendererManager : MonoBehaviour
     public static RendererManager Instance;
     #endregion
 
-    [SerializeField] private CCFModelControl modelControl;
     [SerializeField] private BrainCameraController cameraController;
     [SerializeField] private CameraBehavior _mainCameraBehavior;
     [SerializeField] private Canvas _uiCanvas;
@@ -93,8 +92,9 @@ public class RendererManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        modelControl.SetBeryl(true);
-        modelControl.LateStart(loadDefaults);
+        throw new NotImplementedException();
+        //modelControl.SetBeryl(true);
+        //modelControl.LateStart(loadDefaults);
 
         if (loadDefaults)
             DelayedStart();
@@ -104,13 +104,15 @@ public class RendererManager : MonoBehaviour
 
     private async void DelayedStart()
     {
-        await modelControl.GetDefaultLoadedTask();
+        throw new NotImplementedException();
+        //await modelControl.GetDefaultLoadedTask();
 
-        foreach (CCFTreeNode node in modelControl.GetDefaultLoadedNodes())
-        {
-            RegisterNode(node);
-            node.SetNodeModelVisibility_Full(true);
-        }
+        throw new NotImplementedException();
+        //foreach (CCFTreeNode node in modelControl.GetDefaultLoadedNodes())
+        //{
+        //    RegisterNode(node);
+        //    node.SetNodeModelVisibility_Full(true);
+        //}
     }
 
     public void ChangeCosmosIdx(int newIdx)
@@ -199,15 +201,17 @@ public class RendererManager : MonoBehaviour
         }
     }
 
-    public void RegisterNode(CCFTreeNode node)
+    public void RegisterNode()
+    //public void RegisterNode(CCFTreeNode node)
     {
-        if (node != null && node.NodeModelLeftGO != null)
-        {
-            if (!originalTransformPositionsLeft.ContainsKey(node.ID))
-                originalTransformPositionsLeft.Add(node.ID, node.NodeModelLeftGO.transform.localPosition);
-            if (!originalTransformPositionsRight.ContainsKey(node.ID))
-                originalTransformPositionsRight.Add(node.ID, node.NodeModelRightGO.transform.localPosition);
-        }
+        throw new NotImplementedException();
+        //if (node != null && node.NodeModelLeftGO != null)
+        //{
+        //    if (!originalTransformPositionsLeft.ContainsKey(node.ID))
+        //        originalTransformPositionsLeft.Add(node.ID, node.NodeModelLeftGO.transform.localPosition);
+        //    if (!originalTransformPositionsRight.ContainsKey(node.ID))
+        //        originalTransformPositionsRight.Add(node.ID, node.NodeModelRightGO.transform.localPosition);
+        //}
     }
 
     public Color GetColormapColor(float perc)
@@ -309,34 +313,36 @@ public class RendererManager : MonoBehaviour
 
     public void SetLeftColorOnly(bool state)
     {
-        colorLeftOnly = state;
-        foreach (CCFTreeNode node in AreaManager.VisibleNodes)
-            if (state)
-                node.SetColorOneSided(node.DefaultColor, false, false);
-            else
-                node.SetColor(node.color);
+        throw new NotImplementedException();
+        //colorLeftOnly = state;
+        //foreach (CCFTreeNode node in AreaManager.VisibleNodes)
+        //    if (state)
+        //        node.SetColorOneSided(node.DefaultColor, false, false);
+        //    else
+        //        node.SetColor(node.color);
     }
 
     private void UpdateExploded()
     {
-        cameraController.SetControlBlock(true);
+        throw new NotImplementedException();
+        //cameraController.SetControlBlock(true);
 
-        Vector3 flipVector = new Vector3(1f, 1f, -1f);
-        foreach (CCFTreeNode node in AreaManager.VisibleNodes)
-        {
-            int cosmos = modelControl.GetCosmosID(node.ID);
-            Transform nodeTLeft = node.NodeModelLeftGO.transform;
-            Transform nodeTright = node.NodeModelRightGO.transform;
+        //Vector3 flipVector = new Vector3(1f, 1f, -1f);
+        //foreach (CCFTreeNode node in AreaManager.VisibleNodes)
+        //{
+        //    int cosmos = modelControl.GetCosmosID(node.ID);
+        //    Transform nodeTLeft = node.NodeModelLeftGO.transform;
+        //    Transform nodeTright = node.NodeModelRightGO.transform;
 
-            nodeTLeft.localPosition = originalTransformPositionsLeft[node.ID] +
-                cosmosVectors[cosmos] * percentageExploded;
+        //    nodeTLeft.localPosition = originalTransformPositionsLeft[node.ID] +
+        //        cosmosVectors[cosmos] * percentageExploded;
 
-            if (explodeLeftOnly)
-                nodeTright.localPosition = originalTransformPositionsRight[node.ID];
-            else
-                nodeTright.localPosition = originalTransformPositionsRight[node.ID] +
-                        Vector3.Scale(cosmosVectors[cosmos], flipVector) * percentageExploded;
-        }
+        //    if (explodeLeftOnly)
+        //        nodeTright.localPosition = originalTransformPositionsRight[node.ID];
+        //    else
+        //        nodeTright.localPosition = originalTransformPositionsRight[node.ID] +
+        //                Vector3.Scale(cosmosVectors[cosmos], flipVector) * percentageExploded;
+        //}
     }
 
     public void UpdateDataIndex(float newIdx)

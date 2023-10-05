@@ -14,6 +14,7 @@
     "com.unity.timeline": "1.7.5",
     "com.unity.toolchain.win-x86_64-linux-x86_64": "2.0.4",
     "com.unity.ugui": "1.0.0",
+    "vbl.brainatlas": "https://github.com/VirtualBrainLab/BrainAtlas.git?path=/Packages/vbl.brainatlas",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",

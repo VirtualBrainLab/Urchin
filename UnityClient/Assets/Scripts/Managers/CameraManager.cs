@@ -15,7 +15,6 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private CameraBehavior mainCamera;
     [SerializeField] private LightBehavior _lightBehavior;
     [SerializeField] private AreaManager _areaManager;
-    [SerializeField] private CCFModelControl _modelControl;
     [SerializeField] private Canvas _uiCanvas;
 
     [SerializeField] private List<GameObject> _cameraUIGOs;
@@ -63,7 +62,8 @@ public class CameraManager : MonoBehaviour
             CameraBehavior cameraBehavior = tempObject.GetComponent<CameraBehavior>();
             cameraBehavior.RenderTexture = textures.Pop();
             cameraBehavior.AreaManager = _areaManager;
-            cameraBehavior.ModelControl = _modelControl;
+            throw new NotImplementedException();
+            //cameraBehavior.ModelControl = _modelControl;
             cameraBehavior.Name = cameraName;
             // Get all Camera components attached to children of the script's GameObject (since there are multiple)
             _cameras.Add(cameraName, cameraBehavior);

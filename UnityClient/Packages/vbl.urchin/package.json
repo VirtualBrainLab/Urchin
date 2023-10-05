@@ -1,0 +1,10 @@
+{
+  "name": "vbl.urchin",
+  "version": "0.5.0",
+  "description": "Universal Renderer Creating Helpful Images for Neuroscience",
+  "displayName": "Urchin",
+  "unity": "2022.3",
+  "author": "VirtualBrainLab",
+  "changelogUrl": "https://github.com/VirtualBrainLab/Urchin/",
+  "documentationUrl": "https://virtualbrainlab.org/urchin/installation_and_use.html"
+}

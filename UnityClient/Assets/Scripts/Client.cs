@@ -14,7 +14,6 @@ using System.Collections.Specialized;
 public class Client : MonoBehaviour
 {
     [SerializeField] RendererManager main;
-    [SerializeField] CCFModelControl modelControl;
     [SerializeField] private bool localhost;
 
     // UI

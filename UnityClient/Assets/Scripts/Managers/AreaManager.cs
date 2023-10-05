@@ -7,12 +7,11 @@ using UnityEngine;
 public class AreaManager : MonoBehaviour
 {
     #region Serialized fields
-    [SerializeField] private CCFModelControl _modelControl;
     [SerializeField] private RendererManager _main;
     #endregion
 
     #region static
-    public static HashSet<CCFTreeNode> VisibleNodes { get; private set; }
+    //public static HashSet<CCFTreeNode> VisibleNodes { get; private set; }
     public static AreaManager Instance;
     #endregion
 
@@ -31,7 +30,7 @@ public class AreaManager : MonoBehaviour
         _nodeTasks = new Dictionary<int, Task>();
         _areaSides = new();
         _areaData = new();
-        VisibleNodes = new();
+        //VisibleNodes = new();
 
         if (Instance != null)
             throw new Exception("Only one AreaManager can exist in the scene!");
@@ -43,132 +42,136 @@ public class AreaManager : MonoBehaviour
 
     public void SetAreaVisibility(Dictionary<string, bool> areaVisibility)
     {
-        foreach (KeyValuePair<string, bool> kvp in areaVisibility)
-        {
-            (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
-            CCFTreeNode node = _modelControl.tree.findNode(ID);
+        throw new NotImplementedException();
+//        foreach (KeyValuePair<string, bool> kvp in areaVisibility)
+//        {
+//            (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
+//            CCFTreeNode node = _modelControl.tree.findNode(ID);
 
-            if (node == null)
-                return;
+//            if (node == null)
+//                return;
 
-            if (_missing.Contains(node.ID))
-            {
-                Client.LogWarning("The mesh file for area " + node.ID + " does not exist, we can't load it");
-                continue;
-            }
-            if (_nodeTasks.ContainsKey(node.ID))
-            {
-                RendererManager.Log("Node " + node.ID + " is already being loaded, did you send duplicate instructions?");
-                continue;
-            }
+//            if (_missing.Contains(node.ID))
+//            {
+//                Client.LogWarning("The mesh file for area " + node.ID + " does not exist, we can't load it");
+//                continue;
+//            }
+//            if (_nodeTasks.ContainsKey(node.ID))
+//            {
+//                RendererManager.Log("Node " + node.ID + " is already being loaded, did you send duplicate instructions?");
+//                continue;
+//            }
 
-            bool set = false;
+//            bool set = false;
 
-            if (full && node.IsLoaded(true))
-            {
-                node.SetNodeModelVisibility_Full(kvp.Value);
-                _main.RegisterNode(node);
-                VisibleNodes.Add(node);
-                set = true;
-#if UNITY_EDITOR
-                Debug.Log("Setting full model visibility to true");
-#endif
-            }
-            if (leftSide && node.IsLoaded(false))
-            {
-                node.SetNodeModelVisibility_Left(kvp.Value);
-                _main.RegisterNode(node);
-                VisibleNodes.Add(node);
-                set = true;
-#if UNITY_EDITOR
-                Debug.Log("Setting left model visibility to true");
-#endif
-            }
-            if (rightSide && node.IsLoaded(false))
-            {
-                node.SetNodeModelVisibility_Right(kvp.Value);
-                _main.RegisterNode(node);
-                VisibleNodes.Add(node);
-                set = true;
-#if UNITY_EDITOR
-                Debug.Log("Setting right model visibility to true");
-#endif
-            }
+//            if (full && node.IsLoaded(true))
+//            {
+//                node.SetNodeModelVisibility_Full(kvp.Value);
+//                _main.RegisterNode(node);
+//                VisibleNodes.Add(node);
+//                set = true;
+//#if UNITY_EDITOR
+//                Debug.Log("Setting full model visibility to true");
+//#endif
+//            }
+//            if (leftSide && node.IsLoaded(false))
+//            {
+//                node.SetNodeModelVisibility_Left(kvp.Value);
+//                _main.RegisterNode(node);
+//                VisibleNodes.Add(node);
+//                set = true;
+//#if UNITY_EDITOR
+//                Debug.Log("Setting left model visibility to true");
+//#endif
+//            }
+//            if (rightSide && node.IsLoaded(false))
+//            {
+//                node.SetNodeModelVisibility_Right(kvp.Value);
+//                _main.RegisterNode(node);
+//                VisibleNodes.Add(node);
+//                set = true;
+//#if UNITY_EDITOR
+//                Debug.Log("Setting right model visibility to true");
+//#endif
+//            }
 
-            if (!set)
-                LoadIndividualArea(ID, full, leftSide, rightSide, kvp.Value);
-        }
+//            if (!set)
+//                LoadIndividualArea(ID, full, leftSide, rightSide, kvp.Value);
+//        }
     }
 
     public async void SetAreaColor(Dictionary<string, string> areaColor)
     {
-        foreach (KeyValuePair<string, string> kvp in areaColor)
-        {
-            (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
-            CCFTreeNode node = _modelControl.tree.findNode(ID);
+        throw new NotImplementedException();
+        //foreach (KeyValuePair<string, string> kvp in areaColor)
+        //{
+        //    (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
+        //    CCFTreeNode node = _modelControl.tree.findNode(ID);
 
-            Color newColor;
-            if (node != null && ColorUtility.TryParseHtmlString(kvp.Value, out newColor))
-            {
-                if (WaitingOnTask(node.ID))
-                    await _nodeTasks[node.ID];
+        //    Color newColor;
+        //    if (node != null && ColorUtility.TryParseHtmlString(kvp.Value, out newColor))
+        //    {
+        //        if (WaitingOnTask(node.ID))
+        //            await _nodeTasks[node.ID];
 
-                if (full)
-                {
-                    if (!_main.colorLeftOnly)
-                        node.SetColor(newColor, true);
-                    else
-                        node.SetColorOneSided(newColor, true, true);
-                }
-                else if (leftSide)
-                    node.SetColorOneSided(newColor, true, true);
-                else if (rightSide && !_main.colorLeftOnly)
-                    node.SetColorOneSided(newColor, false, true);
-            }
-            else
-                RendererManager.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
-        }
+        //        if (full)
+        //        {
+        //            if (!_main.colorLeftOnly)
+        //                node.SetColor(newColor, true);
+        //            else
+        //                node.SetColorOneSided(newColor, true, true);
+        //        }
+        //        else if (leftSide)
+        //            node.SetColorOneSided(newColor, true, true);
+        //        else if (rightSide && !_main.colorLeftOnly)
+        //            node.SetColorOneSided(newColor, false, true);
+        //    }
+        //    else
+        //        RendererManager.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+        //}
     }
 
     public async void SetAreaMaterial(Dictionary<string, string> areaMaterial)
     {
-        foreach (KeyValuePair<string, string> kvp in areaMaterial)
-        {
-            (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
-            if (WaitingOnTask(ID))
-                await _nodeTasks[ID];
+        throw new NotImplementedException();
+        //foreach (KeyValuePair<string, string> kvp in areaMaterial)
+        //{
+        //    (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
+        //    if (WaitingOnTask(ID))
+        //        await _nodeTasks[ID];
 
-            if (full)
-                _modelControl.ChangeMaterial(ID, kvp.Value);
-            else if (leftSide)
-                _modelControl.ChangeMaterialOneSided(ID, kvp.Value, true);
-            else if (rightSide)
-                _modelControl.ChangeMaterialOneSided(ID, kvp.Value, false);
-        }
+        //    if (full)
+        //        _modelControl.ChangeMaterial(ID, kvp.Value);
+        //    else if (leftSide)
+        //        _modelControl.ChangeMaterialOneSided(ID, kvp.Value, true);
+        //    else if (rightSide)
+        //        _modelControl.ChangeMaterialOneSided(ID, kvp.Value, false);
+        //}
     }
 
     public async void SetAreaAlpha(Dictionary<string, float> areaAlpha)
     {
-        foreach (KeyValuePair<string, float> kvp in areaAlpha)
-        {
-            (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
-            CCFTreeNode node = _modelControl.tree.findNode(ID);
+        throw new NotImplementedException();
+        //foreach (KeyValuePair<string, float> kvp in areaAlpha)
+        //{
+        //    (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
+        //    CCFTreeNode node = _modelControl.tree.findNode(ID);
 
-            if (node != null)
-            {
-                if (WaitingOnTask(node.ID))
-                    await _nodeTasks[node.ID];
+        //    if (node != null)
+        //    {
+        //        if (WaitingOnTask(node.ID))
+        //            await _nodeTasks[node.ID];
 
-                if (full)
-                    node.SetShaderProperty("_Alpha", kvp.Value);
-                else if (leftSide)
-                    node.SetShaderPropertyOneSided("_Alpha", kvp.Value, true);
-                else if (rightSide)
-                    node.SetShaderPropertyOneSided("_Alpha", kvp.Value, false);
-            }
-            else
-                RendererManager.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
-        }
+        //        if (full)
+        //            node.SetShaderProperty("_Alpha", kvp.Value);
+        //        else if (leftSide)
+        //            node.SetShaderPropertyOneSided("_Alpha", kvp.Value, true);
+        //        else if (rightSide)
+        //            node.SetShaderPropertyOneSided("_Alpha", kvp.Value, false);
+        //    }
+        //    else
+        //        RendererManager.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+        //}
     }
 
     // Area colormaps
@@ -208,57 +211,59 @@ public class AreaManager : MonoBehaviour
     // Area intensity colormaps
     public async void SetAreaColorIntensity(Dictionary<string, float> areaIntensity)
     {
-        foreach (KeyValuePair<string, float> kvp in areaIntensity)
-        {
-            (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
-            CCFTreeNode node = _modelControl.tree.findNode(ID);
+        throw new NotImplementedException();
+        //foreach (KeyValuePair<string, float> kvp in areaIntensity)
+        //{
+        //    (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
+        //    CCFTreeNode node = _modelControl.tree.findNode(ID);
 
-            if (node != null)
-            {
-                if (WaitingOnTask(node.ID))
-                    await _nodeTasks[node.ID];
+        //    if (node != null)
+        //    {
+        //        if (WaitingOnTask(node.ID))
+        //            await _nodeTasks[node.ID];
 
-                if (full)
-                {
-                    if (!_main.colorLeftOnly)
-                        node.SetColor(_main.GetColormapColor(kvp.Value), true);
-                    else
-                        node.SetColorOneSided(_main.GetColormapColor(kvp.Value), true, true);
-                }
-                else if (leftSide)
-                    node.SetColorOneSided(_main.GetColormapColor(kvp.Value), true, true);
-                else if (rightSide && !_main.colorLeftOnly)
-                    node.SetColorOneSided(_main.GetColormapColor(kvp.Value), false, true);
-            }
-            else
-                RendererManager.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
-        }
+        //        if (full)
+        //        {
+        //            if (!_main.colorLeftOnly)
+        //                node.SetColor(_main.GetColormapColor(kvp.Value), true);
+        //            else
+        //                node.SetColorOneSided(_main.GetColormapColor(kvp.Value), true, true);
+        //        }
+        //        else if (leftSide)
+        //            node.SetColorOneSided(_main.GetColormapColor(kvp.Value), true, true);
+        //        else if (rightSide && !_main.colorLeftOnly)
+        //            node.SetColorOneSided(_main.GetColormapColor(kvp.Value), false, true);
+        //    }
+        //    else
+        //        RendererManager.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+        //}
     }
 
     // Auto-loaders
     public async void LoadDefaultAreas(string defaultName)
     {
-        Task<List<CCFTreeNode>> nodeTask;
-        if (defaultName.Equals("cosmos"))
-            nodeTask = _modelControl.LoadCosmosNodes(false);
-        else if (defaultName.Equals("beryl"))
-            nodeTask = _modelControl.LoadBerylNodes(false);
-        else
-        {
-            RendererManager.Log("Failed to load nodes: " + defaultName);
-            Client.LogError("Node group " + defaultName + " does not exist.");
-            return;
-        }
+        throw new NotImplementedException();
+        //Task<List<CCFTreeNode>> nodeTask;
+        //if (defaultName.Equals("cosmos"))
+        //    nodeTask = _modelControl.LoadCosmosNodes(false);
+        //else if (defaultName.Equals("beryl"))
+        //    nodeTask = _modelControl.LoadBerylNodes(false);
+        //else
+        //{
+        //    RendererManager.Log("Failed to load nodes: " + defaultName);
+        //    Client.LogError("Node group " + defaultName + " does not exist.");
+        //    return;
+        //}
 
-        await nodeTask;
+        //await nodeTask;
 
-        foreach (CCFTreeNode node in nodeTask.Result)
-        {
-            node.SetNodeModelVisibility_Left(true);
-            node.SetNodeModelVisibility_Right(true);
-            VisibleNodes.Add(node);
-            _main.RegisterNode(node);
-        }
+        //foreach (CCFTreeNode node in nodeTask.Result)
+        //{
+        //    node.SetNodeModelVisibility_Left(true);
+        //    node.SetNodeModelVisibility_Right(true);
+        //    VisibleNodes.Add(node);
+        //    _main.RegisterNode(node);
+        //}
     }
 
     #endregion
@@ -266,15 +271,16 @@ public class AreaManager : MonoBehaviour
     #region Public helpers
     public void ClearAreas()
     {
-        Debug.Log("(Client) Clearing areas");
-        foreach (CCFTreeNode node in VisibleNodes)
-        {
-            Debug.Log("Clearing: " + node.Name);
-            node.SetNodeModelVisibility_Full(false);
-            node.SetNodeModelVisibility_Left(false);
-            node.SetNodeModelVisibility_Right(false);
-        }
-        VisibleNodes = new();
+        throw new NotImplementedException();
+        //Debug.Log("(Client) Clearing areas");
+        //foreach (CCFTreeNode node in VisibleNodes)
+        //{
+        //    Debug.Log("Clearing: " + node.Name);
+        //    node.SetNodeModelVisibility_Full(false);
+        //    node.SetNodeModelVisibility_Left(false);
+        //    node.SetNodeModelVisibility_Right(false);
+        //}
+        //VisibleNodes = new();
     }
 
     /// <summary>
@@ -304,16 +310,17 @@ public class AreaManager : MonoBehaviour
         if (lower.Equals("root") || lower.Equals("void"))
             return (-1, full, leftSide, rightSide);
 
-        // Figure out what the acronym was by asking CCFModelControl
-        if (_modelControl.IsAcronym(idOrAcronym))
-            return (_modelControl.Acronym2ID(idOrAcronym), full, leftSide, rightSide);
-        else
-        {
-            // It wasn't an acronym, so it has to be an integer
-            int ret;
-            if (int.TryParse(idOrAcronym, out ret))
-                return (ret, full, leftSide, rightSide);
-        }
+        throw new NotImplementedException();
+        //// Figure out what the acronym was by asking CCFModelControl
+        //if (_modelControl.IsAcronym(idOrAcronym))
+        //    return (_modelControl.Acronym2ID(idOrAcronym), full, leftSide, rightSide);
+        //else
+        //{
+        //    // It wasn't an acronym, so it has to be an integer
+        //    int ret;
+        //    if (int.TryParse(idOrAcronym, out ret))
+        //        return (ret, full, leftSide, rightSide);
+        //}
 
         // We failed to figure out what this was
         return (-1, full, leftSide, rightSide);
@@ -325,53 +332,55 @@ public class AreaManager : MonoBehaviour
 
     private async void LoadIndividualArea(int ID, bool full, bool leftSide, bool rightSide, bool visibility)
     {
-#if UNITY_EDITOR
-        Debug.Log("Loading model");
-#endif
-        CCFTreeNode node = _modelControl.tree.findNode(ID);
-        VisibleNodes.Add(node);
+        throw new NotImplementedException();
+//#if UNITY_EDITOR
+//        Debug.Log("Loading model");
+//#endif
+//        CCFTreeNode node = _modelControl.tree.findNode(ID);
+//        VisibleNodes.Add(node);
 
-        Debug.Log((full, leftSide, rightSide));
-        node.LoadNodeModel(full, leftSide || rightSide);
+//        Debug.Log((full, leftSide, rightSide));
+//        node.LoadNodeModel(full, leftSide || rightSide);
 
-        await node.GetLoadedTask(full);
+//        await node.GetLoadedTask(full);
 
-        _main.RegisterNode(node);
+//        _main.RegisterNode(node);
 
-        if (full)
-            node.SetNodeModelVisibility_Full(visibility);
-        if (leftSide)
-            node.SetNodeModelVisibility_Left(visibility);
-        if (rightSide)
-            node.SetNodeModelVisibility_Right(visibility);
+//        if (full)
+//            node.SetNodeModelVisibility_Full(visibility);
+//        if (leftSide)
+//            node.SetNodeModelVisibility_Left(visibility);
+//        if (rightSide)
+//            node.SetNodeModelVisibility_Right(visibility);
     }
 
     private async void UpdateAreaDataIntensity()
     {
-        foreach (KeyValuePair<int, List<float>> kvp in _areaData)
-        {
-            int ID = kvp.Key;
-            (bool leftSide, bool rightSide) = _areaSides[ID];
+        throw new NotImplementedException();
+        //foreach (KeyValuePair<int, List<float>> kvp in _areaData)
+        //{
+        //    int ID = kvp.Key;
+        //    (bool leftSide, bool rightSide) = _areaSides[ID];
 
-            CCFTreeNode node = _modelControl.tree.findNode(ID);
+        //    CCFTreeNode node = _modelControl.tree.findNode(ID);
 
-            if (WaitingOnTask(node.ID))
-                await _nodeTasks[node.ID];
+        //    if (WaitingOnTask(node.ID))
+        //        await _nodeTasks[node.ID];
 
-            float currentValue = kvp.Value[_areaDataIndex];
+        //    float currentValue = kvp.Value[_areaDataIndex];
 
-            if (node != null)
-            {
-                if (leftSide && rightSide)
-                    node.SetColor(_main.GetColormapColor(currentValue), true);
-                else if (leftSide)
-                    node.SetColorOneSided(_main.GetColormapColor(currentValue), true, true);
-                else if (rightSide)
-                    node.SetColorOneSided(_main.GetColormapColor(currentValue), false, true);
-            }
-            else
-                RendererManager.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
-        }
+        //    if (node != null)
+        //    {
+        //        if (leftSide && rightSide)
+        //            node.SetColor(_main.GetColormapColor(currentValue), true);
+        //        else if (leftSide)
+        //            node.SetColorOneSided(_main.GetColormapColor(currentValue), true, true);
+        //        else if (rightSide)
+        //            node.SetColorOneSided(_main.GetColormapColor(currentValue), false, true);
+        //    }
+        //    else
+        //        RendererManager.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+        //}
     }
 
     /// <summary>

@@ -266,6 +266,19 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
+    "vbl.brainatlas": {
+      "version": "https://github.com/VirtualBrainLab/BrainAtlas.git?path=/Packages/vbl.brainatlas",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "3da6b995c54040e0fd2438226aef6dff6c3c2e49"
+    },
+    "vbl.urchin": {
+      "version": "file:vbl.urchin",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,

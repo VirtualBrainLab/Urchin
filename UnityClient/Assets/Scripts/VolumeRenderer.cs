@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -98,17 +99,18 @@ public class VolumeRenderer : MonoBehaviour
     {
         if (visible)
         {
-            Task<Texture3D> volumeTexTask = AddressablesRemoteLoader.LoadAnnotationTexture();
-            await volumeTexTask;
+            throw new NotImplementedException();
+            //Task<Texture3D> volumeTexTask = AddressablesRemoteLoader.LoadAnnotationTexture();
+            //await volumeTexTask;
 
-            volumeTexture = volumeTexTask.Result;
-            GetComponent<Renderer>().material.mainTexture = volumeTexture;
-            volumeTexture.Apply();
+            //volumeTexture = volumeTexTask.Result;
+            //GetComponent<Renderer>().material.mainTexture = volumeTexture;
+            //volumeTexture.Apply();
 
-            GetComponent<Renderer>().enabled = true;
+            //GetComponent<Renderer>().enabled = true;
 
-            // Force the camera to perspective
-            cameraControl.SwitchCameraMode(false);
+            //// Force the camera to perspective
+            //cameraControl.SwitchCameraMode(false);
         }
         else
             GetComponent<Renderer>().enabled = false;

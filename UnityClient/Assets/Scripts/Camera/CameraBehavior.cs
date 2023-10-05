@@ -17,7 +17,6 @@ public class CameraBehavior : MonoBehaviour
     public string Name;
 
     public AreaManager AreaManager;
-    public CCFModelControl ModelControl;
     private RenderTexture _renderTexture;
    
 
@@ -185,19 +184,20 @@ public class CameraBehavior : MonoBehaviour
 
     public void SetCameraTargetArea(string obj)
     {
-        (int ID, bool full, bool leftSide, bool rightSide) = AreaManager.GetID(obj);
-        CCFTreeNode node = ModelControl.tree.findNode(ID);
-        if (node != null)
-        {
-            Vector3 center;
-            if (full)
-                center = node.GetMeshCenterFull();
-            else
-                center = node.GetMeshCenterSided(leftSide);
-            _cameraControl.SetCameraTarget(center);
-        }
-        else
-            RendererManager.Log("Failed to find node to set camera target: " + obj);
+        throw new NotImplementedException();
+        //(int ID, bool full, bool leftSide, bool rightSide) = AreaManager.GetID(obj);
+        //CCFTreeNode node = ModelControl.tree.findNode(ID);
+        //if (node != null)
+        //{
+        //    Vector3 center;
+        //    if (full)
+        //        center = node.GetMeshCenterFull();
+        //    else
+        //        center = node.GetMeshCenterSided(leftSide);
+        //    _cameraControl.SetCameraTarget(center);
+        //}
+        //else
+        //    RendererManager.Log("Failed to find node to set camera target: " + obj);
     }
 
     public void SetCameraTarget(List<float> mlapdv)
