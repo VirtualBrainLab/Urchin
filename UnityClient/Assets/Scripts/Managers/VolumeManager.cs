@@ -5,7 +5,7 @@ using UnityEngine;
 public class VolumeManager : MonoBehaviour
 {
     #region Serialized
-    [SerializeField] private UM_VolumeRenderer volRenderer;
+    [SerializeField] private VolumeRenderer volRenderer;
     #endregion
 
     #region Public functions

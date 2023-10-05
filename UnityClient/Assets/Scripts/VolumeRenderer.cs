@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 
-public class UM_VolumeRenderer : MonoBehaviour
+public class VolumeRenderer : MonoBehaviour
 {
     [SerializeField] GameObject volumeLoadingUIGO;
     [SerializeField] TMP_Text volumeLoadingUIText;
