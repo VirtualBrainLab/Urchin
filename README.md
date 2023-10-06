@@ -49,6 +49,10 @@ urchin.ccf.set_alpha({"grey":0.25})
 
 For detailed instructions please see the [documentation](https://virtualbrainlab.org/urchin/installation_and_use.html).
 
+# Urchin for Unity
+
+The Urchin package can be embedded into a Unity application by adding the package: https://github.com/VirtualBrainLab/Urchin.git?path=/UnityClient/Packages/vbl.urchin
+
 # Citing
 
 [![DOI](https://zenodo.org/badge/460577328.svg)](https://zenodo.org/badge/latestdoi/460577328)
