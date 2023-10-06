@@ -1,0 +1,20 @@
+{
+    "name": "urchin.managers",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:cf8306b60e03aa941a4a6fdc9f0cd819",
+        "GUID:20582ac19d7f4684f93b0c5ef62b2bcd",
+        "GUID:0e68f56b71507ea46a7a7e86308f8eef",
+        "GUID:1487851fb22c2cc4a85babd43c153c20"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
