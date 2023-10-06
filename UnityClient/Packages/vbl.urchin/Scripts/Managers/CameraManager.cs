@@ -19,7 +19,7 @@ namespace Urchin.Managers
         [SerializeField] private RenderTexture _renderTexture4;
         [SerializeField] private CameraBehavior mainCamera;
         [SerializeField] private LightBehavior _lightBehavior;
-        [SerializeField] private AreaManager _areaManager;
+        [SerializeField] private AtlasManager _areaManager;
         [SerializeField] private Canvas _uiCanvas;
 
         [SerializeField] private List<GameObject> _cameraUIGOs;

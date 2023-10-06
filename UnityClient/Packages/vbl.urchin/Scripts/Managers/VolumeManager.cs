@@ -53,7 +53,7 @@ namespace Urchin.Managers
         public void SetSlice(List<float> obj)
         {
             throw new NotImplementedException();
-            //RendererManager.Log("Not implemented");
+            //Debug.Log("Not implemented");
         }
 
         public void Clear()

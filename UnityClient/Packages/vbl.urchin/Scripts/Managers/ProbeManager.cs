@@ -89,7 +89,7 @@ namespace Urchin.Managers
                     }
                 }
                 //else
-                    //RendererManager.Log("Probe " + kvp.Key + " not found");
+                    //Debug.Log("Probe " + kvp.Key + " not found");
             }
         }
 
@@ -104,7 +104,7 @@ namespace Urchin.Managers
                     SetProbePositionAndAngles(kvp.Key);
                 }
                 //else
-                    //RendererManager.Log("Probe " + kvp.Key + " not found");
+                    //Debug.Log("Probe " + kvp.Key + " not found");
             }
         }
 
@@ -119,7 +119,7 @@ namespace Urchin.Managers
                     SetProbePositionAndAngles(kvp.Key);
                 }
                 //else
-                //    RendererManager.Log("Probe " + kvp.Key + " not found");
+                //    Debug.Log("Probe " + kvp.Key + " not found");
             }
         }
 
@@ -149,7 +149,7 @@ namespace Urchin.Managers
                     _probes[kvp.Key].transform.GetChild(0).localPosition = new Vector3(0f, kvp.Value[1] / 2, 0f);
                 }
                 //else
-                //    RendererManager.Log("Probe " + kvp.Key + " not found");
+                //    Debug.Log("Probe " + kvp.Key + " not found");
             }
         }
 

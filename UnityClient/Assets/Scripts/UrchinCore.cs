@@ -1,3 +1,4 @@
+using BrainAtlas;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using TMPro;
 using UnityEngine;
 using Urchin.Behaviors;
 using Urchin.Cameras;
+using Urchin.Managers;
 
 public class UrchinCore : MonoBehaviour
 {
@@ -17,6 +19,8 @@ public class UrchinCore : MonoBehaviour
     [SerializeField] private CameraBehavior _mainCameraBehavior;
     [SerializeField] private Canvas _uiCanvas;
     [SerializeField] private ColormapPanel _colormapPanel;
+
+    [SerializeField] private AtlasManager _atlasManager;
 
     [SerializeField] private GameObject settingsPanel;
     [SerializeField] private Transform brainControlsT;
@@ -62,8 +66,8 @@ public class UrchinCore : MonoBehaviour
 
     private int[] cosmos = { 315, 698, 1089, 703, 623, 549, 1097, 313, 1065, 512 };
     private Dictionary<int, Vector3> cosmosMeshCenters;
-    private Dictionary<int, Vector3> originalTransformPositionsLeft;
-    private Dictionary<int, Vector3> originalTransformPositionsRight;
+    private Dictionary<OntologyNode, Vector3> originalTransformPositionsLeft;
+    private Dictionary<OntologyNode, Vector3> originalTransformPositionsRight;
     private Dictionary<int, Vector3> cosmosVectors;
     
     // COSMOS
@@ -86,21 +90,22 @@ public class UrchinCore : MonoBehaviour
         colormaps.Add(GreyRainbow);
         activeColormap = Cool;
 
-        originalTransformPositionsLeft = new Dictionary<int, Vector3>();
-        originalTransformPositionsRight = new Dictionary<int, Vector3>();
+        originalTransformPositionsLeft = new();
+        originalTransformPositionsRight = new();
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        throw new NotImplementedException();
+        //todo
+        //throw new NotImplementedException();
         //modelControl.SetBeryl(true);
         //modelControl.LateStart(loadDefaults);
 
-        if (loadDefaults)
-            DelayedStart();
+        //if (loadDefaults)
+        //    DelayedStart();
 
-        RecomputeCosmosCenters();
+        //RecomputeCosmosCenters();
     }
 
     private async void DelayedStart()
@@ -202,17 +207,15 @@ public class UrchinCore : MonoBehaviour
         }
     }
 
-    public void RegisterNode()
-    //public void RegisterNode(CCFTreeNode node)
+    public void RegisterNode(OntologyNode node)
     {
-        throw new NotImplementedException();
-        //if (node != null && node.NodeModelLeftGO != null)
-        //{
-        //    if (!originalTransformPositionsLeft.ContainsKey(node.ID))
-        //        originalTransformPositionsLeft.Add(node.ID, node.NodeModelLeftGO.transform.localPosition);
-        //    if (!originalTransformPositionsRight.ContainsKey(node.ID))
-        //        originalTransformPositionsRight.Add(node.ID, node.NodeModelRightGO.transform.localPosition);
-        //}
+        if (node != null && node.SideLoaded.IsCompleted)
+        {
+            if (!originalTransformPositionsLeft.ContainsKey(node))
+                originalTransformPositionsLeft.Add(node, node.LeftGO.transform.localPosition);
+            if (!originalTransformPositionsRight.ContainsKey(node))
+                originalTransformPositionsRight.Add(node, node.RightGO.transform.localPosition);
+        }
     }
 
     public Color GetColormapColor(float perc)
@@ -325,11 +328,11 @@ public class UrchinCore : MonoBehaviour
 
     private void UpdateExploded()
     {
-        throw new NotImplementedException();
-        //cameraController.SetControlBlock(true);
+        cameraController.SetControlBlock(true);
 
+        throw new NotImplementedException();
         //Vector3 flipVector = new Vector3(1f, 1f, -1f);
-        //foreach (CCFTreeNode node in AreaManager.VisibleNodes)
+        //foreach (OntologyNode node in AtlasManager.VisibleNodes)
         //{
         //    int cosmos = modelControl.GetCosmosID(node.ID);
         //    Transform nodeTLeft = node.NodeModelLeftGO.transform;

@@ -25,7 +25,7 @@ namespace Urchin.API
         [SerializeField] private LineRendererManager _lineRendererManager;
         [SerializeField] private PrimitiveMeshManager _primitiveMeshManager;
         [SerializeField] private ProbeManager _probeManager;
-        [SerializeField] private AreaManager _areaManager;
+        [SerializeField] private AtlasManager _areaManager;
         [SerializeField] private TextManager _textManager;
         [SerializeField] private VolumeManager _volumeManager;
         [SerializeField] private CameraManager _cameraManager;
@@ -71,6 +71,7 @@ namespace Urchin.API
 #endif
 
             // CCF Areas
+            manager.Socket.On<string>("LoadAtlas", _areaManager.LoadAtlas);
             manager.Socket.On<Dictionary<string, bool>>("SetAreaVisibility", _areaManager.SetAreaVisibility);
             manager.Socket.On<Dictionary<string, string>>("SetAreaColors", _areaManager.SetAreaColor);
             manager.Socket.On<Dictionary<string, float>>("SetAreaIntensity", _areaManager.SetAreaColorIntensity);

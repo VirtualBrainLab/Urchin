@@ -203,7 +203,7 @@ namespace Urchin.Behaviors
             //    _cameraControl.SetCameraTarget(center);
             //}
             //else
-            //    RendererManager.Log("Failed to find node to set camera target: " + obj);
+            //    Debug.Log("Failed to find node to set camera target: " + obj);
         }
 
         public void SetCameraTarget(List<float> mlapdv)

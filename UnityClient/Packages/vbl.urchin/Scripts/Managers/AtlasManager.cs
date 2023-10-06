@@ -1,39 +1,39 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
 using BrainAtlas;
-using BrainAtlas.CoordinateSystems;
+using UnityEngine.Events;
 
 namespace Urchin.Managers
 {
-    public class AreaManager : MonoBehaviour
+    public class AtlasManager : MonoBehaviour
     {
         #region Serialized fields
         #endregion
 
         #region static
-        //public static HashSet<CCFTreeNode> VisibleNodes { get; private set; }
-        public static AreaManager Instance;
+        public static HashSet<OntologyNode> VisibleNodes { get; private set; }
+        public static AtlasManager Instance;
         #endregion
-
-        private Dictionary<int, Task> _nodeTasks;
-        private Dictionary<int, (bool, bool)> _areaSides;
-        private int[] _missing = { 738, 995 };
 
         #region Data
         private Dictionary<int, List<float>> _areaData;
         private int _areaDataIndex;
+
+        private Dictionary<int, (bool, bool)> _areaSides;
+        //private int[] _missing = { 738, 995 };
+        #endregion
+
+        #region Events
+        public UnityEvent<OntologyNode> NodeVisibleEvent;
         #endregion
 
         #region Unity
         private void Awake()
         {
-            _nodeTasks = new Dictionary<int, Task>();
             _areaSides = new();
             _areaData = new();
-            //VisibleNodes = new();
+            VisibleNodes = new();
 
             if (Instance != null)
                 throw new Exception("Only one AreaManager can exist in the scene!");
@@ -43,138 +43,147 @@ namespace Urchin.Managers
 
         #region Public
 
+        public void LoadAtlas(string atlasName)
+        {
+            switch (atlasName)
+            {
+                case "ccf25":
+                    BrainAtlasManager.LoadAtlas(BrainAtlasManager.AtlasNames[0]);
+                    break;
+                case "waxholm39":
+                    BrainAtlasManager.LoadAtlas(BrainAtlasManager.AtlasNames[1]);
+                    break;
+            }
+        }
+
         public void SetAreaVisibility(Dictionary<string, bool> areaVisibility)
         {
-            throw new NotImplementedException();
-            //        foreach (KeyValuePair<string, bool> kvp in areaVisibility)
-            //        {
-            //            (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
-            //            CCFTreeNode node = _modelControl.tree.findNode(ID);
+            foreach (KeyValuePair<string, bool> kvp in areaVisibility)
+            {
+                (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
+                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(ID);
 
-            //            if (node == null)
-            //                return;
+                if (node == null)
+                    return;
 
-            //            if (_missing.Contains(node.ID))
-            //            {
-            //                Client.LogWarning("The mesh file for area " + node.ID + " does not exist, we can't load it");
-            //                continue;
-            //            }
-            //            if (_nodeTasks.ContainsKey(node.ID))
-            //            {
-            //                RendererManager.Log("Node " + node.ID + " is already being loaded, did you send duplicate instructions?");
-            //                continue;
-            //            }
+                //if (_missing.Contains(node.ID))
+                //{
+                //    Client.LogWarning("The mesh file for area " + node.ID + " does not exist, we can't load it");
+                //    continue;
+                //}
 
-            //            bool set = false;
+                bool set = false;
 
-            //            if (full && node.IsLoaded(true))
-            //            {
-            //                node.SetNodeModelVisibility_Full(kvp.Value);
-            //                _main.RegisterNode(node);
-            //                VisibleNodes.Add(node);
-            //                set = true;
-            //#if UNITY_EDITOR
-            //                Debug.Log("Setting full model visibility to true");
-            //#endif
-            //            }
-            //            if (leftSide && node.IsLoaded(false))
-            //            {
-            //                node.SetNodeModelVisibility_Left(kvp.Value);
-            //                _main.RegisterNode(node);
-            //                VisibleNodes.Add(node);
-            //                set = true;
-            //#if UNITY_EDITOR
-            //                Debug.Log("Setting left model visibility to true");
-            //#endif
-            //            }
-            //            if (rightSide && node.IsLoaded(false))
-            //            {
-            //                node.SetNodeModelVisibility_Right(kvp.Value);
-            //                _main.RegisterNode(node);
-            //                VisibleNodes.Add(node);
-            //                set = true;
-            //#if UNITY_EDITOR
-            //                Debug.Log("Setting right model visibility to true");
-            //#endif
-            //            }
+                if (full && node.FullLoaded.IsCompleted)
+                {
+                    node.SetVisibility(kvp.Value, OntologyNode.OntologyNodeSide.Full);
+                    VisibleNodes.Add(node);
+                    set = true;
+#if UNITY_EDITOR
+                    Debug.Log("Setting full model visibility to true");
+#endif
+                }
+                if (leftSide && node.SideLoaded.IsCompleted)
+                {
+                    node.SetVisibility(kvp.Value, OntologyNode.OntologyNodeSide.Left);
+                    VisibleNodes.Add(node);
+                    set = true;
+#if UNITY_EDITOR
+                    Debug.Log("Setting left model visibility to true");
+#endif
+                }
+                if (rightSide && node.SideLoaded.IsCompleted)
+                {
+                    node.SetVisibility(kvp.Value, OntologyNode.OntologyNodeSide.Right);
+                    VisibleNodes.Add(node);
+                    set = true;
+#if UNITY_EDITOR
+                    Debug.Log("Setting right model visibility to true");
+#endif
+                }
 
-            //            if (!set)
-            //                LoadIndividualArea(ID, full, leftSide, rightSide, kvp.Value);
-            //        }
+                if (set)
+                    NodeVisibleEvent.Invoke(node);
+                else
+                    LoadIndividualArea(node, full, leftSide, rightSide, kvp.Value);
+            }
         }
 
         public async void SetAreaColor(Dictionary<string, string> areaColor)
         {
-            throw new NotImplementedException();
-            //foreach (KeyValuePair<string, string> kvp in areaColor)
-            //{
-            //    (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
-            //    CCFTreeNode node = _modelControl.tree.findNode(ID);
+            foreach (KeyValuePair<string, string> kvp in areaColor)
+            {
+                (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
+                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(ID);
 
-            //    Color newColor;
-            //    if (node != null && ColorUtility.TryParseHtmlString(kvp.Value, out newColor))
-            //    {
-            //        if (WaitingOnTask(node.ID))
-            //            await _nodeTasks[node.ID];
+                Color newColor;
+                if (node != null && ColorUtility.TryParseHtmlString(kvp.Value, out newColor))
+                {
 
-            //        if (full)
-            //        {
-            //            if (!_main.colorLeftOnly)
-            //                node.SetColor(newColor, true);
-            //            else
-            //                node.SetColorOneSided(newColor, true, true);
-            //        }
-            //        else if (leftSide)
-            //            node.SetColorOneSided(newColor, true, true);
-            //        else if (rightSide && !_main.colorLeftOnly)
-            //            node.SetColorOneSided(newColor, false, true);
-            //    }
-            //    else
-            //        RendererManager.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
-            //}
+                    if (full)
+                    {
+                        await node.FullLoaded;
+                        node.SetColor(newColor, OntologyNode.OntologyNodeSide.Full);
+                    }
+                    else
+                    {
+                        await node.SideLoaded;
+                        if (leftSide)
+                            node.SetColor(newColor, OntologyNode.OntologyNodeSide.Left);
+                        if (rightSide)
+                            node.SetColor(newColor, OntologyNode.OntologyNodeSide.Right);
+                    }
+                }
+                else
+                    Debug.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+            }
         }
 
         public async void SetAreaMaterial(Dictionary<string, string> areaMaterial)
         {
-            throw new NotImplementedException();
-            //foreach (KeyValuePair<string, string> kvp in areaMaterial)
-            //{
-            //    (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
-            //    if (WaitingOnTask(ID))
-            //        await _nodeTasks[ID];
+            foreach (KeyValuePair<string, string> kvp in areaMaterial)
+            {
+                (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
 
-            //    if (full)
-            //        _modelControl.ChangeMaterial(ID, kvp.Value);
-            //    else if (leftSide)
-            //        _modelControl.ChangeMaterialOneSided(ID, kvp.Value, true);
-            //    else if (rightSide)
-            //        _modelControl.ChangeMaterialOneSided(ID, kvp.Value, false);
-            //}
+                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(ID);
+                if (full)
+                {
+                    await node.FullLoaded;
+                    node.SetMaterial(BrainAtlasManager.BrainRegionMaterials[kvp.Value], OntologyNode.OntologyNodeSide.Full);
+                }
+                else
+                {
+                    await node.SideLoaded;
+                    if (leftSide)
+                        node.SetMaterial(BrainAtlasManager.BrainRegionMaterials[kvp.Value], OntologyNode.OntologyNodeSide.Left);
+                    if (rightSide)
+                        node.SetMaterial(BrainAtlasManager.BrainRegionMaterials[kvp.Value], OntologyNode.OntologyNodeSide.Right);
+                }
+            }
         }
 
         public async void SetAreaAlpha(Dictionary<string, float> areaAlpha)
         {
-            throw new NotImplementedException();
-            //foreach (KeyValuePair<string, float> kvp in areaAlpha)
-            //{
-            //    (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
-            //    CCFTreeNode node = _modelControl.tree.findNode(ID);
+            foreach (KeyValuePair<string, float> kvp in areaAlpha)
+            {
+                (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
 
-            //    if (node != null)
-            //    {
-            //        if (WaitingOnTask(node.ID))
-            //            await _nodeTasks[node.ID];
+                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(ID);
+                if (full)
+                {
+                    await node.FullLoaded;
+                    node.SetShaderProperty("_Alpha", kvp.Value, OntologyNode.OntologyNodeSide.Full);
+                }
+                else
+                {
+                    await node.SideLoaded;
+                    if (leftSide)
+                        node.SetShaderProperty("_Alpha", kvp.Value, OntologyNode.OntologyNodeSide.Left);
+                    if (rightSide)
+                        node.SetShaderProperty("_Alpha", kvp.Value, OntologyNode.OntologyNodeSide.Right);
+                }
 
-            //        if (full)
-            //            node.SetShaderProperty("_Alpha", kvp.Value);
-            //        else if (leftSide)
-            //            node.SetShaderPropertyOneSided("_Alpha", kvp.Value, true);
-            //        else if (rightSide)
-            //            node.SetShaderPropertyOneSided("_Alpha", kvp.Value, false);
-            //    }
-            //    else
-            //        RendererManager.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
-            //}
+            }
         }
 
         // Area colormaps
@@ -239,7 +248,7 @@ namespace Urchin.Managers
             //            node.SetColorOneSided(_main.GetColormapColor(kvp.Value), false, true);
             //    }
             //    else
-            //        RendererManager.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+            //        Debug.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
             //}
         }
 
@@ -254,7 +263,7 @@ namespace Urchin.Managers
             //    nodeTask = _modelControl.LoadBerylNodes(false);
             //else
             //{
-            //    RendererManager.Log("Failed to load nodes: " + defaultName);
+            //    Debug.Log("Failed to load nodes: " + defaultName);
             //    Client.LogError("Node group " + defaultName + " does not exist.");
             //    return;
             //}
@@ -275,16 +284,10 @@ namespace Urchin.Managers
         #region Public helpers
         public void ClearAreas()
         {
-            throw new NotImplementedException();
-            //Debug.Log("(Client) Clearing areas");
-            //foreach (CCFTreeNode node in VisibleNodes)
-            //{
-            //    Debug.Log("Clearing: " + node.Name);
-            //    node.SetNodeModelVisibility_Full(false);
-            //    node.SetNodeModelVisibility_Left(false);
-            //    node.SetNodeModelVisibility_Right(false);
-            //}
-            //VisibleNodes = new();
+            Debug.Log("(Client) Clearing areas");
+            foreach (OntologyNode node in VisibleNodes)
+                node.SetVisibility(false, OntologyNode.OntologyNodeSide.All);
+            VisibleNodes.Clear();
         }
 
         /// <summary>
@@ -311,20 +314,23 @@ namespace Urchin.Managers
             string lower = idOrAcronym.ToLower();
 
             // Check for root (special case, which we can't currently handle)
-            if (lower.Equals("root") || lower.Equals("void"))
+            if (lower.Equals("void"))
                 return (-1, full, leftSide, rightSide);
 
-            throw new NotImplementedException();
-            //// Figure out what the acronym was by asking CCFModelControl
-            //if (_modelControl.IsAcronym(idOrAcronym))
-            //    return (_modelControl.Acronym2ID(idOrAcronym), full, leftSide, rightSide);
-            //else
-            //{
-            //    // It wasn't an acronym, so it has to be an integer
-            //    int ret;
-            //    if (int.TryParse(idOrAcronym, out ret))
-            //        return (ret, full, leftSide, rightSide);
-            //}
+            // Figure out what the acronym was by asking CCFModelControl
+            Debug.Log(idOrAcronym);
+            try
+            {
+                int ID = BrainAtlasManager.ActiveReferenceAtlas.Ontology.Acronym2ID(idOrAcronym);
+                return (ID, full, leftSide, rightSide);
+            }
+            catch
+            {
+                // It wasn't an acronym, so it has to be an integer
+                int ret;
+                if (int.TryParse(idOrAcronym, out ret))
+                    return (ret, full, leftSide, rightSide);
+            }
 
             // We failed to figure out what this was
             return (-1, full, leftSide, rightSide);
@@ -334,28 +340,25 @@ namespace Urchin.Managers
 
         #region Private helpers
 
-        private async void LoadIndividualArea(int ID, bool full, bool leftSide, bool rightSide, bool visibility)
+        private async void LoadIndividualArea(OntologyNode node, bool full, bool leftSide, bool rightSide, bool visibility)
         {
-            throw new NotImplementedException();
-            //#if UNITY_EDITOR
-            //        Debug.Log("Loading model");
-            //#endif
-            //        CCFTreeNode node = _modelControl.tree.findNode(ID);
-            //        VisibleNodes.Add(node);
+#if UNITY_EDITOR
+            Debug.Log("Loading model");
+#endif
+            VisibleNodes.Add(node);
 
-            //        Debug.Log((full, leftSide, rightSide));
-            //        node.LoadNodeModel(full, leftSide || rightSide);
+            await node.LoadMesh(OntologyNode.OntologyNodeSide.All);
 
-            //        await node.GetLoadedTask(full);
+            if (full)
+                node.SetVisibility(visibility, OntologyNode.OntologyNodeSide.Full);
 
-            //        _main.RegisterNode(node);
+            await node.SideLoaded;
+            if (leftSide)
+                node.SetVisibility(visibility, OntologyNode.OntologyNodeSide.Left);
+            if (rightSide)
+                node.SetVisibility(visibility, OntologyNode.OntologyNodeSide.Right);
 
-            //        if (full)
-            //            node.SetNodeModelVisibility_Full(visibility);
-            //        if (leftSide)
-            //            node.SetNodeModelVisibility_Left(visibility);
-            //        if (rightSide)
-            //            node.SetNodeModelVisibility_Right(visibility);
+            NodeVisibleEvent.Invoke(node);
         }
 
         private async void UpdateAreaDataIntensity()
@@ -383,27 +386,8 @@ namespace Urchin.Managers
             //            node.SetColorOneSided(_main.GetColormapColor(currentValue), false, true);
             //    }
             //    else
-            //        RendererManager.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+            //        Debug.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
             //}
-        }
-
-        /// <summary>
-        /// Check whether a brain area is still actively being loaded
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        private bool WaitingOnTask(int id)
-        {
-            if (_nodeTasks.ContainsKey(id))
-            {
-                if (_nodeTasks[id].IsCompleted || _nodeTasks[id].IsFaulted || _nodeTasks[id].IsCanceled)
-                {
-                    _nodeTasks.Remove(id);
-                    return false;
-                }
-                return true;
-            }
-            return false;
         }
 
         #endregion

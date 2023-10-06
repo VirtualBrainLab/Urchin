@@ -1,25 +1,25 @@
-""" Allen CCF 3D Models"""
+""" Waxholm Rat 3D Models"""
 
 from .. import client
 
 def load():
-	client.sio.emit('LoadAtlas', 'ccf25')
+	client.sio.emit('LoadAtlas', 'waxholm39')
 
-def load_beryl():
-	"""Load all beryl areas and set visibility to True
+# def load_beryl():
+# 	"""Load all beryl areas and set visibility to True
 
-	NOTE: One of the load functions OR set_area_visibility must be called
-	before you set the color/alpha/etc of brain regions.
-	"""
-	client.sio.emit('LoadDefaultAreas', 'beryl')
+# 	NOTE: One of the load functions OR set_area_visibility must be called
+# 	before you set the color/alpha/etc of brain regions.
+# 	"""
+# 	client.sio.emit('LoadDefaultAreas', 'beryl')
 
-def load_cosmos():
-	"""Load all cosmos areas and set visibility to True
+# def load_cosmos():
+# 	"""Load all cosmos areas and set visibility to True
 
-	NOTE: One of the load functions OR set_area_visibility must be called
-	before you set the color/alpha/etc of brain regions.
-	"""
-	client.sio.emit('LoadDefaultAreas', 'cosmos')
+# 	NOTE: One of the load functions OR set_area_visibility must be called
+# 	before you set the color/alpha/etc of brain regions.
+# 	"""
+# 	client.sio.emit('LoadDefaultAreas', 'cosmos')
 
 def set_visibility(area_visibilities):
 	"""Set visibility of CCF area models
