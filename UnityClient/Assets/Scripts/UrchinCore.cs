@@ -49,20 +49,6 @@ public class UrchinCore : MonoBehaviour
     // Neuron materials
     [SerializeField] private Dictionary<string, Material> neuronMaterials;
 
-    // Colormaps
-    private List<Converter<float, Color>> colormaps;
-    private List<string> colormapOptions = new List<string>{"cool","gray","grey-green","grey-purple","grey-red","grey-rainbow"};
-    private Converter<float, Color> activeColormap;
-
-    // Starting colors
-    private Vector3 teal = new Vector3(0f, 1f, 1f);
-    private Vector3 magenta = new Vector3(1f, 0f, 1f);
-    private Vector3 lightgreen = new Vector3(14f / 255f, 1f, 0f);
-    private Vector3 darkgreen = new Vector3(6f / 255f, 59 / 255f, 0f);
-    private Vector3 lightpurple = new Vector3(202f / 255f, 105f / 255f, 227f / 255f);
-    private Vector3 darkpurple = new Vector3(141f / 255f, 10f / 255f, 157f / 255f);
-    private Vector3 lightred = new Vector3(1f, 165f / 255f, 0f);
-    private Vector3 darkred = new Vector3(1f, 0f, 0f);
 
     private int[] cosmos = { 315, 698, 1089, 703, 623, 549, 1097, 313, 1065, 512 };
     private Dictionary<int, Vector3> cosmosMeshCenters;
@@ -81,14 +67,6 @@ public class UrchinCore : MonoBehaviour
         else
             throw new Exception("There should only be on UM_Launch component in the scene");
 
-        colormaps = new List<Converter<float, Color>>();
-        colormaps.Add(Cool);
-        colormaps.Add(Grey);
-        colormaps.Add(GreyGreen);
-        colormaps.Add(GreyPurple);
-        colormaps.Add(GreyRed);
-        colormaps.Add(GreyRainbow);
-        activeColormap = Cool;
 
         originalTransformPositionsLeft = new();
         originalTransformPositionsRight = new();
@@ -218,83 +196,6 @@ public class UrchinCore : MonoBehaviour
         }
     }
 
-    public Color GetColormapColor(float perc)
-    {
-        return activeColormap(perc);
-    }
-
-    public void ChangeColormap(string newColormap)
-    {
-        if (colormapOptions.Contains(newColormap))
-            activeColormap = colormaps[colormapOptions.IndexOf(newColormap)];
-        else
-            Log("Colormap " + newColormap + " not an available option");
-
-        _colormapPanel.SetColormap(activeColormap);
-        _colormapPanel.SetColormapVisibility(true);
-    }
-
-    // [TODO] Refactor colormaps into their own class
-    public Color Cool(float perc)
-    {
-        perc = CheckColormapRange(perc);
-        Vector3 colorVector = Vector3.Lerp(teal, magenta, perc);
-        return new Color(colorVector.x, colorVector.y, colorVector.z, 1f);
-    }
-
-    public Color Grey(float perc)
-    {
-        perc = CheckColormapRange(perc);
-        Vector3 colorVector = Vector3.Lerp(Vector3.zero, Vector3.one, perc);
-        return new Color(colorVector.x, colorVector.y, colorVector.z, 1f);
-    }
-
-    public Color GreyGreen(float perc)
-    {
-        perc = CheckColormapRange(perc);
-        return GreyGradient(perc, lightgreen, darkgreen);
-    }
-    public Color GreyPurple(float perc)
-    {
-        perc = CheckColormapRange(perc);
-        return GreyGradient(perc, lightpurple, darkpurple);
-    }
-
-    public Color GreyRed(float perc)
-    {
-        perc = CheckColormapRange(perc);
-        return GreyGradient(perc, lightred, darkred);
-    }
-
-    public Color GreyRainbow(float perc)
-    {
-        if (perc == 0)
-            return Color.grey;
-        else
-        {
-            // Interpolate rainbow map
-            float red = Mathf.Abs(2f * perc - 0.5f);
-            float green = Mathf.Sin(perc * Mathf.PI);
-            float blue = Mathf.Cos(perc * Mathf.PI / 2);
-            return new Color(red, green, blue);
-        }
-    }
-
-    public float CheckColormapRange(float perc)
-    {
-        return Mathf.Clamp(perc, 0, 1);
-    }
-
-    public Color GreyGradient(float perc, Vector3 lightcolor, Vector3 darkcolor)
-    {
-        if (perc == 0)
-            return Color.grey;
-        else
-        {
-            Vector3 colorVector = Vector3.Lerp(lightcolor, darkcolor, perc);
-            return new Color(colorVector.x, colorVector.y, colorVector.z, 1f);
-        }
-    }
 
     public static void Log(string text)
     {

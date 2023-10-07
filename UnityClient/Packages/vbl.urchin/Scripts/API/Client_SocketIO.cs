@@ -13,14 +13,6 @@ namespace Urchin.API
     {
         [SerializeField] private bool localhost;
 
-        // NEURONS
-        [SerializeField] private GameObject neuronPrefab;
-        [SerializeField] private List<Mesh> neuronMeshList;
-        [SerializeField] private List<string> neuronMeshNames;
-        [SerializeField] private Transform neuronParent;
-        private Dictionary<string, GameObject> neurons;
-
-
         #region Managers
         [SerializeField] private LineRendererManager _lineRendererManager;
         [SerializeField] private PrimitiveMeshManager _primitiveMeshManager;
@@ -43,8 +35,6 @@ namespace Urchin.API
         /// </summary>
         private void Awake()
         {
-            neurons = new Dictionary<string, GameObject>();
-
             if (_lineRendererManager == null || _primitiveMeshManager == null || _probeManager == null || _areaManager == null ||
                 _textManager == null || _volumeManager == null || _cameraManager == null)
                 throw new Exception("All managers must be linked in the editor!");
@@ -91,13 +81,13 @@ namespace Urchin.API
             manager.Socket.On<List<string>>("SetVolumeColormap", _volumeManager.SetVolumeColormap);
 
             // Neurons
-            manager.Socket.On<List<string>>("CreateNeurons", CreateNeurons);
-            manager.Socket.On<List<string>>("DeleteNeurons", DeleteNeurons);
-            manager.Socket.On<Dictionary<string, List<float>>>("SetNeuronPos", UpdateNeuronPos);
-            manager.Socket.On<Dictionary<string, float>>("SetNeuronSize", UpdateNeuronScale);
-            manager.Socket.On<Dictionary<string, string>>("SetNeuronShape", UpdateNeuronShape);
-            manager.Socket.On<Dictionary<string, string>>("SetNeuronColor", UpdateNeuronColor);
-            manager.Socket.On<Dictionary<string, string>>("SetNeuronMaterial", UpdateNeuronMaterial);
+            //manager.Socket.On<List<string>>("CreateNeurons", CreateNeurons);
+            //manager.Socket.On<List<string>>("DeleteNeurons", DeleteNeurons);
+            //manager.Socket.On<Dictionary<string, List<float>>>("SetNeuronPos", UpdateNeuronPos);
+            //manager.Socket.On<Dictionary<string, float>>("SetNeuronSize", UpdateNeuronScale);
+            //manager.Socket.On<Dictionary<string, string>>("SetNeuronShape", UpdateNeuronShape);
+            //manager.Socket.On<Dictionary<string, string>>("SetNeuronColor", UpdateNeuronColor);
+            //manager.Socket.On<Dictionary<string, string>>("SetNeuronMaterial", UpdateNeuronMaterial);
 
             // Probes
             manager.Socket.On<List<string>>("CreateProbes", _probeManager.CreateProbes);
@@ -197,14 +187,10 @@ namespace Urchin.API
             switch (val)
             {
                 case "all":
-                    ClearNeurons();
                     _probeManager.ClearProbes();
                     _areaManager.ClearAreas();
                     _volumeManager.Clear();
                     _textManager.Clear();
-                    break;
-                case "neurons":
-                    ClearNeurons();
                     break;
                 case "probes":
                     _probeManager.ClearProbes();
@@ -223,86 +209,7 @@ namespace Urchin.API
                     break;
             }
         }
-
-        private void ClearNeurons()
-        {
-            Debug.Log("(Client) Clearing neurons");
-            foreach (GameObject neuron in neurons.Values)
-                Destroy(neuron);
-            neurons = new Dictionary<string, GameObject>();
-        }
-
         #endregion
-
-
-        // NEURONS
-
-
-        private void UpdateNeuronMaterial(Dictionary<string, string> obj)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void UpdateNeuronScale(Dictionary<string, float> data)
-        {
-            Debug.Log("Updating neuron scale");
-            foreach (KeyValuePair<string, float> kvp in data)
-                neurons[kvp.Key].transform.localScale = Vector3.one * kvp.Value;
-        }
-
-        private void UpdateNeuronShape(Dictionary<string, string> data)
-        {
-            Debug.Log("Updating neuron shapes");
-            foreach (KeyValuePair<string, string> kvp in data)
-            {
-                if (neuronMeshNames.Contains(kvp.Value))
-                    neurons[kvp.Key].GetComponent<MeshFilter>().mesh = neuronMeshList[neuronMeshNames.IndexOf(kvp.Value)];
-                else
-                    Debug.Log("Mesh type: " + kvp.Value + " does not exist");
-            }
-        }
-
-        private void UpdateNeuronColor(Dictionary<string, string> data)
-        {
-            Debug.Log("Updating neuron color");
-            foreach (KeyValuePair<string, string> kvp in data)
-            {
-
-                Color newColor;
-                if (neurons.ContainsKey(kvp.Key) && ColorUtility.TryParseHtmlString(kvp.Value, out newColor))
-                {
-                    neurons[kvp.Key].GetComponent<Renderer>().material.color = newColor;
-                }
-                else
-                    Debug.Log("Failed to set neuron color to: " + kvp.Value);
-            }
-        }
-
-        // Takes coordinates in ML AP DV in um units
-        private void UpdateNeuronPos(Dictionary<string, List<float>> data)
-        {
-            foreach (KeyValuePair<string, List<float>> kvp in data)
-            {
-                neurons[kvp.Key].transform.localPosition = new Vector3(-kvp.Value[0] / 1000f, -kvp.Value[2] / 1000f, kvp.Value[1] / 1000f);
-            }
-        }
-
-        private void CreateNeurons(List<string> data)
-        {
-            foreach (string id in data)
-            {
-                neurons.Add(id, Instantiate(neuronPrefab, neuronParent));
-            }
-        }
-
-        private void DeleteNeurons(List<string> data)
-        {
-            foreach (string id in data)
-            {
-                Destroy(neurons[id]);
-                neurons.Remove(id);
-            }
-        }
 
         ////
         //// SOCKET FUNCTIONS
