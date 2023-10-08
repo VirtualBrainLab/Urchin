@@ -36,14 +36,10 @@ namespace Urchin.Managers
                 if (_primMeshRenderers.ContainsKey(mesh))
                     Debug.LogWarning($"Mesh with id = {mesh} already exists.");
 
-                throw new NotImplementedException();
                 GameObject tempObject = Instantiate(_primitivePrefabGO, _primitiveMeshParentT);
                 tempObject.name = $"primMesh_{mesh}";
                 _primMeshRenderers.Add(mesh, tempObject.GetComponent<MeshRenderer>());
                 tempObject.GetComponent<MeshRenderer>().material = _materialDictionary["default"];
-                //creates new entry to dictionary w name meshes[mesh] and associates it w a new Game Object(cube as of 1 / 25 / 23)
-                //adds mesh renderer componenet to the mesh renderer manager 
-
             }
         }
 

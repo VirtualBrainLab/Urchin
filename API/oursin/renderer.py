@@ -16,7 +16,7 @@ from . import client
 def is_running_in_colab():
 	return notebook and 'google.colab' in str(get_ipython())
 
-def setup(verbose = True, localhost = False, standalone = False):
+def setup(localhost = False, standalone = False, verbose = True):
 	"""Connect the Unity Renderer for Neuroscience Python API to the web-based (or standalone) viewer
 
 	Parameters
@@ -50,8 +50,6 @@ def setup(verbose = True, localhost = False, standalone = False):
 			javascript_code = f'window.open("{url}", "_blank", "{window_features}");'
 			# Display the JavaScript code to open the new window
 			display(Javascript(javascript_code))
-
-			
 
 ######################
 # CLEAR #
