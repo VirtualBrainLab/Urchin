@@ -10381,6 +10381,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -256
       objectReference: {fileID: 0}
+    - target: {fileID: 4953134166764036748, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5873102397275390939, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
       value: 4
@@ -10537,10 +10541,6 @@ PrefabInstance:
       propertyPath: _lightBehavior
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 1366211727439126397, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
-      propertyPath: _primitiveMeshParentT
-      value: 
-      objectReference: {fileID: 7887254271563545728}
     - target: {fileID: 2919354365425105655, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
       propertyPath: m_UseCustomVertexStreams
       value: 1
@@ -10795,11 +10795,6 @@ MonoBehaviour:
 --- !u!4 &7887254271563545727 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3393775226113162769, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
-  m_PrefabInstance: {fileID: 7887254271563545724}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &7887254271563545728 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1366211727439126398, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
   m_PrefabInstance: {fileID: 7887254271563545724}
   m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807

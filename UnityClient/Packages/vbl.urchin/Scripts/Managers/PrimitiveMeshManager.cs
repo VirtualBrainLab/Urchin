@@ -7,11 +7,13 @@ namespace Urchin.Managers
    
     public class PrimitiveMeshManager : MonoBehaviour
     {
-        //Keeping a dictionary mapping names of objects to the game object in schene
-        private Dictionary<string, MeshRenderer> _primMeshRenderers;
         [SerializeField] private List<Material> _materials;
         [SerializeField] private List<string> _materialNames;
         [SerializeField] private Transform _primitiveMeshParentT;
+        [SerializeField] private GameObject _primitivePrefabGO;
+
+        //Keeping a dictionary mapping names of objects to the game object in schene
+        private Dictionary<string, MeshRenderer> _primMeshRenderers;
         private Dictionary<string, Material> _materialDictionary;
 
         private void Awake()
@@ -31,15 +33,15 @@ namespace Urchin.Managers
         {
             foreach (string mesh in meshes)
             {
-                //if (_primMeshRenderers.ContainsKey(mesh))
-                //    Client_SocketIO.LogWarning($"Mesh with id = {mesh} already exists.");
+                if (_primMeshRenderers.ContainsKey(mesh))
+                    Debug.LogWarning($"Mesh with id = {mesh} already exists.");
 
                 throw new NotImplementedException();
-                //GameObject tempObject = Instantiate(_cubePrefab, _primitiveMeshParentT);
-                //tempObject.name = $"primMesh_{mesh}";
-                //_primMeshRenderers.Add(mesh, tempObject.GetComponent<MeshRenderer>());
-                //tempObject.GetComponent<MeshRenderer>().material = _materialDictionary["default"];
-                //creates new entry to dictionary w name meshes[mesh] and associates it w a new Game Object (cube as of 1/25/23)
+                GameObject tempObject = Instantiate(_primitivePrefabGO, _primitiveMeshParentT);
+                tempObject.name = $"primMesh_{mesh}";
+                _primMeshRenderers.Add(mesh, tempObject.GetComponent<MeshRenderer>());
+                tempObject.GetComponent<MeshRenderer>().material = _materialDictionary["default"];
+                //creates new entry to dictionary w name meshes[mesh] and associates it w a new Game Object(cube as of 1 / 25 / 23)
                 //adds mesh renderer componenet to the mesh renderer manager 
 
             }

@@ -4976,6 +4976,7 @@ MonoBehaviour:
   - transparent-lit
   - unlit
   _primitiveMeshParentT: {fileID: 1366211727439126398}
+  _primitivePrefabGO: {fileID: 3780062229249569090, guid: 70ca9229f59b9d34cae96f29e23a3c1b, type: 3}
 --- !u!1 &1398703444632528419
 GameObject:
   m_ObjectHideFlags: 0
