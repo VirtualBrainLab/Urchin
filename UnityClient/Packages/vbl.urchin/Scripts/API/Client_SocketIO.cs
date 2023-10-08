@@ -11,6 +11,7 @@ namespace Urchin.API
  /// </summary>
     public class Client_SocketIO : MonoBehaviour
     {
+        private const string ID_SAVE_KEY = "id";
         [SerializeField] private bool localhost;
 
         #region Managers
@@ -22,6 +23,7 @@ namespace Urchin.API
         [SerializeField] private VolumeManager _volumeManager;
         [SerializeField] private CameraManager _cameraManager;
         [SerializeField] private FOVManager _fovManager;//TODO
+        [SerializeField] private ParticleManager _particleManager;
         #endregion
 
         // NODES
@@ -81,12 +83,12 @@ namespace Urchin.API
             manager.Socket.On<List<string>>("SetVolumeColormap", _volumeManager.SetVolumeColormap);
 
             // Neurons
-            //manager.Socket.On<List<string>>("CreateNeurons", CreateNeurons);
+            manager.Socket.On<List<string>>("CreateNeurons", _particleManager.CreateParticles);
             //manager.Socket.On<List<string>>("DeleteNeurons", DeleteNeurons);
-            //manager.Socket.On<Dictionary<string, List<float>>>("SetNeuronPos", UpdateNeuronPos);
-            //manager.Socket.On<Dictionary<string, float>>("SetNeuronSize", UpdateNeuronScale);
+            manager.Socket.On<Dictionary<string, float[]>>("SetNeuronPos", _particleManager.SetPosition);
+            manager.Socket.On<Dictionary<string, float>>("SetNeuronSize", _particleManager.SetSize);
             //manager.Socket.On<Dictionary<string, string>>("SetNeuronShape", UpdateNeuronShape);
-            //manager.Socket.On<Dictionary<string, string>>("SetNeuronColor", UpdateNeuronColor);
+            manager.Socket.On<Dictionary<string, string>>("SetNeuronColor", _particleManager.SetColor);
             //manager.Socket.On<Dictionary<string, string>>("SetNeuronMaterial", UpdateNeuronMaterial);
 
             // Probes
@@ -191,6 +193,7 @@ namespace Urchin.API
                     _areaManager.ClearAreas();
                     _volumeManager.Clear();
                     _textManager.Clear();
+                    _particleManager.Clear();
                     break;
                 case "probes":
                     _probeManager.ClearProbes();
@@ -206,6 +209,9 @@ namespace Urchin.API
                     break;
                 case "primitives":
                     _primitiveMeshManager.Clear();
+                    break;
+                case "particles":
+                    _particleManager.Clear();
                     break;
             }
         }
@@ -223,7 +229,9 @@ namespace Urchin.API
         public void UpdateID(string newID)
         {
             ID = newID;
+            PlayerPrefs.SetString(ID_SAVE_KEY, ID);
             manager.Socket.Emit("ID", new List<string>() { ID, "receive" });
+            Debug.Log($"ID updated to {ID}");
         }
 
         private void OnDestroy()
@@ -233,6 +241,9 @@ namespace Urchin.API
 
         private void Connected()
         {
+
+            if (PlayerPrefs.HasKey(ID_SAVE_KEY))
+                ID = PlayerPrefs.GetString(ID_SAVE_KEY);
             UpdateID(ID);
         }
 

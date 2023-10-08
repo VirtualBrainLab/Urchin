@@ -6,13 +6,9 @@ namespace Urchin.Cameras
 {
     public class CameraMiniController : MonoBehaviour
     {
-        [SerializeField] BrainCameraController brainCameraController;
-
-        // Update is called once per frame
-        void Update()
+        public void UpdateRotation(Vector3 pitchYawRoll)
         {
-            Vector2 cameraPitchYaw = brainCameraController.GetPitchYaw();
-            transform.localRotation = Quaternion.Euler(cameraPitchYaw.y, cameraPitchYaw.x, 0);
+            transform.localRotation = Quaternion.Euler(new Vector3(-pitchYawRoll.x, -pitchYawRoll.z, pitchYawRoll.y));
         }
     }
 }

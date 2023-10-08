@@ -119,7 +119,7 @@ class Camera:
 		Parameters
 		----------
 		camera_target_coordinate : float list
-		  list of coordinates in ml/ap/dv in um
+		  list of coordinates in ap, ml, dv in um
 
 		Examples
 		--------
@@ -156,14 +156,14 @@ class Camera:
 		client.sio.emit('SetCameraPosition', {self.id: packet})
 
 	def set_rotation(self, rotation):
-		"""Set the camera rotation (pitch, yaw, spin). The camera is locked to a target, so this rotation rotates around the target.
+		"""Set the camera rotation (pitch, yaw, roll). The camera is locked to a target, so this rotation rotates around the target.
 
-		Rotations are applied in order: pitch, then yaw, then spin.
+		Rotations are applied in order: roll, yaw, pitch. This can cause gimbal lock.
 
 		Parameters
 		----------
 		rotation : float list
-			list of euler angles to set the camera rotation in (pitch, yaw, spin)
+			list of euler angles to set the camera rotation in (pitch, yaw, roll)
 
 		Examples
 		--------

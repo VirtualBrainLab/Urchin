@@ -17,8 +17,8 @@ public class SceneInfoManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector3 target = cameraController.GetCameraTarget();
-        Vector3 angles = cameraController.GetAngles();
+        Vector3 target = cameraController.CameraTarget;
+        Vector3 angles = cameraController.PitchYawRoll;
         float zoom = cameraController.GetZoom();
 
         // Note angles y/x flipped so that yaw/pitch/spin is correct

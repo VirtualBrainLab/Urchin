@@ -60,12 +60,12 @@ class Neuron:
 		self.in_unity = False
 
 	def set_position(self, position):
-		"""Set the position of neuron position in ml/ap/dv coordinates relative to the CCF (0,0,0) point
+		"""Set the position of neuron position in ap/ml/dv coordinates relative to the CCF (0,0,0) point
 		
 		Parameters
 		---------- 
 		position : list of three floats
-			vertex positions of the neuron relative to the CCF point
+			vertex positions of the neuron relative to the CCF point in um
 
 		Examples
 		--------

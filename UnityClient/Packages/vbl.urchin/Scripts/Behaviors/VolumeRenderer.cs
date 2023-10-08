@@ -20,8 +20,6 @@ public class VolumeRenderer : MonoBehaviour
 
     private void Awake()
     {
-        volumeTexture = new Texture3D(528, 320, 456, TextureFormat.RGBA32, false);
-        GetComponent<Renderer>().material.mainTexture = volumeTexture;
         volumeData = new Dictionary<string, Color32[]>();
         colormaps = new Dictionary<string, Color32[]>();
 
@@ -36,7 +34,14 @@ public class VolumeRenderer : MonoBehaviour
 
     public void CreateVolume(string name)
     {
+        if (volumeTexture == null)
+        {
+            volumeTexture = new Texture3D(528, 320, 456, TextureFormat.RGBA32, false);
+            GetComponent<Renderer>().material.mainTexture = volumeTexture;
+        }
+
         Debug.Log("(UM_VolRend) Creating new volume: " + name);
+
         // Size is currently hard-coded
         if (volumeData.ContainsKey(name))
             volumeData[name] = new Color32[528 * 320 * 456];

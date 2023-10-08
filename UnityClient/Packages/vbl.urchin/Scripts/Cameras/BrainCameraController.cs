@@ -1,345 +1,270 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-namespace Urchin.Cameras
+public class BrainCameraController : MonoBehaviour
 {
-    public class BrainCameraController : MonoBehaviour
+    #region Exposed fields
+    [SerializeField] private Camera _mainCamera;
+    [SerializeField] private GameObject _mainCameraRotator;
+    [SerializeField] private Transform _mainCameraTargetT;
+    #endregion
+
+    #region Properties
+    public Vector3 CameraTarget { get { return _mainCameraTargetT.localPosition; } }
+
+    public float minFoV = 15.0f;
+    public float maxFoV = 90.0f;
+    public float fovDelta = 15.0f;
+    public float orthoDelta = 5.0f;
+    public float moveSpeed = 10.0f;
+    public float minXRotation = -180f;
+    public float maxXRotation = 180f;
+    public float minZRotation = -180f;
+    public float maxZRotation = 180f;
+    #endregion
+
+    #region Private vars
+    private bool mouseDownOverBrain;
+    private int mouseButtonDown;
+    private bool brainTransformChanged;
+    private float lastLeftClick;
+    private float lastRightClick;
+
+    // auto-rotation
+    private bool autoRotate;
+    private float autoRotateSpeed = 10.0f;
+    #endregion
+
+    #region Events
+    public UnityEvent<Vector3> RotationChangedEvent;
+    #endregion
+
+    // Speed and rotation controls
+
+    #region Rotation
+    public float rotSpeed = 200.0f;
+
+    private Vector3 _pitchYawRoll;
+
+    public Vector3 PitchYawRoll { get { return _pitchYawRoll; } }
+    #endregion
+
+    public static bool BlockBrainControl;
+    public bool UserControllable = true;
+
+    public static float doubleClickTime = 0.2f;
+
+    private void Awake()
     {
-        [SerializeField] private Camera brainCamera;
-        [SerializeField] private GameObject brainCameraRotator;
-        [SerializeField] private GameObject brain;
-
-        private Vector3 initialCameraRotatorPosition;
-        private Vector3 cameraPositionOffset;
-
-        public float minFoV = 15.0f;
-        public float maxFoV = 90.0f;
-        public float fovDelta = 15.0f;
-        public float orthoDelta = 5.0f;
-        public float moveSpeed = 10.0f;
-        public float rotSpeed = 200.0f;
-        [SerializeField] private float shiftMult = 2f;
-        [SerializeField] private float ctrlMult = 0.5f;
-        public float minXRotation = -90;
-        public float maxXRotation = 90;
-        public float minZRotation = -90;
-        public float maxZRotation = 90;
-
-        private bool mouseDownOverBrain;
-        private int mouseButtonDown;
-        private bool brainTransformChanged;
-        private float lastLeftClick;
-        private float lastRightClick;
-
-        private float totalYaw;
-        private float totalPitch;
-        private float totalSpin;
-
-        private bool blockBrainControl;
-
-        public bool UserControllable;
-
-        // auto-rotation
-        private bool autoRotate;
-        private float autoRotateSpeed = 10.0f;
-
-        public static float doubleClickTime = 0.2f;
-        // Targeting
-        private Vector3 cameraTarget;
-
-        private void Awake()
-        {
-            // Artifically limit the framerate
+        // Artifically limit the framerate
 #if !UNITY_WEBGL
-            Application.targetFrameRate = 144;
+        Application.targetFrameRate = 144;
 #endif
 
-            if (brain == null)
-            {
-                brain = GameObject.Find("BrainModel");
-            }
+        autoRotate = false;
 
-            cameraTarget = brain.transform.position;
-            initialCameraRotatorPosition = brainCameraRotator.transform.position;
-            cameraPositionOffset = Vector3.zero;
+        lastLeftClick = Time.realtimeSinceStartup;
+        lastRightClick = Time.realtimeSinceStartup;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (!UserControllable)
+            return;
+
+        // Check the scroll wheel and deal with the field of view
+        if (!EventSystem.current.IsPointerOverGameObject())
+        {
+            float fov = GetZoom();
+
+            float scroll = -Input.GetAxis("Mouse ScrollWheel");
+            fov += (_mainCamera.orthographic ? orthoDelta : fovDelta) * scroll;
+            fov = Mathf.Clamp(fov, minFoV, maxFoV);
+
+            SetZoom(fov);
+        }
+
+        // Now check if the mouse wheel is being held down
+        if (Input.GetMouseButton(1) && !BlockBrainControl && !EventSystem.current.IsPointerOverGameObject())
+        {
+            mouseDownOverBrain = true;
+            mouseButtonDown = 1;
+        }
+
+        bool thisFrameDown = false;
+        // Now deal with dragging
+        if (Input.GetMouseButtonDown(0) && !BlockBrainControl && !EventSystem.current.IsPointerOverGameObject())
+        {
+            //BrainCameraDetectTargets();
+            mouseDownOverBrain = true;
+            mouseButtonDown = 0;
             autoRotate = false;
-        }
-        // Start is called before the first frame update
-        void Start()
-        {
-            lastLeftClick = Time.realtimeSinceStartup;
-            lastRightClick = Time.realtimeSinceStartup;
+            thisFrameDown = true;
         }
 
-        // Update is called once per frame
-        void Update()
+        if (autoRotate)
         {
-            if (!UserControllable)
-            {
-                return;
-            }
-
-            // Check the scroll wheel and deal with the field of view
-            if (!EventSystem.current.IsPointerOverGameObject())
-            {
-                float fov = GetZoom();
-
-                float scroll = -Input.GetAxis("Mouse ScrollWheel");
-                fov += (brainCamera.orthographic ? orthoDelta : fovDelta) * scroll * SpeedMultiplier();
-                fov = Mathf.Clamp(fov, minFoV, maxFoV);
-
-                SetZoom(fov);
-            }
-
-            // Now check if the mouse wheel is being held down
-            if (Input.GetMouseButton(1) && !blockBrainControl && !EventSystem.current.IsPointerOverGameObject())
-            {
-                mouseDownOverBrain = true;
-                mouseButtonDown = 1;
-            }
-
-            // Now deal with dragging
-            if (Input.GetMouseButtonDown(0) && !blockBrainControl && !EventSystem.current.IsPointerOverGameObject())
-            {
-                //BrainCameraDetectTargets();
-                mouseDownOverBrain = true;
-                mouseButtonDown = 0;
-                autoRotate = false;
-            }
-
-            if (autoRotate)
-            {
-                totalSpin += autoRotateSpeed * Time.deltaTime;
-                ApplyBrainCameraPositionAndRotation();
-            }
-            else if (!Input.GetMouseButtonDown(0))
-                BrainCameraControl_noTarget();
+            _pitchYawRoll += Vector3.up * autoRotateSpeed * Time.deltaTime;
+            ApplyBrainCameraPositionAndRotation();
         }
+        else if (!thisFrameDown)
+            BrainCameraControl_noTarget();
+    }
 
-        public void SetControlBlock(bool state)
+    public void SetControlBlock(bool state)
+    {
+        BlockBrainControl = state;
+    }
+
+
+    void BrainCameraControl_noTarget()
+    {
+        if (Input.GetMouseButtonUp(0))
+            SetControlBlock(false);
+
+        if (mouseDownOverBrain)
         {
-            blockBrainControl = state;
-        }
-
-
-        void BrainCameraControl_noTarget()
-        {
-            if (Input.GetMouseButtonUp(0))
-                SetControlBlock(false);
-
-            if (mouseDownOverBrain)
+            // Deal with releasing the mouse (anywhere)
+            if (mouseButtonDown == 0 && Input.GetMouseButtonUp(0))
             {
-                // Deal with releasing the mouse (anywhere)
-                if (mouseButtonDown == 0 && Input.GetMouseButtonUp(0))
+                lastLeftClick = Time.realtimeSinceStartup;
+                ClearMouseDown(); return;
+            }
+            if (mouseButtonDown == 1 && Input.GetMouseButtonUp(1))
+            {
+                if (!brainTransformChanged)
                 {
-                    lastLeftClick = Time.realtimeSinceStartup;
-                    ClearMouseDown(); return;
-                }
-                if (mouseButtonDown == 1 && Input.GetMouseButtonUp(1))
-                {
-                    if (!brainTransformChanged)
+                    // Check for double click
+                    if ((Time.realtimeSinceStartup - lastRightClick) < doubleClickTime)
                     {
-                        // Check for double click
-                        if ((Time.realtimeSinceStartup - lastRightClick) < doubleClickTime)
-                        {
-                            // Reset the brainCamera transform position
-                            brainCamera.transform.localPosition = Vector3.zero;
-                        }
-                    }
-
-                    lastRightClick = Time.realtimeSinceStartup;
-                    ClearMouseDown(); return;
-                }
-
-                if (mouseButtonDown == 1)
-                {
-                    // While right-click is held down 
-                    float xMove = -Input.GetAxis("Mouse X") * moveSpeed * SpeedMultiplier() * Time.deltaTime;
-                    float yMove = -Input.GetAxis("Mouse Y") * moveSpeed * SpeedMultiplier() * Time.deltaTime;
-
-                    if (xMove != 0 || yMove != 0)
-                    {
-                        brainTransformChanged = true;
-                        brainCamera.transform.Translate(xMove, yMove, 0, Space.Self);
+                        // Reset the brainCamera transform position
+                        _mainCamera.transform.localPosition = Vector3.zero;
                     }
                 }
 
-                // If the mouse is down, even if we are far way now we should drag the brain
-                if (mouseButtonDown == 0)
+                lastRightClick = Time.realtimeSinceStartup;
+                ClearMouseDown(); return;
+            }
+
+            if (mouseButtonDown == 1)
+            {
+                // While right-click is held down 
+                float xMove = -Input.GetAxis("Mouse X") * moveSpeed * Time.deltaTime;
+                float yMove = -Input.GetAxis("Mouse Y") * moveSpeed * Time.deltaTime;
+
+                if (xMove != 0 || yMove != 0)
                 {
-                    float xRot = -Input.GetAxis("Mouse X") * rotSpeed * SpeedMultiplier() * Time.deltaTime;
-                    float yRot = Input.GetAxis("Mouse Y") * rotSpeed * SpeedMultiplier() * Time.deltaTime;
+                    brainTransformChanged = true;
+                    _mainCamera.transform.Translate(xMove, yMove, 0, Space.Self);
+                }
+            }
 
-                    if (xRot != 0 || yRot != 0)
+            // If the mouse is down, even if we are far way now we should drag the brain
+            if (mouseButtonDown == 0)
+            {
+                float roll = -Input.GetAxis("Mouse X") * rotSpeed * Time.deltaTime;
+                float pitch = Input.GetAxis("Mouse Y") * rotSpeed * Time.deltaTime;
+
+                if (roll != 0 || pitch != 0)
+                {
+                    brainTransformChanged = true;
+
+                    // Pitch Locally, Yaw Globally. See: https://gamedev.stackexchange.com/questions/136174/im-rotating-an-object-on-two-axes-so-why-does-it-keep-twisting-around-the-thir
+
+                    // if space is down, we can apply yaw instead of roll
+                    if (Input.GetKey(KeyCode.Space))
                     {
-                        brainTransformChanged = true;
-
-                        // Pitch Locally, Yaw Globally. See: https://gamedev.stackexchange.com/questions/136174/im-rotating-an-object-on-two-axes-so-why-does-it-keep-twisting-around-the-thir
-
-                        // if space is down, we can apply spin instead of yaw
-                        if (Input.GetKey(KeyCode.Space))
-                        {
-                            totalSpin = Mathf.Clamp(totalSpin + xRot, minXRotation, maxXRotation);
-                        }
-                        else
-                        {
-                            // [TODO] Pitch and Yaw are flipped?
-                            totalYaw = Mathf.Clamp(totalYaw + yRot, minXRotation, maxXRotation);
-                            totalPitch = Mathf.Clamp(totalPitch + xRot, minZRotation, maxZRotation);
-                        }
-                        ApplyBrainCameraPositionAndRotation();
+                        _pitchYawRoll.y = Mathf.Clamp(_pitchYawRoll.y + roll, minXRotation, maxXRotation);
                     }
+                    else
+                    {
+                        _pitchYawRoll.x = Mathf.Clamp(_pitchYawRoll.x - pitch, minXRotation, maxXRotation);
+                        _pitchYawRoll.z = Mathf.Clamp(_pitchYawRoll.z - roll, minZRotation, maxZRotation);
+                    }
+                    ApplyBrainCameraPositionAndRotation();
                 }
             }
         }
+    }
 
-        private float SpeedMultiplier()
+    void ApplyBrainCameraPositionAndRotation()
+    {
+        _mainCameraRotator.transform.rotation = Quaternion.Euler(_pitchYawRoll);
+        RotationChangedEvent.Invoke(_pitchYawRoll);
+    }
+
+    void ClearMouseDown()
+    {
+        mouseDownOverBrain = false;
+        //brainCameraClickthroughTarget = null;
+        brainTransformChanged = false;
+    }
+
+    public float GetZoom()
+    {
+        return _mainCamera.orthographic ? _mainCamera.orthographicSize : _mainCamera.fieldOfView;
+    }
+
+    public void SetZoom(float zoom)
+    {
+        if (_mainCamera.orthographic)
         {
-            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-                return shiftMult;
-            else if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
-                return ctrlMult;
-            else
-                return 1f;
+            //Settings.CameraZoom = zoom;
+            _mainCamera.orthographicSize = zoom;
         }
+        else
+            _mainCamera.fieldOfView = zoom;
+    }
 
-        void ApplyBrainCameraPositionAndRotation()
-        {
-            Quaternion curRotation = Quaternion.Euler(totalYaw, totalSpin, totalPitch);
-            // Move the camera back to zero, perform rotation, then offset back
-            brainCameraRotator.transform.position = initialCameraRotatorPosition + cameraPositionOffset;
-            brainCameraRotator.transform.LookAt(cameraTarget, Vector3.back);
-            brainCameraRotator.transform.position = curRotation * (brainCameraRotator.transform.position - cameraTarget) + cameraTarget;
-            brainCameraRotator.transform.rotation = curRotation * brainCameraRotator.transform.rotation;
-        }
+    public void SetBrainAxisAngles(Vector3 yawPitchRoll)
+    {
+        _pitchYawRoll = yawPitchRoll;
+        ApplyBrainCameraPositionAndRotation();
+    }
 
-        void ClearMouseDown()
-        {
-            mouseDownOverBrain = false;
-            //brainCameraClickthroughTarget = null;
-            brainTransformChanged = false;
-        }
+    public void SetCameraTarget(Vector3 newTarget)
+    {
+        Debug.Log("Setting camera target to: " + newTarget);
+        _mainCameraTargetT.localPosition = newTarget;
 
-        public Vector2 GetPitchYaw()
-        {
-            return new Vector2(totalPitch, totalYaw);
-        }
+        // Reset any panning 
+        _mainCamera.transform.localPosition = Vector3.zero;
+    }
 
-        public Vector3 GetAngles()
-        {
-            return new Vector3(totalPitch, totalYaw, totalSpin);
-        }
+    public void ResetCameraTarget()
+    {
+        _mainCameraTargetT.localPosition = Vector3.zero;
+        ApplyBrainCameraPositionAndRotation();
+    }
 
-        public float GetZoom()
-        {
-            return brainCamera.orthographic ? brainCamera.orthographicSize : brainCamera.fieldOfView;
-        }
+    public void SetCameraContinuousRotation(bool state)
+    {
+        autoRotate = state;
+    }
 
-        public void SetZoom(float zoom)
-        {
-            if (brainCamera.orthographic)
-                brainCamera.orthographicSize = zoom;
-            else
-                brainCamera.fieldOfView = zoom;
-        }
+    public void SetCameraRotationSpeed(float speed)
+    {
+        autoRotateSpeed = speed;
+    }
 
-        public void SetBrainAxisAngles(Vector2 pitchYaw)
-        {
-            totalPitch = pitchYaw.x;
-            totalYaw = pitchYaw.y;
-            totalSpin = 0f;
-            ApplyBrainCameraPositionAndRotation();
-        }
-        public void SetBrainAxisAngles(Vector3 pitchYawSpin)
-        {
-            totalPitch = pitchYawSpin.x;
-            totalYaw = pitchYawSpin.y;
-            totalSpin = pitchYawSpin.z;
-            ApplyBrainCameraPositionAndRotation();
-        }
+    public void SetCamera(Camera newCamera)
+    {
+        _mainCamera = newCamera;
+        ApplyBrainCameraPositionAndRotation();
+    }
 
-        public void SetYaw(float newYaw)
-        {
-            totalYaw = newYaw;
-        }
+    public Camera GetCamera()
+    {
+        return _mainCamera;
+    }
 
-        public void SetPitch(float newPitch)
-        {
-            totalPitch = newPitch;
-        }
-
-        public void SetSpin(float newSpin)
-        {
-            totalSpin = newSpin;
-        }
-
-        public Vector3 GetCameraTarget()
-        {
-            return cameraTarget;
-        }
-
-        public void SetCameraTarget(Vector3 newTarget)
-        {
-            Debug.Log("Setting camera target to: " + newTarget);
-
-            // Reset any panning 
-            brainCamera.transform.localPosition = Vector3.zero;
-
-            cameraTarget = newTarget;
-            cameraPositionOffset = newTarget;
-
-            ApplyBrainCameraPositionAndRotation();
-        }
-
-        public void ResetCameraTarget()
-        {
-            cameraTarget = brain.transform.position;
-            ApplyBrainCameraPositionAndRotation();
-        }
-
-        public void SetCameraContinuousRotation(bool state)
-        {
-            autoRotate = state;
-        }
-
-        public void SetCameraRotationSpeed(float speed)
-        {
-            autoRotateSpeed = speed;
-        }
-
-        public void SetCamera(Camera newCamera)
-        {
-            brainCamera = newCamera;
-            ApplyBrainCameraPositionAndRotation();
-        }
-
-        public void SetCameraPan(Vector3 panXY)
-        {
-            brainCamera.transform.localPosition = panXY;
-        }
-
-        public Camera GetCamera()
-        {
-            return brainCamera;
-        }
-
-        public void SetCameraBackgroundToggle(bool white)
-        {
-            if (white)
-                SetCameraBackgroundColor(Color.white);
-            else
-                SetCameraBackgroundColor(Color.black);
-        }
-
-        public void SetCameraBackgroundColor(Color newColor)
-        {
-            brainCamera.backgroundColor = newColor;
-        }
-
-        public void SetOffsetPosition(Vector3 newOffset)
-        {
-            cameraPositionOffset = newOffset;
-            ApplyBrainCameraPositionAndRotation();
-        }
+    public void SetCameraBackgroundColor(Color newColor)
+    {
+        _mainCamera.backgroundColor = newColor;
     }
 }

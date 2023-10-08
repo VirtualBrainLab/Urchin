@@ -79,6 +79,17 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.entities.graphics": {
+      "version": "1.0.16",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.entities": "1.0.16",
+        "com.unity.modules.particlesystem": "1.0.0",
+        "com.unity.render-pipelines.core": "14.0.7"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.ext.nunit": {
       "version": "1.0.6",
       "depth": 1,
@@ -269,7 +280,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "e533ec5c29dfdb9858eb5825b26246b8162569af"
+      "hash": "cf792b06b79f2371a19e49879855eeafe10b81da"
     },
     "vbl.urchin": {
       "version": "file:vbl.urchin",

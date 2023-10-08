@@ -175,21 +175,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d43419cf1d43bf4995059dad0606dfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brainCamera: {fileID: 5697262124586181144}
-  brainCameraRotator: {fileID: 5697262125096797366}
-  brain: {fileID: 0}
+  _mainCamera: {fileID: 5697262124586181144}
+  _mainCameraRotator: {fileID: 5697262125096797366}
+  _mainCameraTargetT: {fileID: 0}
   minFoV: 0.5
   maxFoV: 120
   fovDelta: 15
   orthoDelta: 5
   moveSpeed: 10
-  rotSpeed: 200
-  shiftMult: 2
-  ctrlMult: 0.5
   minXRotation: -180
   maxXRotation: 180
   minZRotation: -180
   maxZRotation: 180
+  rotSpeed: 200
   UserControllable: 1
 --- !u!114 &5697262125096797362
 MonoBehaviour:

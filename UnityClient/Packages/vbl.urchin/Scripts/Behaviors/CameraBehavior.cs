@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEditor.PackageManager;
 using UnityEngine;
 using Urchin.Cameras;
+using BrainAtlas;
 
 namespace Urchin.Behaviors
 {
@@ -185,7 +186,8 @@ namespace Urchin.Behaviors
 
         public void SetCameraYAngle(float obj)
         {
-            _cameraControl.SetSpin(obj);
+            throw new NotImplementedException();
+            //_cameraControl.SetSpin(obj);
         }
 
         public void SetCameraTargetArea(string obj)
@@ -206,20 +208,20 @@ namespace Urchin.Behaviors
             //    Debug.Log("Failed to find node to set camera target: " + obj);
         }
 
-        public void SetCameraTarget(List<float> mlapdv)
+        public void SetCameraTarget(List<float> apmldv)
         {
             // data comes in in um units in ml/ap/dv
             // note that (0,0,0) in world is the center of the brain
             // so offset by (-6.6 ap, -4 dv, -5.7 lr) to get to the corner
             // in world space, x = ML, y = DV, z = AP
-
-            Vector3 worldCoords = new Vector3(5.7f - mlapdv[0] / 1000f, 4f - mlapdv[2] / 1000f, mlapdv[1] / 1000f - 6.6f);
-            _cameraControl.SetCameraTarget(worldCoords);
+            Vector3 coordAtlas = new Vector3(apmldv[0], apmldv[1], apmldv[2]);
+            _cameraControl.SetCameraTarget(BrainAtlasManager.ActiveReferenceAtlas.Atlas2World(coordAtlas));
         }
 
         public void SetCameraPan(List<float> panXY)
         {
-            _cameraControl.SetCameraPan(new Vector2(panXY[0], panXY[1]));
+            throw new NotImplementedException();
+            //_cameraControl.SetCameraPan(new Vector2(panXY[0], panXY[1]));
         }
         #endregion
     }

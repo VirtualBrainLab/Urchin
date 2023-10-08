@@ -153,11 +153,11 @@ public class UrchinCore : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.S))
         {
             // Hacky workaround because the brain controls doesn't attach to the UI element properly
+            settingsPanel.SetActive(!settingsPanel.activeSelf);
             if (settingsPanel.activeSelf)
                 brainControlsT.localPosition = new Vector3(-82.3f, -85.6f, 0f);
             else
                 brainControlsT.localPosition = new Vector3(20.2f, -85.6f, 0f);
-            settingsPanel.SetActive(!settingsPanel.activeSelf);
         }
 
         if (Input.GetKeyDown(KeyCode.A))
