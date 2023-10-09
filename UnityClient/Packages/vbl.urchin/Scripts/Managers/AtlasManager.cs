@@ -25,10 +25,10 @@ namespace Urchin.Managers
         /// </summary>
         private Dictionary<OntologyNode, (float full, float left, float right)> _areaIntensity;
 
-        private Dictionary<string, List<float>> _areaData;
+        private Dictionary<int, List<float>> _areaData;
         private int _areaDataIndex;
+        private Dictionary<int, (bool full, bool left, bool right)> _areaSides;
 
-        private Dictionary<int, (bool, bool)> _areaSides;
         private Colormap _localColormap;
         #endregion
 
@@ -215,16 +215,15 @@ namespace Urchin.Managers
             {
                 (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
 
-                Debug.LogWarning("Might be broken with new data loading");
                 if (_areaData.ContainsKey(ID))
                 {
                     _areaData[ID] = kvp.Value;
-                    _areaSides[ID] = (leftSide, rightSide);
+                    _areaSides[ID] = (full, leftSide, rightSide);
                 }
                 else
                 {
                     _areaData.Add(ID, kvp.Value);
-                    _areaSides.Add(ID, (leftSide, rightSide));
+                    _areaSides.Add(ID, (full, leftSide, rightSide));
                 }
             }
         }
@@ -385,9 +384,9 @@ namespace Urchin.Managers
         {
             foreach (KeyValuePair<int, List<float>> kvp in _areaData)
             {
-                (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
+                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(kvp.Key);
 
-                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(ID);
+                (bool full, bool leftSide, bool rightSide) = _areaSides[kvp.Key];
 
                 float currentValue = kvp.Value[_areaDataIndex];
 
@@ -396,22 +395,23 @@ namespace Urchin.Managers
                     if (full)
                     {
                         await node.FullLoaded;
-                        node.SetShaderProperty("_Alpha", kvp.Value, OntologyNode.OntologyNodeSide.Full);
+                        node.SetShaderProperty("_Alpha", currentValue, OntologyNode.OntologyNodeSide.Full);
                     }
                     else
                     {
                         await node.SideLoaded;
                         if (leftSide)
-                            node.SetShaderProperty("_Alpha", kvp.Value, OntologyNode.OntologyNodeSide.Left);
+                            node.SetShaderProperty("_Alpha", currentValue, OntologyNode.OntologyNodeSide.Left);
                         if (rightSide)
-                            node.SetShaderProperty("_Alpha", kvp.Value, OntologyNode.OntologyNodeSide.Right);
+                            node.SetShaderProperty("_Alpha", currentValue, OntologyNode.OntologyNodeSide.Right);
                     }
-                    if (leftSide && rightSide)
-                        node.SetColor(_main.GetColormapColor(currentValue), true);
-                    else if (leftSide)
-                        node.SetColorOneSided(_main.GetColormapColor(currentValue), true, true);
-                    else if (rightSide)
-                        node.SetColorOneSided(_main.GetColormapColor(currentValue), false, true);
+                    Color color = _localColormap.Value(currentValue);
+                    if (full)
+                        node.SetColor(color, OntologyNode.OntologyNodeSide.Full);
+                    if (leftSide)
+                        node.SetColor(color, OntologyNode.OntologyNodeSide.Left);
+                    if (rightSide)
+                        node.SetColor(color, OntologyNode.OntologyNodeSide.Right);
                 }
                 else
                     Debug.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
