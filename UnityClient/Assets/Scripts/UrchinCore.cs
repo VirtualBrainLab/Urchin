@@ -70,33 +70,8 @@ public class UrchinCore : MonoBehaviour
 
         originalTransformPositionsLeft = new();
         originalTransformPositionsRight = new();
-    }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        //todo
-        //throw new NotImplementedException();
-        //modelControl.SetBeryl(true);
-        //modelControl.LateStart(loadDefaults);
-
-        //if (loadDefaults)
-        //    DelayedStart();
-
-        //RecomputeCosmosCenters();
-    }
-
-    private async void DelayedStart()
-    {
-        throw new NotImplementedException();
-        //await modelControl.GetDefaultLoadedTask();
-
-        throw new NotImplementedException();
-        //foreach (CCFTreeNode node in modelControl.GetDefaultLoadedNodes())
-        //{
-        //    RegisterNode(node);
-        //    node.SetNodeModelVisibility_Full(true);
-        //}
+        RecomputeCosmosCenters();
     }
 
     public void ChangeCosmosIdx(int newIdx)
@@ -216,26 +191,14 @@ public class UrchinCore : MonoBehaviour
         UpdateExploded();
     }
 
-    public void SetLeftColorOnly(bool state)
-    {
-        throw new NotImplementedException();
-        //colorLeftOnly = state;
-        //foreach (CCFTreeNode node in AreaManager.VisibleNodes)
-        //    if (state)
-        //        node.SetColorOneSided(node.DefaultColor, false, false);
-        //    else
-        //        node.SetColor(node.color);
-    }
-
     private void UpdateExploded()
     {
-        cameraController.SetControlBlock(true);
+        //cameraController.SetControlBlock(true);
 
-        throw new NotImplementedException();
         //Vector3 flipVector = new Vector3(1f, 1f, -1f);
         //foreach (OntologyNode node in AtlasManager.VisibleNodes)
         //{
-        //    int cosmos = modelControl.GetCosmosID(node.ID);
+        //    int cosmos = AtlasManager..GetCosmosID(node.ID);
         //    Transform nodeTLeft = node.NodeModelLeftGO.transform;
         //    Transform nodeTright = node.NodeModelRightGO.transform;
 

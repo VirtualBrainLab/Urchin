@@ -9,6 +9,7 @@ namespace Urchin.Managers
     public class AtlasManager : MonoBehaviour
     {
         #region Serialized fields
+        [SerializeField] BrainAtlasManager _brainAtlasManager;
         #endregion
 
         #region static
@@ -21,7 +22,6 @@ namespace Urchin.Managers
         private int _areaDataIndex;
 
         private Dictionary<int, (bool, bool)> _areaSides;
-        //private int[] _missing = { 738, 995 };
         #endregion
 
         #region Events
