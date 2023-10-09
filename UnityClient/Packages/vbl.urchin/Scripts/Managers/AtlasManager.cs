@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using BrainAtlas;
 using UnityEngine.Events;
+using Urchin.Utils;
+using System.Threading.Tasks;
 
 namespace Urchin.Managers
 {
@@ -18,10 +20,16 @@ namespace Urchin.Managers
         #endregion
 
         #region Data
+        /// <summary>
+        /// Intensity values map to full, left, right
+        /// </summary>
+        private Dictionary<OntologyNode, (float full, float left, float right)> _areaIntensity;
+
         private Dictionary<int, List<float>> _areaData;
         private int _areaDataIndex;
+        private Dictionary<int, (bool full, bool left, bool right)> _areaSides;
 
-        private Dictionary<int, (bool, bool)> _areaSides;
+        private Colormap _localColormap;
         #endregion
 
         #region Events
@@ -33,11 +41,17 @@ namespace Urchin.Managers
         {
             _areaSides = new();
             _areaData = new();
+            _areaIntensity = new();
             VisibleNodes = new();
 
             if (Instance != null)
                 throw new Exception("Only one AreaManager can exist in the scene!");
             Instance = this;
+        }
+
+        private void Start()
+        {
+            _localColormap = Colormaps.MainColormap;
         }
         #endregion
 
@@ -189,8 +203,8 @@ namespace Urchin.Managers
         // Area colormaps
         public void SetAreaColormap(string colormapName)
         {
-            throw new NotImplementedException();
-            //_main.ChangeColormap(colormapName);
+            _localColormap = Colormaps.ColormapDict[colormapName];
+            UpdateAreaColorFromColormap();
         }
 
 
@@ -201,16 +215,15 @@ namespace Urchin.Managers
             {
                 (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
 
-                Debug.LogWarning("Might be broken with new data loading");
                 if (_areaData.ContainsKey(ID))
                 {
                     _areaData[ID] = kvp.Value;
-                    _areaSides[ID] = (leftSide, rightSide);
+                    _areaSides[ID] = (full, leftSide, rightSide);
                 }
                 else
                 {
                     _areaData.Add(ID, kvp.Value);
-                    _areaSides.Add(ID, (leftSide, rightSide));
+                    _areaSides.Add(ID, (full, leftSide, rightSide));
                 }
             }
         }
@@ -224,59 +237,65 @@ namespace Urchin.Managers
         // Area intensity colormaps
         public async void SetAreaColorIntensity(Dictionary<string, float> areaIntensity)
         {
-            throw new NotImplementedException();
-            //foreach (KeyValuePair<string, float> kvp in areaIntensity)
-            //{
-            //    (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
-            //    CCFTreeNode node = _modelControl.tree.findNode(ID);
+            foreach (KeyValuePair<string, float> kvp in areaIntensity)
+            {
+                (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
+                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(ID);
 
-            //    if (node != null)
-            //    {
-            //        if (WaitingOnTask(node.ID))
-            //            await _nodeTasks[node.ID];
+                if (node != null)
+                {
+                    if (!_areaIntensity.ContainsKey(node))
+                        _areaIntensity.Add(node, (-1f, -1f, -1f));
 
-            //        if (full)
-            //        {
-            //            if (!_main.colorLeftOnly)
-            //                node.SetColor(_main.GetColormapColor(kvp.Value), true);
-            //            else
-            //                node.SetColorOneSided(_main.GetColormapColor(kvp.Value), true, true);
-            //        }
-            //        else if (leftSide)
-            //            node.SetColorOneSided(_main.GetColormapColor(kvp.Value), true, true);
-            //        else if (rightSide && !_main.colorLeftOnly)
-            //            node.SetColorOneSided(_main.GetColormapColor(kvp.Value), false, true);
-            //    }
-            //    else
-            //        Debug.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
-            //}
+                    (float fullVal, float leftVal, float rightVal) = _areaIntensity[node];
+
+                    if (full)
+                        fullVal = kvp.Value;
+                    if (leftSide)
+                        leftVal = kvp.Value;
+                    if (rightSide)
+                        rightVal = kvp.Value;
+
+                    _areaIntensity[node] = (fullVal, leftVal, rightVal);
+                }
+                else
+                    Debug.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+            }
+        }
+
+        public void UpdateAreaColorFromColormap()
+        {
+            foreach (var kvp in _areaIntensity)
+            {
+                OntologyNode node = kvp.Key;
+
+                if (node.FullLoaded.IsCompleted && kvp.Value.full >= 0)
+                    node.SetColor(_localColormap.Value(kvp.Value.full), OntologyNode.OntologyNodeSide.Full);
+                if (node.SideLoaded.IsCompleted && kvp.Value.left >= 0)
+                    node.SetColor(_localColormap.Value(kvp.Value.full), OntologyNode.OntologyNodeSide.Left);
+                if (node.SideLoaded.IsCompleted && kvp.Value.right >= 0)
+                    node.SetColor(_localColormap.Value(kvp.Value.full), OntologyNode.OntologyNodeSide.Right);
+            }
         }
 
         // Auto-loaders
         public async void LoadDefaultAreas(string defaultName)
         {
-            throw new NotImplementedException();
-            //Task<List<CCFTreeNode>> nodeTask;
-            //if (defaultName.Equals("cosmos"))
-            //    nodeTask = _modelControl.LoadCosmosNodes(false);
-            //else if (defaultName.Equals("beryl"))
-            //    nodeTask = _modelControl.LoadBerylNodes(false);
-            //else
-            //{
-            //    Debug.Log("Failed to load nodes: " + defaultName);
-            //    Client.LogError("Node group " + defaultName + " does not exist.");
-            //    return;
-            //}
+            int[] defaultAreaIDs = BrainAtlasManager.ActiveReferenceAtlas.DefaultAreas;
 
-            //await nodeTask;
+            foreach (int areaID in defaultAreaIDs)
+            {
+                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(areaID);
 
-            //foreach (CCFTreeNode node in nodeTask.Result)
-            //{
-            //    node.SetNodeModelVisibility_Left(true);
-            //    node.SetNodeModelVisibility_Right(true);
-            //    VisibleNodes.Add(node);
-            //    _main.RegisterNode(node);
-            //}
+                // Load all models
+                _ = node.LoadMesh(OntologyNode.OntologyNodeSide.All);
+
+                await Task.WhenAll(new Task[] { node.FullLoaded, node.SideLoaded });
+
+                node.SetVisibility(false, OntologyNode.OntologyNodeSide.Full);
+                node.SetVisibility(true, OntologyNode.OntologyNodeSide.Left);
+                node.SetVisibility(true, OntologyNode.OntologyNodeSide.Right);
+            }
         }
 
         #endregion
@@ -363,31 +382,40 @@ namespace Urchin.Managers
 
         private async void UpdateAreaDataIntensity()
         {
-            throw new NotImplementedException();
-            //foreach (KeyValuePair<int, List<float>> kvp in _areaData)
-            //{
-            //    int ID = kvp.Key;
-            //    (bool leftSide, bool rightSide) = _areaSides[ID];
+            foreach (KeyValuePair<int, List<float>> kvp in _areaData)
+            {
+                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(kvp.Key);
 
-            //    CCFTreeNode node = _modelControl.tree.findNode(ID);
+                (bool full, bool leftSide, bool rightSide) = _areaSides[kvp.Key];
 
-            //    if (WaitingOnTask(node.ID))
-            //        await _nodeTasks[node.ID];
+                float currentValue = kvp.Value[_areaDataIndex];
 
-            //    float currentValue = kvp.Value[_areaDataIndex];
-
-            //    if (node != null)
-            //    {
-            //        if (leftSide && rightSide)
-            //            node.SetColor(_main.GetColormapColor(currentValue), true);
-            //        else if (leftSide)
-            //            node.SetColorOneSided(_main.GetColormapColor(currentValue), true, true);
-            //        else if (rightSide)
-            //            node.SetColorOneSided(_main.GetColormapColor(currentValue), false, true);
-            //    }
-            //    else
-            //        Debug.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
-            //}
+                if (node != null)
+                {
+                    if (full)
+                    {
+                        await node.FullLoaded;
+                        node.SetShaderProperty("_Alpha", currentValue, OntologyNode.OntologyNodeSide.Full);
+                    }
+                    else
+                    {
+                        await node.SideLoaded;
+                        if (leftSide)
+                            node.SetShaderProperty("_Alpha", currentValue, OntologyNode.OntologyNodeSide.Left);
+                        if (rightSide)
+                            node.SetShaderProperty("_Alpha", currentValue, OntologyNode.OntologyNodeSide.Right);
+                    }
+                    Color color = _localColormap.Value(currentValue);
+                    if (full)
+                        node.SetColor(color, OntologyNode.OntologyNodeSide.Full);
+                    if (leftSide)
+                        node.SetColor(color, OntologyNode.OntologyNodeSide.Left);
+                    if (rightSide)
+                        node.SetColor(color, OntologyNode.OntologyNodeSide.Right);
+                }
+                else
+                    Debug.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+            }
         }
 
         #endregion
