@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Urchin.API;
 
 namespace Urchin.Managers
 {
@@ -27,6 +28,17 @@ namespace Urchin.Managers
                 _materialDictionary.Add(_materialNames[i], _materials[i]);
             }
 
+        }
+
+        private void Start()
+        {
+
+            Client_SocketIO.CreateMesh += CreateMesh;
+            Client_SocketIO.DeleteMesh += DeleteMesh;
+            Client_SocketIO.SetPosition += SetPosition;
+            Client_SocketIO.SetScale += SetScale;
+            Client_SocketIO.SetColor += SetColor;
+            Client_SocketIO.SetMaterial += SetMaterial;
         }
 
         public void CreateMesh(List<string> meshes) //instantiates cube as default

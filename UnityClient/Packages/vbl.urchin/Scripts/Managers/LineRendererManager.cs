@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
+using Urchin.API;
 
 namespace Urchin.Managers
 {
@@ -24,24 +25,17 @@ namespace Urchin.Managers
             _lineRenderers = new();
         }
 
+        
+
         private void Start()
         {
-            //CreateLine(new List<string> { "l1", "l2" });
-            //DeleteLine(new List<string> { "l2" });
-
-            //Dictionary<string, List<List<float>>> temp = new();
-            //List<List<float>> tempPositions = new();
-            //tempPositions.Add(new List<float>() { 0, 0, 0 });
-            //tempPositions.Add(new List<float>() { 13200, 11400, 8000 });
-            //temp.Add("l1", tempPositions);
-
-            //SetLinePosition(temp);
-
-
-            //SetLineColor("l1", Color.blue);
+            Client_SocketIO.CreateLine += Create;
+            Client_SocketIO.SetLinePosition += SetPosition;
+            Client_SocketIO.DeleteLine += Delete;
+            Client_SocketIO.SetLineColor += SetColors;
         }
 
-        public void CreateLine(List<string> lines)
+        public void Create(List<string> lines)
         {
             //instantiating game object w line renderer component
             foreach (string line in lines)
@@ -56,7 +50,7 @@ namespace Urchin.Managers
 
         }
 
-        public void DeleteLine(List<string> lines)
+        public void Delete(List<string> lines)
         {
 
             //calls destroy (the one specific line)
@@ -67,7 +61,7 @@ namespace Urchin.Managers
             }
         }
 
-        public void SetLinePosition(Dictionary<string, List<List<float>>> linePositions)
+        public void SetPosition(Dictionary<string, List<List<float>>> linePositions)
         {
             //set line renderer position
             Debug.Log("function got called!");
@@ -87,7 +81,7 @@ namespace Urchin.Managers
                 tempLine.SetPositions(posvectors);
             }
         }
-        public void SetLineColor(Dictionary<string, string> lineColors)
+        public void SetColors(Dictionary<string, string> lineColors)
         {
             foreach (string lineName in lineColors.Keys)
             {

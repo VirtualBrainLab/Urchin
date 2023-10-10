@@ -51,32 +51,6 @@ namespace Urchin.API
 
             // Misc
             manager.Socket.On<string>("Clear", Clear);
-
-            // If we are building to WebGL or to Standalone, switch how you acquire the user's ID
-
-#if UNITY_WEBGL && !UNITY_EDITOR
-        // get the url
-        string appURL = Application.absoluteURL;
-        // parse for query strings
-        int queryIdx = appURL.IndexOf("?");
-        if (queryIdx > 0)
-        {
-            Debug.Log("Found query string");
-            string queryString = appURL.Substring(queryIdx);
-            Debug.Log(queryString);
-            NameValueCollection qscoll = System.Web.HttpUtility.ParseQueryString(queryString);
-            foreach (string query in qscoll)
-            {
-                Debug.Log(query);
-                Debug.Log(qscoll[query]);
-                if (query.Equals("ID"))
-                {
-                    ID = qscoll[query];
-                    Debug.Log("Found ID in URL querystring, setting to: " + ID);
-                }
-            }
-        }
-#endif
         }
 
         #region Socket setup by action group
@@ -126,7 +100,7 @@ namespace Urchin.API
         public static Action<List<string>> CreateParticles;
         public static Action<List<string>> DeleteParticles;
         public static Action<Dictionary<string, float[]>> SetParticlePosition;
-        public static Action<Dictionary<string, float>> SetPraticleSize;
+        public static Action<Dictionary<string, float>> SetParticleSize;
         public static Action<Dictionary<string, string>> SetParticleShape;
         public static Action<Dictionary<string, string>> SetParticleColor;
         public static Action<Dictionary<string, string>> SetParticleMaterial;
@@ -136,7 +110,7 @@ namespace Urchin.API
             manager.Socket.On<List<string>>("CreateNeurons", x => CreateParticles.Invoke(x));
             manager.Socket.On<List<string>>("DeleteNeurons", x => DeleteParticles.Invoke(x));
             manager.Socket.On<Dictionary<string, float[]>>("SetNeuronPos", x => SetParticlePosition.Invoke(x));
-            manager.Socket.On<Dictionary<string, float>>("SetNeuronSize", x => SetPraticleSize.Invoke(x));
+            manager.Socket.On<Dictionary<string, float>>("SetNeuronSize", x => SetParticleSize.Invoke(x));
             manager.Socket.On<Dictionary<string, string>>("SetNeuronShape", x => SetParticleShape.Invoke(x));
             manager.Socket.On<Dictionary<string, string>>("SetNeuronColor", x => SetParticleColor.Invoke(x));
             manager.Socket.On<Dictionary<string, string>>("SetNeuronMaterial", x => SetParticleMaterial.Invoke(x));
@@ -168,7 +142,7 @@ namespace Urchin.API
         public static Action<Dictionary<string, List<float>>> SetCameraPan;
         public static Action<Dictionary<string, string>> SetCameraMode;
         public static Action<string> SetCameraControl;
-        public static Action<string> RequestCameraImg;
+        public static Action<string> RequestScreenshot;
         public static Action<Dictionary<string, float>> SetCameraYAngle;
         public static Action<List<string>> CreateCamera;
         public static Action<List<string>> DeleteCamera;
@@ -182,7 +156,7 @@ namespace Urchin.API
             manager.Socket.On<Dictionary<string, List<float>>>("SetCameraPan", x => SetCameraPan.Invoke(x));
             manager.Socket.On<Dictionary<string, string>>("SetCameraMode", x => SetCameraMode.Invoke(x));
             manager.Socket.On<string>("SetCameraControl", x => SetCameraControl.Invoke(x));
-            manager.Socket.On<string>("RequestCameraImg", x => RequestCameraImg.Invoke(x));
+            manager.Socket.On<string>("RequestCameraImg", x => RequestScreenshot.Invoke(x));
             manager.Socket.On<Dictionary<string, float>>("SetCameraYAngle", x => SetCameraYAngle.Invoke(x));
             manager.Socket.On<List<string>>("CreateCamera", x => CreateCamera.Invoke(x));
             manager.Socket.On<List<string>>("DeleteCamera", x => DeleteCamera.Invoke(x));
@@ -338,7 +312,30 @@ namespace Urchin.API
         private void Connected()
         {
 
-            if (PlayerPrefs.HasKey(ID_SAVE_KEY))
+            // If we are building to WebGL or to Standalone, switch how you acquire the user's ID
+            bool webGLID = false;
+#if UNITY_WEBGL && !UNITY_EDITOR
+        // get the url
+        string appURL = Application.absoluteURL;
+        // parse for query strings
+        int queryIdx = appURL.IndexOf("?");
+        if (queryIdx > 0)
+        {
+            string queryString = appURL.Substring(queryIdx);
+            NameValueCollection qscoll = System.Web.HttpUtility.ParseQueryString(queryString);
+            foreach (string query in qscoll)
+            {
+                if (query.Equals("ID"))
+                {
+                    ID = qscoll[query];
+                    webGLID = true;
+                    Debug.Log("Found ID in URL querystring, setting to: " + ID);
+                }
+            }
+        }
+#endif
+
+            if (PlayerPrefs.HasKey(ID_SAVE_KEY) && !webGLID)
                 ID = PlayerPrefs.GetString(ID_SAVE_KEY);
             UpdateID(ID);
         }

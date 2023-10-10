@@ -3,6 +3,7 @@ using BrainAtlas;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Urchin.API;
 
 public class ParticleManager : MonoBehaviour
 {
@@ -13,6 +14,17 @@ public class ParticleManager : MonoBehaviour
     private void Awake()
     {
         _particleMapping = new();
+    }
+
+    private void Start()
+    {
+        Client_SocketIO.CreateParticles += CreateParticles;
+        Client_SocketIO.DeleteParticles += DeleteParticles;
+        Client_SocketIO.SetParticlePosition += SetPosition;
+        Client_SocketIO.SetParticleSize += SetSize;
+        //Client_SocketIO.SetParticleShape += SetShape;
+        Client_SocketIO.SetParticleColor += SetColor;
+        //Client_SocketIO.SetParticleMaterial += SetMaterial;
     }
     #endregion
 

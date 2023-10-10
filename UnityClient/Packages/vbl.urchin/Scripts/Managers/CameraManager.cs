@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.PackageManager;
 using UnityEngine;
+using Urchin.API;
 using Urchin.Behaviors;
 using Urchin.Cameras;
 
@@ -42,6 +43,22 @@ namespace Urchin.Managers
             _cameras.Add("CameraMain", mainCamera);
 
             mainCamera.Name = "CameraMain";
+        }
+
+        private void Start()
+        {
+
+            Client_SocketIO.SetCameraTarget += SetCameraTarget;
+            Client_SocketIO.SetCameraRotation += SetCameraRotation;
+            Client_SocketIO.SetCameraTargetArea += SetCameraTargetArea;
+            Client_SocketIO.SetCameraZoom += SetCameraZoom;
+            Client_SocketIO.SetCameraPan += SetCameraPan;
+            Client_SocketIO.SetCameraMode += SetCameraMode;
+            Client_SocketIO.SetCameraControl += SetCameraControl;
+            Client_SocketIO.RequestScreenshot += RequestScreenshot;
+            Client_SocketIO.SetCameraYAngle += SetCameraYAngle;
+            Client_SocketIO.CreateCamera += CreateCamera;
+            Client_SocketIO.DeleteCamera += DeleteCamera;
         }
 
         #endregion
@@ -130,7 +147,7 @@ namespace Urchin.Managers
             }
         }
 
-        public void Screenshot(string data)
+        public void RequestScreenshot(string data)
         {
             ScreenshotData screenshotData = JsonUtility.FromJson<ScreenshotData>(data);
 

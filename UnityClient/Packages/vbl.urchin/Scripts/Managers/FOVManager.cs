@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Urchin.API;
 using Urchin.Behaviors;
 
 namespace Urchin.Managers
@@ -26,6 +27,20 @@ namespace Urchin.Managers
         void Awake()
         {
             _fovs = new();
+        }
+
+        private void Start()
+        {
+
+            Client_SocketIO.CreateFOV += Create;
+            Client_SocketIO.DeleteFOV += Delete;
+            Client_SocketIO.SetFOVPos += SetPosition;
+            // TODO
+            //Client_SocketIO.SetFOVOffset += SetOffset;
+            //Client_SocketIO.SetFOVTextureDataMetaInit += SetFOVTextureDataMetaInit;
+            //Client_SocketIO.SetFOVTextureDataMeta += SetFOVTextureDataMeta;
+            //Client_SocketIO.SetFOVTextureData += SetFOVTextureData;
+            //Client_SocketIO.SetFOVVisibility += SetFOVVisibility;
         }
         #endregion
 
@@ -117,12 +132,6 @@ namespace Urchin.Managers
         //    fovRenderer.SetTextureData(bytes);
         //}
 
-        #endregion
-
-        #region Public helpers
-        #endregion
-
-        #region Private helpers
         #endregion
     }
 }
