@@ -132,28 +132,29 @@ class Camera:
 		self.target = camera_target_coordinate
 		client.sio.emit('SetCameraTarget', {self.id: camera_target_coordinate})
 
-	def set_position(self, position, preserve_target = True):
-		"""Set the camera position in CCF space in um relative to CCF (0,0,0), coordinates can be outside CCF space. 
+	# temporarily removed
+	# def set_position(self, position, preserve_target = True):
+	# 	"""Set the camera position in CCF space in um relative to CCF (0,0,0), coordinates can be outside CCF space. 
 
-		Parameters
-		----------
-		position : float list
-			list of coordinates in ml/ap/dv in um
-		preserve_target : bool, optional
-			when True keeps the camera aimed at the current target, when False preserves the camera rotation, by default True
+	# 	Parameters
+	# 	----------
+	# 	position : float list
+	# 		list of coordinates in ml/ap/dv in um
+	# 	preserve_target : bool, optional
+	# 		when True keeps the camera aimed at the current target, when False preserves the camera rotation, by default True
 		
-		Examples
-		--------
-		>>> c1.set_position([500,1500,1000])
-		"""
-		if self.in_unity == False:
-			raise Exception("Camera is not created. Please create camera before calling method.")
+	# 	Examples
+	# 	--------
+	# 	>>> c1.set_position([500,1500,1000])
+	# 	"""
+	# 	if self.in_unity == False:
+	# 		raise Exception("Camera is not created. Please create camera before calling method.")
 		
-		position = utils.sanitize_vector3(position)
-		self.position = position
-		packet = position.copy()
-		packet.append(preserve_target)
-		client.sio.emit('SetCameraPosition', {self.id: packet})
+	# 	position = utils.sanitize_vector3(position)
+	# 	self.position = position
+	# 	packet = position.copy()
+	# 	packet.append(preserve_target)
+	# 	client.sio.emit('SetCameraPosition', {self.id: packet})
 
 	def set_rotation(self, rotation):
 		"""Set the camera rotation (pitch, yaw, roll). The camera is locked to a target, so this rotation rotates around the target.

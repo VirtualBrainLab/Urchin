@@ -102,7 +102,6 @@ namespace Urchin.API
 
             // Camera
             manager.Socket.On<Dictionary<string, List<float>>>("SetCameraTarget", _cameraManager.SetCameraTarget);
-            manager.Socket.On<Dictionary<string, List<float>>>("SetCameraPosition", _cameraManager.SetCameraPosition);
             manager.Socket.On<Dictionary<string, List<float>>>("SetCameraRotation", _cameraManager.SetCameraRotation);
             manager.Socket.On<Dictionary<string, string>>("SetCameraTargetArea", _cameraManager.SetCameraTargetArea);
             manager.Socket.On<Dictionary<string, float>>("SetCameraZoom", _cameraManager.SetCameraZoom);
