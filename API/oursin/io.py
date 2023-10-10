@@ -13,11 +13,15 @@ def upload_file(file_name, url):
 	----------
 	file_name: string
 		name of the file to be uploaded, INCLUDING the file extension
+	url: string
+		the sharing link of the file to be uploaded
 
 	Examples
 	--------
 	>>> urchin.io.upload_file("test.txt", "https://drive.google.com/file/d/exampleid123456789/view?usp=sharing")
 	"""
+	file_name = utils.sanitize_extension(file_name)
+	url = utils.sanitize_drive_url(url)
 	!wget -O {file_name} {url}
 
 
@@ -32,6 +36,7 @@ def image(image_url):
 	----------
 	url : string
 		URL of the image to be displayed
+		if the image is on google drive, use the sharing link + sanitization gdrive function
 
 	Examples
 	--------
@@ -39,75 +44,72 @@ def image(image_url):
 	"""
 	from IPython.display import Image, display
 
-	image_url = utils.sanitize_string(image_url)
+	image_url = utils.sanitize_drive_url(image_url)
+
 	display(Image(url=image_url))
 	
 
-def load_df(file_id):
+def load_df(url):
 	"""Loads a pandas dataframe from a csv file on drive
 
 	
 	Parameters
 	----------
-	file_id : string
-		Id of the file to be loaded
-		The string of numbers and letters after the "file/d/" and before the "/view?usp=sharing" in the url of the file
+	url : string
+		the sharing link of the file to be uploaded
 		Ensure that the file is viewable by anyone with the link
 
 	Examples
 	--------
-	>>> data = urchin.io.load_df('1Vn5OpFRkEu_GYSmi9kZYXH8WlwmJ6Qs6')
+	>>> probes_data = urchin.io.load_df('https://drive.google.com/file/d/1Vn5OpFRkEu_GYSmi9kZYXH8WlwmJ6Qs6/view?usp=drive_link')
 	"""
-	file_id = utils.sanitize_string(file_id)
-	file_url = f'https://drive.google.com/uc?id={file_id}'
-	return pd.read_csv(file_url)
+	url = utils.sanitize_drive_url(url)
+	return pd.read_csv(url)
 
 
-def load_npy(file_id, file_name):
+def load_npy(url, file_title):
 	"""Loads a numpy array from a npy file on drive
 
 	
 	Parameters
 	----------
-	file_id : string
-		Id of the file to be loaded
-		The string of numbers and letters after the "file/d/" and before the "/view?usp=sharing" in the url of the file
+	url : string
+		the sharing link of the file to be uploaded
 		Ensure that the file is viewable by anyone with the link
 
-	file_name : string
+	file_title : string
 		Name of the file to be loaded, will be saved locally on colab
 
 	Examples
 	--------
-	>>> test = urchin.io.load_npy('1zE3Vobs5HBH_ne4KOpaPNKZFjhdxl6yQ', 'tester')
+	>>> test = urchin.io.load_npy('https://drive.google.com/file/d/1zE3Vobs5HBH_ne4KOpaPNKZFjhdxl6yQ/view?usp=drive_link', 'tester')
 	"""
-	file_id = utils.sanitize_string(file_id)
-	!wget -O {file_name}.npy https://drive.google.com/uc?id={file_id}
-	return np.load(f'/content/{file_name}.npy')
+	file_title = utils.sanitize_string(file_title)
+	url = utils.sanitize_drive_url(url)
+	!wget -O {file_title}.npy {url}
+	return np.load(f'/content/{file_title}.npy')
 
-def load_parquet(file_id, file_name):
+def load_parquet(url, file_title):
 	"""Loads a parquet file from a parquet file on drive
 
 	
 	Parameters
 	----------
-	file_id : string
-		Id of the file to be loaded
-		The string of numbers and letters after the "file/d/" and before the "/view?usp=sharing" in the url of the file
+	url : string
+		the sharing link of the file to be uploaded
 		Ensure that the file is viewable by anyone with the link
 
-	file_name : string
+	file_title : string
 		Name of the file to be loaded, will be saved locally on colab
 
 	Examples
 	--------
-		--------
-	>>> test = urchin.io.load_parquet("13_YNx5ATSGb5LlV4X24yq6PH-E22mvQX","pq_test")
+	>>> test = urchin.io.load_parquet("https://drive.google.com/file/d/13_YNx5ATSGb5LlV4X24yq6PH-E22mvQX/view?usp=drive_link","pq_test")
 	"""
-	import pandas as pd
-	file_id = utils.sanitize_string(file_id)
-	!wget -O {file_name}.npy https://drive.google.com/uc?id={file_id}
-	return pd.read_parquet(f'/content/{file_name}.npy')
+	file_title = utils.sanitize_string(file_title)
+	url = utils.sanitize_drive_url(url)
+	!wget -O {file_title}.parquet {url}
+	return pd.read_parquet(f'/content/{file_title}.parquet')
 
 def download_to_csv(df_name):
 	"""Downloads a pandas dataframe to a csv file on local machine
@@ -140,5 +142,6 @@ def download_file(file_name):
 	--------
 	>>> urchin.io.download_file('test.txt')
 	"""
+	file_name = utils.sanitize_extension(file_name)
 	file_path = f'/content/{file_name}'
 	files.download(file_path)
