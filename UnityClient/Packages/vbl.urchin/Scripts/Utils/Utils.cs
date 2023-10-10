@@ -6,7 +6,10 @@ using UnityEngine;
 
 public class Utils : MonoBehaviour
 {
-    public static Vector3 IBL_BREGMA = new Vector3(5.4f, 5.7f, 0.332f);
+    public static Vector3 CCF_BREGMA = new Vector3(5.2f, 5.7f, 0.332f);
+    public static Vector3 CCF_LAMBDA = new Vector3(9.7f, 5.7f, 0.332f);
+
+    public static Vector3 WXH_BREGMA = new Vector3(25.467f, 9.594f, 17.160f);
 
     /// <summary>
     /// Rotate phi and theta to match IBL coordinates

@@ -234,7 +234,7 @@ namespace Urchin.API
             manager.Socket.On<List<string>>("CreateFOV", x => CreateFOV.Invoke(x));
             manager.Socket.On<List<string>>("DeleteFOV", x => DeleteFOV.Invoke(x));
             manager.Socket.On<Dictionary<string, List<List<float>>>>("SetFOVPos", x => SetFOVPos.Invoke(x));
-             manager.Socket.On<Dictionary<string, float>>("SetFOVOffset", x => SetFOVOffset.Invoke(x));
+            manager.Socket.On<Dictionary<string, float>>("SetFOVOffset", x => SetFOVOffset.Invoke(x));
             manager.Socket.On<List<object>>("SetFOVTextureDataMetaInit", x => SetFOVTextureDataMetaInit.Invoke(x));
             manager.Socket.On<List<object>>("SetFOVTextureDataMeta", x => SetFOVTextureDataMeta.Invoke(x));
             manager.Socket.On<byte[]>("SetFOVTextureData", x => SetFOVTextureData.Invoke(x));
