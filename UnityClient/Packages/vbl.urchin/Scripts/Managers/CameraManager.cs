@@ -56,7 +56,7 @@ namespace Urchin.Managers
             {
                 if (_cameras.Keys.Contains(cameraName))
                 {
-                    //Client.LogWarning($"Camera {cameraName} was created twice. The camera will not be re-created");
+                    Debug.LogWarning($"Camera {cameraName} was created twice. The camera will not be re-created");
                     continue;
                 }
 
@@ -67,13 +67,8 @@ namespace Urchin.Managers
                 tempObject.name = $"camera_{cameraName}";
                 CameraBehavior cameraBehavior = tempObject.GetComponent<CameraBehavior>();
                 cameraBehavior.RenderTexture = textures.Pop();
-                //cameraBehavior.AreaManager = _areaManager;
-                throw new NotImplementedException();
-                //cameraBehavior.ModelControl = _modelControl;
                 cameraBehavior.Name = cameraName;
-                // Get all Camera components attached to children of the script's GameObject (since there are multiple)
                 _cameras.Add(cameraName, cameraBehavior);
-
             }
             UpdateVisibleUI();
 
@@ -197,18 +192,7 @@ namespace Urchin.Managers
         {
             //set everything to false except for given camera
             foreach (var kvp in _cameras)
-            {
-                if (kvp.Key == cameraName)
-                {
-                    kvp.Value.SetCameraControl(true);
-                }
-                else
-                {
-                    kvp.Value.SetCameraControl(false);
-                }
-
-                //kvp.Value.SetCameraControl(kvp.Key == cameraName);
-            }
+                kvp.Value.SetCameraControl(kvp.Key == cameraName);
         }
         #endregion
 
