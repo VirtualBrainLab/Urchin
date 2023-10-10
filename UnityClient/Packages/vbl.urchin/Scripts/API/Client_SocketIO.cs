@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using BestHTTP.SocketIO3;
 using System;
+using UnityEngine.Events;
 
 namespace Urchin.API
 {/// <summary>
@@ -10,9 +11,24 @@ namespace Urchin.API
  /// </summary>
     public class Client_SocketIO : MonoBehaviour
     {
+        #region Events
+        public UnityEvent<string> IDChangedEvent;
+        #endregion
+
         #region variables
         private const string ID_SAVE_KEY = "id";
-        private string ID;
+        private string _ID;
+        public string ID
+        {
+            get { return _ID; }
+            set
+            {
+                _ID = value;
+                PlayerPrefs.SetString(ID_SAVE_KEY, ID);
+                manager.Socket.Emit("ID", new List<string>() { ID, "receive" });
+                IDChangedEvent.Invoke(ID);
+            }
+        }
 
         [SerializeField] private bool localhost;
 
@@ -299,8 +315,6 @@ namespace Urchin.API
         public void UpdateID(string newID)
         {
             ID = newID;
-            PlayerPrefs.SetString(ID_SAVE_KEY, ID);
-            manager.Socket.Emit("ID", new List<string>() { ID, "receive" });
             Debug.Log($"ID updated to {ID}");
         }
 
@@ -334,10 +348,13 @@ namespace Urchin.API
             }
         }
 #endif
-
+            if (webGLID)
+                UpdateID(ID);
             if (PlayerPrefs.HasKey(ID_SAVE_KEY) && !webGLID)
-                ID = PlayerPrefs.GetString(ID_SAVE_KEY);
-            UpdateID(ID);
+            {
+                UpdateID(PlayerPrefs.GetString(ID_SAVE_KEY));
+                Debug.Log("Found ID in PlayerPrefs, setting to: " + ID);
+            }
         }
 
         public static void Log(string msg)
