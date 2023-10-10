@@ -5,6 +5,7 @@ using BrainAtlas;
 using UnityEngine.Events;
 using Urchin.Utils;
 using System.Threading.Tasks;
+using Urchin.API;
 
 namespace Urchin.Managers
 {
@@ -52,6 +53,19 @@ namespace Urchin.Managers
         private void Start()
         {
             _localColormap = Colormaps.MainColormap;
+
+            Client_SocketIO.ClearAreas += ClearAreas;
+
+            Client_SocketIO.LoadAtlas += LoadAtlas;
+            Client_SocketIO.SetAreaVisibility += SetAreaVisibility;
+            Client_SocketIO.SetAreaColors += SetAreaColors;
+            Client_SocketIO.SetAreaIntensity += SetAreaIntensity;
+            Client_SocketIO.SetAreaColormap += SetAreaColormap;
+            Client_SocketIO.SetAreaMaterial += SetAreaMaterial;
+            Client_SocketIO.SetAreaAlpha += SetAreaAlpha;
+            Client_SocketIO.SetAreaData += SetAreaData;
+            Client_SocketIO.SetAreaIndex += SetAreaIndex;
+            Client_SocketIO.LoadDefaultAreas += LoadDefaultAreas;
         }
         #endregion
 
@@ -123,7 +137,7 @@ namespace Urchin.Managers
             }
         }
 
-        public async void SetAreaColor(Dictionary<string, string> areaColor)
+        public async void SetAreaColors(Dictionary<string, string> areaColor)
         {
             foreach (KeyValuePair<string, string> kvp in areaColor)
             {
@@ -228,14 +242,14 @@ namespace Urchin.Managers
             }
         }
 
-        public void SetAreaDataIndex(int areaDataIdx)
+        public void SetAreaIndex(int areaDataIdx)
         {
             _areaDataIndex = areaDataIdx;
             UpdateAreaDataIntensity();
         }
 
         // Area intensity colormaps
-        public async void SetAreaColorIntensity(Dictionary<string, float> areaIntensity)
+        public void SetAreaIntensity(Dictionary<string, float> areaIntensity)
         {
             foreach (KeyValuePair<string, float> kvp in areaIntensity)
             {

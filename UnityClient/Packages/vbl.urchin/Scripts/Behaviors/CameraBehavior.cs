@@ -5,6 +5,7 @@ using UnityEditor.PackageManager;
 using UnityEngine;
 using Urchin.Cameras;
 using BrainAtlas;
+using Urchin.API;
 
 namespace Urchin.Behaviors
 {
@@ -143,8 +144,7 @@ namespace Urchin.Behaviors
             ScreenshotReturnMeta meta = new();
             meta.name = Name;
             meta.totalBytes = bytes.Length;
-            throw new NotImplementedException();
-            //Client_SocketIO.Emit("ReceiveCameraImgMeta", JsonUtility.ToJson(meta));
+            Client_SocketIO.Emit("ReceiveCameraImgMeta", JsonUtility.ToJson(meta));
 
             int nChunks = Mathf.CeilToInt((float)bytes.Length / (float)SOCKET_IO_MAX_CHUNK_BYTES);
 
@@ -156,8 +156,7 @@ namespace Urchin.Behaviors
                 int cChunkSize = Mathf.Min(SOCKET_IO_MAX_CHUNK_BYTES, bytes.Length - i * SOCKET_IO_MAX_CHUNK_BYTES);
                 chunk.data = new byte[cChunkSize];
                 Buffer.BlockCopy(bytes, i * SOCKET_IO_MAX_CHUNK_BYTES, chunk.data, 0, cChunkSize);
-                throw new NotImplementedException();
-                //Client.Emit("ReceiveCameraImg", JsonUtility.ToJson(chunk));
+                Client_SocketIO.Emit("ReceiveCameraImg", JsonUtility.ToJson(chunk));
             }
         }
 
@@ -194,7 +193,7 @@ namespace Urchin.Behaviors
         public void SetCameraPan(List<float> panXY)
         {
             throw new NotImplementedException();
-            //_cameraControl.SetCameraPan(new Vector2(panXY[0], panXY[1]));
+            //_cameraControl.SetP(new Vector2(panXY[0], panXY[1]));
         }
         #endregion
     }
