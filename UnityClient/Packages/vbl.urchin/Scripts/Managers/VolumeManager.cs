@@ -27,7 +27,7 @@ namespace Urchin.Managers
         public void SetVisibility(List<object> data)
         {
             if (((string)data[0]).Equals("allen"))
-                volRenderer.DisplayAllenVolume((bool)data[1]);
+                volRenderer.DisplayAnnotationVolume((bool)data[1]);
             else
                 volRenderer.SetVolumeVisibility((string)data[0], (bool)data[1]);
         }

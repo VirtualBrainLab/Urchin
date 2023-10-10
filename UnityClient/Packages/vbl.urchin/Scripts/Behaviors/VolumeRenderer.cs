@@ -99,7 +99,7 @@ public class VolumeRenderer : MonoBehaviour
             GetComponent<Renderer>().enabled = false;
     }
 
-    public async void DisplayAllenVolume(bool visible)
+    public async void DisplayAnnotationVolume(bool visible)
     {
         if (visible)
         {
@@ -120,6 +120,11 @@ public class VolumeRenderer : MonoBehaviour
             GetComponent<Renderer>().enabled = false;
 
         Debug.Log("(UM_VolRend) Volume: allen is now visible: " + visible);
+    }
+
+    public async void DisplayReferenceVolume(bool visible)
+    {
+        throw new NotImplementedException();
     }
 
     private string nextVol;
