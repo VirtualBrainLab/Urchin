@@ -174,7 +174,17 @@ namespace Urchin.Managers
                     // target area needs to be parsed by AtlasManager
                     var areaData = AtlasManager.GetID(kvp.Value);
 
-                    Vector3 coordAtlas = BrainAtlasManager.ActiveReferenceAtlas.MeshCenters[areaData.ID];
+                    Vector3 coordAtlas = Vector3.zero;
+                    if (areaData.leftSide)
+                        coordAtlas = BrainAtlasManager.ActiveReferenceAtlas.MeshCenters[areaData.ID].left;
+                    else if (areaData.full)
+                        coordAtlas = BrainAtlasManager.ActiveReferenceAtlas.MeshCenters[areaData.ID].full;
+                    else if (areaData.rightSide)
+                    {
+                        coordAtlas = BrainAtlasManager.ActiveReferenceAtlas.MeshCenters[areaData.ID].left;
+                        // invert the ML axis
+                        coordAtlas.y = BrainAtlasManager.ActiveReferenceAtlas.Dimensions.y - coordAtlas.y;
+                    }
 
                     Debug.LogWarning("Mesh center needs to target full/left/right correctly!!");
                     _cameras[kvp.Key].SetCameraTarget(coordAtlas);
