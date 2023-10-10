@@ -175,46 +175,19 @@ namespace Urchin.Behaviors
             public byte[] data;
         }
 
-        public void SetCameraPosition(List<float> obj)
+        public void SetCameraYAngle(float yaw)
         {
-            // position in ml/ap/dv relative to ccf 0,0,0
-            throw new NotImplementedException();
-            //Client.LogError("Setting camera position not implemented yet. Use set_camera_target and set_camera_rotation instead.");
-            //Vector3 ccfPosition25 = new Vector3(obj[0]/25, obj[1]/25, obj[2]/25);
-            //cameraControl.SetOffsetPosition(Utils.apdvlr2World(ccfPosition25));
+            Vector3 angles = _cameraControl.PitchYawRoll;
+            angles.y += yaw;
+            _cameraControl.SetBrainAxisAngles(angles);
         }
 
-        public void SetCameraYAngle(float obj)
-        {
-            throw new NotImplementedException();
-            //_cameraControl.SetSpin(obj);
-        }
-
-        public void SetCameraTargetArea(string obj)
-        {
-            throw new NotImplementedException();
-            //(int ID, bool full, bool leftSide, bool rightSide) = AreaManager.GetID(obj);
-            //CCFTreeNode node = ModelControl.tree.findNode(ID);
-            //if (node != null)
-            //{
-            //    Vector3 center;
-            //    if (full)
-            //        center = node.GetMeshCenterFull();
-            //    else
-            //        center = node.GetMeshCenterSided(leftSide);
-            //    _cameraControl.SetCameraTarget(center);
-            //}
-            //else
-            //    Debug.Log("Failed to find node to set camera target: " + obj);
-        }
-
-        public void SetCameraTarget(List<float> apmldv)
+        public void SetCameraTarget(Vector3 coordAtlas)
         {
             // data comes in in um units in ml/ap/dv
             // note that (0,0,0) in world is the center of the brain
             // so offset by (-6.6 ap, -4 dv, -5.7 lr) to get to the corner
             // in world space, x = ML, y = DV, z = AP
-            Vector3 coordAtlas = new Vector3(apmldv[0], apmldv[1], apmldv[2]);
             _cameraControl.SetCameraTarget(BrainAtlasManager.ActiveReferenceAtlas.Atlas2World(coordAtlas));
         }
 

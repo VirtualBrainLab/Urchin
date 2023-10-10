@@ -1,3 +1,4 @@
+using BrainAtlas;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -141,17 +142,6 @@ namespace Urchin.Managers
             _cameras[screenshotData.name].Screenshot(screenshotData.size);
         }
 
-        public void SetCameraPosition(Dictionary<string, List<float>> cameraPosition)
-        {
-            foreach (var kvp in cameraPosition)
-            {
-                if (_cameras.ContainsKey(kvp.Key))
-                {
-                    _cameras[kvp.Key].SetCameraPosition(kvp.Value);
-                }
-            }
-        }
-
         public void SetCameraYAngle(Dictionary<string, float> cameraYAngle)
         {
             foreach (var kvp in cameraYAngle)
@@ -169,7 +159,13 @@ namespace Urchin.Managers
             {
                 if (_cameras.ContainsKey(kvp.Key))
                 {
-                    _cameras[kvp.Key].SetCameraTargetArea(kvp.Value);
+                    // target area needs to be parsed by AtlasManager
+                    var areaData = AtlasManager.GetID(kvp.Value);
+
+                    Vector3 coordAtlas = BrainAtlasManager.ActiveReferenceAtlas.MeshCenters[areaData.ID];
+
+                    Debug.LogWarning("Mesh center needs to target full/left/right correctly!!");
+                    _cameras[kvp.Key].SetCameraTarget(coordAtlas);
                 }
             }
         }
@@ -180,7 +176,8 @@ namespace Urchin.Managers
             {
                 if (_cameras.ContainsKey(kvp.Key))
                 {
-                    _cameras[kvp.Key].SetCameraTarget(kvp.Value);
+                    Vector3 coordAtlas = new Vector3(kvp.Value[0], kvp.Value[1], kvp.Value[2]);
+                    _cameras[kvp.Key].SetCameraTarget(coordAtlas);
                 }
             }
         }

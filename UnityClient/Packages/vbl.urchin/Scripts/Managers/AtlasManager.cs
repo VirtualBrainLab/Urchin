@@ -314,7 +314,7 @@ namespace Urchin.Managers
         /// </summary>
         /// <param name="idOrAcronym">An ID number (e.g. 0) or an acronym (e.g. "root")</param>
         /// <returns>(int Allen CCF ID, bool left side model, bool right side model)</returns>
-        public (int ID, bool full, bool leftSide, bool rightSide) GetID(string idOrAcronym)
+        public static (int ID, bool full, bool leftSide, bool rightSide) GetID(string idOrAcronym)
         {
             // Check whether a suffix was included
             int leftIndex = idOrAcronym.IndexOf("-lh");
