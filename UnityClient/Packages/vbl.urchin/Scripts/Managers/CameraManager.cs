@@ -24,7 +24,7 @@ namespace Urchin.Managers
         [SerializeField] private AtlasManager _areaManager;
         [SerializeField] private Canvas _uiCanvas;
 
-        [SerializeField] private List<GameObject> _cameraUIGOs;
+        //[SerializeField] private List<GameObject> _cameraUIGOs;
         #endregion
 
         #region Variables
@@ -57,8 +57,8 @@ namespace Urchin.Managers
             Client_SocketIO.SetCameraControl += SetCameraControl;
             Client_SocketIO.RequestScreenshot += RequestScreenshot;
             Client_SocketIO.SetCameraYAngle += SetCameraYAngle;
-            Client_SocketIO.CreateCamera += CreateCamera;
-            Client_SocketIO.DeleteCamera += DeleteCamera;
+            //Client_SocketIO.CreateCamera += CreateCamera;
+            //Client_SocketIO.DeleteCamera += DeleteCamera;
         }
 
         #endregion
@@ -66,47 +66,47 @@ namespace Urchin.Managers
 
         #region Public camera functions
 
-        public void CreateCamera(List<string> cameraNames)
-        {
-            //instantiating game object w camera component
-            foreach (string cameraName in cameraNames)
-            {
-                if (_cameras.Keys.Contains(cameraName))
-                {
-                    Debug.LogWarning($"Camera {cameraName} was created twice. The camera will not be re-created");
-                    continue;
-                }
+//        public void CreateCamera(List<string> cameraNames)
+//        {
+//            //instantiating game object w camera component
+//            foreach (string cameraName in cameraNames)
+//            {
+//                if (_cameras.Keys.Contains(cameraName))
+//                {
+//                    Debug.LogWarning($"Camera {cameraName} was created twice. The camera will not be re-created");
+//                    continue;
+//                }
 
-#if UNITY_EDITOR
-                Debug.Log($"{cameraName} created");
-#endif
-                GameObject tempObject = Instantiate(_cameraPrefab);
-                tempObject.name = $"camera_{cameraName}";
-                CameraBehavior cameraBehavior = tempObject.GetComponent<CameraBehavior>();
-                cameraBehavior.RenderTexture = textures.Pop();
-                cameraBehavior.Name = cameraName;
-                _cameras.Add(cameraName, cameraBehavior);
-            }
-            UpdateVisibleUI();
+//#if UNITY_EDITOR
+//                Debug.Log($"{cameraName} created");
+//#endif
+//                GameObject tempObject = Instantiate(_cameraPrefab);
+//                tempObject.name = $"camera_{cameraName}";
+//                CameraBehavior cameraBehavior = tempObject.GetComponent<CameraBehavior>();
+//                cameraBehavior.RenderTexture = textures.Pop();
+//                cameraBehavior.Name = cameraName;
+//                _cameras.Add(cameraName, cameraBehavior);
+//            }
+//            UpdateVisibleUI();
 
-        }
+//        }
 
-        public void DeleteCamera(List<string> cameraNames)
-        {
-            foreach (string cameraName in cameraNames)
-            {
-                textures.Push(_cameras[cameraName].RenderTexture);
-                GameObject.Destroy(_cameras[cameraName].gameObject);
-                _cameras.Remove(cameraName);
-            }
-            UpdateVisibleUI();
-        }
+//        public void DeleteCamera(List<string> cameraNames)
+//        {
+//            foreach (string cameraName in cameraNames)
+//            {
+//                textures.Push(_cameras[cameraName].RenderTexture);
+//                GameObject.Destroy(_cameras[cameraName].gameObject);
+//                _cameras.Remove(cameraName);
+//            }
+//            UpdateVisibleUI();
+//        }
 
-        private void UpdateVisibleUI()
-        {
-            for (int i = 0; i < _cameraUIGOs.Count; i++)
-                _cameraUIGOs[i].SetActive(i < (_cameras.Count - 1));
-        }
+        //private void UpdateVisibleUI()
+        //{
+        //    for (int i = 0; i < _cameraUIGOs.Count; i++)
+        //        _cameraUIGOs[i].SetActive(i < (_cameras.Count - 1));
+        //}
 
         //each function below works by first checking if camera exits in dictionary, and then calling cameraBehavior function
         public void SetCameraRotation(Dictionary<string, List<float>> cameraRotation)

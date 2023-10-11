@@ -11,9 +11,6 @@ namespace Urchin.Managers
 {
     public class AtlasManager : MonoBehaviour
     {
-        #region Serialized fields
-        [SerializeField] BrainAtlasManager _brainAtlasManager;
-        #endregion
 
         #region static
         public static HashSet<OntologyNode> VisibleNodes { get; private set; }

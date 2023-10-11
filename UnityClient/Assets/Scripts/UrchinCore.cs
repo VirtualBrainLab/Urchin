@@ -116,7 +116,7 @@ public class UrchinCore : MonoBehaviour
         }
 
         // Before checking for keydown events, return if the user is typing in the input box
-        if (idPanel.GetComponent<TMP_InputField>().isFocused)
+        if (idPanel.GetComponentInChildren<TMP_InputField>().isFocused)
             return;
 
         // Check for key down events
