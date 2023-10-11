@@ -2227,7 +2227,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8599610478370708555}
   m_Layer: 10
-  m_Name: NP2.4Probe
+  m_Name: fullProbe
   m_TagString: Probe
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
