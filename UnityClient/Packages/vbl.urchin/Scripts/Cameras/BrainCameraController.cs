@@ -197,7 +197,7 @@ public class BrainCameraController : MonoBehaviour
 
     void ApplyBrainCameraPositionAndRotation()
     {
-        _mainCameraRotator.transform.rotation = _initialRotation * Quaternion.Euler(_pitchYawRoll);
+        _mainCameraRotator.transform.localRotation = _initialRotation * Quaternion.Euler(_pitchYawRoll);
         RotationChangedEvent.Invoke(_pitchYawRoll);
     }
 
