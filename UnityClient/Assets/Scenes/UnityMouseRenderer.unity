@@ -647,7 +647,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 94244065}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -2901,6 +2901,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6177646269513568233, guid: 86a9f7e7c13796947b271b6a8f43d4d9, type: 3}
+      propertyPath: layerMask.m_Bits
+      value: 16384
+      objectReference: {fileID: 0}
+    - target: {fileID: 6177646269513568233, guid: 86a9f7e7c13796947b271b6a8f43d4d9, type: 3}
+      propertyPath: renderTextureCamera
+      value: 
+      objectReference: {fileID: 1754766756}
     - target: {fileID: 7398734895119177350, guid: 86a9f7e7c13796947b271b6a8f43d4d9, type: 3}
       propertyPath: m_Name
       value: ControlPanel
@@ -8135,6 +8143,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1744259007}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!20 &1754766756 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 3007811191311767224, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
+  m_PrefabInstance: {fileID: 431647798}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1756174612
 GameObject:
   m_ObjectHideFlags: 0

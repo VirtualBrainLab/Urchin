@@ -5456,13 +5456,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1585022055348087818}
     m_Modifications:
+    - target: {fileID: 1961916998667086571, guid: f41a56f4fda00a7459bf39bd6b7d4155, type: 3}
+      propertyPath: cameraController
+      value: 
+      objectReference: {fileID: 3393775226113162775}
+    - target: {fileID: 1961916998806602264, guid: f41a56f4fda00a7459bf39bd6b7d4155, type: 3}
+      propertyPath: cameraController
+      value: 
+      objectReference: {fileID: 3393775226113162775}
+    - target: {fileID: 1961917000157152736, guid: f41a56f4fda00a7459bf39bd6b7d4155, type: 3}
+      propertyPath: cameraController
+      value: 
+      objectReference: {fileID: 3393775226113162775}
+    - target: {fileID: 1961917000196635951, guid: f41a56f4fda00a7459bf39bd6b7d4155, type: 3}
+      propertyPath: cameraController
+      value: 
+      objectReference: {fileID: 3393775226113162775}
     - target: {fileID: 1961917000311605960, guid: f41a56f4fda00a7459bf39bd6b7d4155, type: 3}
       propertyPath: m_Name
       value: BrainControls
       objectReference: {fileID: 0}
     - target: {fileID: 1961917000311605967, guid: f41a56f4fda00a7459bf39bd6b7d4155, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 1961917000311605967, guid: f41a56f4fda00a7459bf39bd6b7d4155, type: 3}
       propertyPath: m_LocalPosition.y
@@ -5534,10 +5550,6 @@ PrefabInstance:
       value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 5697262125096797361, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
-      propertyPath: _mainCameraTargetT
-      value: 
-      objectReference: {fileID: 1585022055348087818}
-    - target: {fileID: 5697262125096797361, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
       propertyPath: RotationChangedEvent.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -5568,34 +5580,6 @@ PrefabInstance:
     - target: {fileID: 5697262125096797366, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
       propertyPath: m_Name
       value: MainCamera
-      objectReference: {fileID: 0}
-    - target: {fileID: 5697262125096797367, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5697262125096797367, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 16
-      objectReference: {fileID: 0}
-    - target: {fileID: 5697262125096797367, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5697262125096797367, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5697262125096797367, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5697262125096797367, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 5697262125096797367, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 5697262125096797367, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -5632,6 +5616,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 29696c16e4ad4234f81dfdbd428c8ad3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3393775226113162775 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5697262125096797361, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
+  m_PrefabInstance: {fileID: 6920239469451836070}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d43419cf1d43bf4995059dad0606dfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &7863671746043544761

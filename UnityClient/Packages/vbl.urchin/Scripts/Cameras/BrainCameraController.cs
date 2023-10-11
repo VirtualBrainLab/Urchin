@@ -34,6 +34,7 @@ public class BrainCameraController : MonoBehaviour
     private float lastLeftClick;
     private float lastRightClick;
 
+
     // auto-rotation
     private bool autoRotate;
     private float autoRotateSpeed = 10.0f;
@@ -46,6 +47,7 @@ public class BrainCameraController : MonoBehaviour
     // Speed and rotation controls
 
     #region Rotation
+    private Quaternion _initialRotation;
     public float rotSpeed = 200.0f;
 
     private Vector3 _pitchYawRoll;
@@ -65,6 +67,7 @@ public class BrainCameraController : MonoBehaviour
         Application.targetFrameRate = 144;
 #endif
 
+        _initialRotation = transform.rotation;
         autoRotate = false;
 
         lastLeftClick = Time.realtimeSinceStartup;
@@ -167,7 +170,7 @@ public class BrainCameraController : MonoBehaviour
             // If the mouse is down, even if we are far way now we should drag the brain
             if (mouseButtonDown == 0)
             {
-                float roll = -Input.GetAxis("Mouse X") * rotSpeed * Time.deltaTime;
+                float roll = Input.GetAxis("Mouse X") * rotSpeed * Time.deltaTime;
                 float pitch = Input.GetAxis("Mouse Y") * rotSpeed * Time.deltaTime;
 
                 if (roll != 0 || pitch != 0)
@@ -179,12 +182,12 @@ public class BrainCameraController : MonoBehaviour
                     // if space is down, we can apply yaw instead of roll
                     if (Input.GetKey(KeyCode.Space))
                     {
-                        _pitchYawRoll.y = Mathf.Clamp(_pitchYawRoll.y + roll, minXRotation, maxXRotation);
+                        _pitchYawRoll.z = Mathf.Clamp(_pitchYawRoll.z + roll, minXRotation, maxXRotation);
                     }
                     else
                     {
                         _pitchYawRoll.x = Mathf.Clamp(_pitchYawRoll.x - pitch, minXRotation, maxXRotation);
-                        _pitchYawRoll.z = Mathf.Clamp(_pitchYawRoll.z - roll, minZRotation, maxZRotation);
+                        _pitchYawRoll.y = Mathf.Clamp(_pitchYawRoll.y + roll, minZRotation, maxZRotation);
                     }
                     ApplyBrainCameraPositionAndRotation();
                 }
@@ -194,7 +197,8 @@ public class BrainCameraController : MonoBehaviour
 
     void ApplyBrainCameraPositionAndRotation()
     {
-        _mainCameraRotator.transform.rotation = Quaternion.Euler(_pitchYawRoll);
+        _mainCameraRotator.transform.rotation = _initialRotation * Quaternion.Euler(_pitchYawRoll);
+        Debug.Log(_pitchYawRoll);
         RotationChangedEvent.Invoke(_pitchYawRoll);
     }
 
