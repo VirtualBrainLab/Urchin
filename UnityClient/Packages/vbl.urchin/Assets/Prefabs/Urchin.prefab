@@ -5398,10 +5398,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _probePrefabOptions:
   - {fileID: 2507564506256405100, guid: bbfd294d9a4375144b5214e4196f5d20, type: 3}
-  - {fileID: 8943063119080654577, guid: c6cbe13bba479184aa05bff7d11023f5, type: 3}
   _probePrefabNames:
   - line
-  - np24
   _defaultProbeStyle: line
   _probeParentT: {fileID: 0}
 --- !u!1 &9067917052004693332
