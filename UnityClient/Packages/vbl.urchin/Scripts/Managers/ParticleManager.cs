@@ -41,7 +41,7 @@ public class ParticleManager : MonoBehaviour
             ParticleSystem.EmitParams emitParams = new ParticleSystem.EmitParams();
             emitParams.position = Vector3.zero;
             emitParams.startColor = Color.red;
-            emitParams.startSize = 0.02f;
+            emitParams.startSize = 0.1f;
             _particleSystem.Emit(emitParams, 1);
 
             _particleMapping.Add(particleName, _particleSystem.particleCount - 1);

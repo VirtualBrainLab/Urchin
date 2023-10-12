@@ -5545,10 +5545,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1585022055348087818}
     m_Modifications:
-    - target: {fileID: 5697262124586181144, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
-      propertyPath: near clip plane
-      value: -50
-      objectReference: {fileID: 0}
     - target: {fileID: 5697262125096797361, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
       propertyPath: RotationChangedEvent.m_PersistentCalls.m_Calls.Array.size
       value: 1

@@ -80,18 +80,6 @@ public class BrainCameraController : MonoBehaviour
         if (!UserControllable)
             return;
 
-        // Check the scroll wheel and deal with the field of view
-        if (!EventSystem.current.IsPointerOverGameObject())
-        {
-            float fov = GetZoom();
-
-            float scroll = -Input.GetAxis("Mouse ScrollWheel");
-            fov += (_mainCamera.orthographic ? orthoDelta : fovDelta) * scroll;
-            fov = Mathf.Clamp(fov, minFoV, maxFoV);
-
-            SetZoom(fov);
-        }
-
         // Now check if the mouse wheel is being held down
         if (Input.GetMouseButton(1) && !BlockBrainControl && !EventSystem.current.IsPointerOverGameObject())
         {
@@ -108,6 +96,18 @@ public class BrainCameraController : MonoBehaviour
             mouseButtonDown = 0;
             autoRotate = false;
             thisFrameDown = true;
+        }
+
+        // Check the scroll wheel and deal with the field of view
+        if (!EventSystem.current.IsPointerOverGameObject() && !thisFrameDown)
+        {
+            float fov = GetZoom();
+
+            float scroll = -Input.GetAxis("Mouse ScrollWheel");
+            fov += (_mainCamera.orthographic ? orthoDelta : fovDelta) * scroll;
+            fov = Mathf.Clamp(fov, minFoV, maxFoV);
+
+            SetZoom(fov);
         }
 
         if (autoRotate)

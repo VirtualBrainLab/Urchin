@@ -4,6 +4,7 @@ using UnityEngine;
 public class IDPanel : MonoBehaviour
 {
     [SerializeField] TMP_InputField _inputField;
+    [SerializeField] GameObject _idPanelGO;
 
     public void UpdateText(string text)
     {
@@ -12,6 +13,6 @@ public class IDPanel : MonoBehaviour
 
     public void SetVisibility(bool visible)
     {
-        gameObject.SetActive(visible);
+        _idPanelGO.SetActive(visible);
     }
 }

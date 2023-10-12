@@ -347,8 +347,6 @@ namespace Urchin.Managers
             if (lower.Equals("void"))
                 return (-1, full, leftSide, rightSide);
 
-            // Figure out what the acronym was by asking CCFModelControl
-            Debug.Log(idOrAcronym);
             try
             {
                 int ID = BrainAtlasManager.ActiveReferenceAtlas.Ontology.Acronym2ID(idOrAcronym);
