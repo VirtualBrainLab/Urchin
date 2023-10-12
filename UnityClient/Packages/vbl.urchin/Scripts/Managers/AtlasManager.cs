@@ -62,7 +62,7 @@ namespace Urchin.Managers
             Client_SocketIO.SetAreaAlpha += SetAreaAlpha;
             Client_SocketIO.SetAreaData += SetAreaData;
             Client_SocketIO.SetAreaIndex += SetAreaIndex;
-            Client_SocketIO.LoadDefaultAreas += LoadDefaultAreas;
+            Client_SocketIO.LoadDefaultAreas += LoadDefaultAreasVoid;
         }
         #endregion
 
@@ -290,7 +290,7 @@ namespace Urchin.Managers
         }
 
         // Auto-loaders
-        public async void LoadDefaultAreas(string defaultName)
+        public async void LoadDefaultAreasVoid(string defaultName)
         {
             int[] defaultAreaIDs = BrainAtlasManager.ActiveReferenceAtlas.DefaultAreas;
 
@@ -307,6 +307,29 @@ namespace Urchin.Managers
                 node.SetVisibility(true, OntologyNode.OntologyNodeSide.Left);
                 node.SetVisibility(true, OntologyNode.OntologyNodeSide.Right);
             }
+        }
+
+        public async Task<List<OntologyNode>> LoadDefaultAreas(string defaultName)
+        {
+            List<OntologyNode> nodes = new();
+            int[] defaultAreaIDs = BrainAtlasManager.ActiveReferenceAtlas.DefaultAreas;
+
+            foreach (int areaID in defaultAreaIDs)
+            {
+                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(areaID);
+                nodes.Add(node);
+
+                // Load all models
+                _ = node.LoadMesh(OntologyNode.OntologyNodeSide.All);
+
+                await Task.WhenAll(new Task[] { node.FullLoaded, node.SideLoaded });
+
+                node.SetVisibility(false, OntologyNode.OntologyNodeSide.Full);
+                node.SetVisibility(true, OntologyNode.OntologyNodeSide.Left);
+                node.SetVisibility(true, OntologyNode.OntologyNodeSide.Right);
+            }
+
+            return nodes;
         }
 
         #endregion
