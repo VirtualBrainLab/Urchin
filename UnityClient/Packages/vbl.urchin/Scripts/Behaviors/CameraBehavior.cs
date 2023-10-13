@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.PackageManager;
 using UnityEngine;
-using Urchin.Cameras;
 using BrainAtlas;
 using Urchin.API;
 
