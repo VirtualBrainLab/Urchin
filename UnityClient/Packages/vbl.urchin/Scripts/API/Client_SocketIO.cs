@@ -4,7 +4,6 @@ using BestHTTP.SocketIO3;
 using System;
 using UnityEngine.Events;
 using System.Collections.Specialized;
-using UnityEditor.Search;
 
 namespace Urchin.API
 {/// <summary>
