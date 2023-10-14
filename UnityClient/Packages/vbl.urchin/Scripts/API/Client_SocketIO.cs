@@ -4,6 +4,7 @@ using BestHTTP.SocketIO3;
 using System;
 using UnityEngine.Events;
 using System.Collections.Specialized;
+using UnityEditor.Search;
 
 namespace Urchin.API
 {/// <summary>
@@ -328,30 +329,15 @@ namespace Urchin.API
         {
 
             // If we are building to WebGL or to Standalone, switch how you acquire the user's ID
-            bool webGLID = false;
-#if UNITY_WEBGL && !UNITY_EDITOR
-        // get the url
-        string appURL = Application.absoluteURL;
-        // parse for query strings
-        int queryIdx = appURL.IndexOf("?");
-        if (queryIdx > 0)
-        {
-            string queryString = appURL.Substring(queryIdx);
-            NameValueCollection qscoll = System.Web.HttpUtility.ParseQueryString(queryString);
-            foreach (string query in qscoll)
-            {
-                if (query.Equals("ID"))
-                {
-                    ID = qscoll[query];
-                    webGLID = true;
-                    Debug.Log("Found ID in URL querystring, setting to: " + ID);
-                }
-            }
-        }
-#endif
+            string queryID;
+            bool webGLID = Utils.Utils.ParseQueryForID(out queryID);
+
             if (webGLID)
-                UpdateID(ID);
-            if (PlayerPrefs.HasKey(ID_SAVE_KEY) && !webGLID)
+            {
+                UpdateID(queryID);
+                Debug.Log("Found ID in Query string, setting to: " + ID);
+            }
+            else if (PlayerPrefs.HasKey(ID_SAVE_KEY))
             {
                 UpdateID(PlayerPrefs.GetString(ID_SAVE_KEY));
                 Debug.Log("Found ID in PlayerPrefs, setting to: " + ID);

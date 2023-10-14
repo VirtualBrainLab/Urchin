@@ -2,7 +2,8 @@
     "name": "urchin.api",
     "rootNamespace": "",
     "references": [
-        "GUID:9069ac25d95ca17448a247f3bb1c769f"
+        "GUID:9069ac25d95ca17448a247f3bb1c769f",
+        "GUID:5dedf88781c06a443aeac3e770ba73f9"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
