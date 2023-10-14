@@ -3,6 +3,7 @@ using UnityEngine;
 using BestHTTP.SocketIO3;
 using System;
 using UnityEngine.Events;
+using System.Collections.Specialized;
 
 namespace Urchin.API
 {/// <summary>
