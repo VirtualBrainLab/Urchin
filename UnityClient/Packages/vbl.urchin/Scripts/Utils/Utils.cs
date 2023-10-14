@@ -38,6 +38,18 @@ namespace Urchin.Utils
             return new Vector3(worldPhi, worldTheta, iblAngles.z);
         }
 
+        public static Color Hex2Color(string hexString)
+        {
+            Color color;
+            ColorUtility.TryParseHtmlString(hexString, out color);
+            return color;
+        }
+
+        public static string Color2Hex(Color color)
+        {
+            return $"{Mathf.RoundToInt(color.r * 255):X2}{Mathf.RoundToInt(color.g * 255):X2}{Mathf.RoundToInt(color.b * 255):X2}";
+        }
+
         public static bool ParseQueryForID(out string ID)
         {
             bool webGLID = false;
