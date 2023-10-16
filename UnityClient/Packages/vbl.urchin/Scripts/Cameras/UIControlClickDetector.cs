@@ -21,7 +21,7 @@ namespace BrainAtlas.Cameras
             if (Input.GetMouseButtonDown(0))
             {
                 Vector2 localMousePosition;
-                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(rawImageRectTransform, Input.mousePosition, null, out localMousePosition))
+                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(rawImageRectTransform, Input.mousePosition, Camera.main, out localMousePosition))
                 {
                     Vector2 normalizedPosition = Rect.PointToNormalized(rawImageRectTransform.rect, localMousePosition);
                     Ray ray = renderTextureCamera.ViewportPointToRay(new Vector3(normalizedPosition.x, normalizedPosition.y, 0));
