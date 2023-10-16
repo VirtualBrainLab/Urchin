@@ -68,9 +68,9 @@ namespace Urchin.Behaviors
             _cameraControl.UserControllable = controllable;
         }
 
-        public void SetCameraRotation(List<float> obj)
+        public void SetCameraRotation(Vector3 yawPitchRoll)
         {
-            _cameraControl.SetBrainAxisAngles(new Vector3(obj[1], obj[0], obj[2]));
+            _cameraControl.SetBrainAxisAngles(yawPitchRoll);
         }
 
         public void SetCameraZoom(float obj)

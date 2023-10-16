@@ -112,7 +112,8 @@ namespace Urchin.Managers
             {
                 if (_cameras.ContainsKey(kvp.Key))
                 {
-                    _cameras[kvp.Key].SetCameraRotation(kvp.Value);
+                    Vector3 yawPitchRoll = new Vector3(kvp.Value[0], kvp.Value[1], kvp.Value[2]);
+                    _cameras[kvp.Key].SetCameraRotation(yawPitchRoll);
                 }
             }
         }
