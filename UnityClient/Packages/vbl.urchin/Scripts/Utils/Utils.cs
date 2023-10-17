@@ -20,6 +20,13 @@ namespace Urchin.Utils
             {"waxholm_rat_39um", WXH_BREGMA},
         };
 
+        public static Dictionary<string, Vector3> LambdaDefaults = new Dictionary<string, Vector3>
+        {
+            {"allen_mouse_25um", CCF_LAMBDA},
+            {"waxholm_rat_39um", Vector3.zero},
+        };
+
+
         /// <summary>
         /// Rotate phi and theta to match IBL coordinates
         /// </summary>
