@@ -14,6 +14,12 @@ namespace Urchin.Utils
 
         public static Vector3 WXH_BREGMA = new Vector3(25.467f, 9.594f, 17.160f);
 
+        public static Dictionary<string, Vector3> BregmaDefaults = new Dictionary<string, Vector3>
+        {
+            {"allen_mouse_25um", CCF_BREGMA},
+            {"waxholm_rat_39um", WXH_BREGMA},
+        };
+
         /// <summary>
         /// Rotate phi and theta to match IBL coordinates
         /// </summary>
