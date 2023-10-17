@@ -73,7 +73,7 @@ namespace Urchin.Utils
         {
             Dictionary<string, string> parsedQueryParams = new Dictionary<string, string>();
 
-#if !UNITY_WEBGL
+#if !UNITY_WEBGL || UNITY_EDITOR
         return parsedQueryParams;          
 #endif
             Uri uri = new Uri(Application.absoluteURL);
