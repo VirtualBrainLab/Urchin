@@ -81,7 +81,7 @@ public class ParticleManager : MonoBehaviour
         foreach (var kvp in particlePositions)
         {
             Vector3 coordU = new Vector3(kvp.Value[0], kvp.Value[1], kvp.Value[2]);
-            particles[_particleMapping[kvp.Key]].position = BrainAtlasManager.ActiveReferenceAtlas.Atlas2World(coordU);
+            particles[_particleMapping[kvp.Key]].position = BrainAtlasManager.ActiveReferenceAtlas.Atlas2World(coordU, false);
         }
 
         _particleSystem.SetParticles(particles);
