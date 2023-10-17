@@ -17,13 +17,13 @@ namespace Urchin.Utils
         public static Dictionary<string, Vector3> BregmaDefaults = new Dictionary<string, Vector3>
         {
             {"allen_mouse_25um", CCF_BREGMA},
-            {"waxholm_rat_39um", WXH_BREGMA},
+            {"whs_sd_rat_39um", WXH_BREGMA},
         };
 
         public static Dictionary<string, Vector3> LambdaDefaults = new Dictionary<string, Vector3>
         {
             {"allen_mouse_25um", CCF_LAMBDA},
-            {"waxholm_rat_39um", Vector3.zero},
+            {"whs_sd_rat_39um", Vector3.zero},
         };
 
 
