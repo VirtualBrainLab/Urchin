@@ -12,7 +12,7 @@ namespace Urchin.Utils
         public static Vector3 CCF_BREGMA = new Vector3(5.2f, 5.7f, 0.332f);
         public static Vector3 CCF_LAMBDA = new Vector3(9.7f, 5.7f, 0.332f);
 
-        public static Vector3 WXH_BREGMA = new Vector3(14.469f, 9.984f, 2.808f);
+        public static Vector3 WXH_BREGMA = new Vector3(14.469f, 10.374f, 2.808f);
 
         public static Dictionary<string, Vector3> BregmaDefaults = new Dictionary<string, Vector3>
         {
