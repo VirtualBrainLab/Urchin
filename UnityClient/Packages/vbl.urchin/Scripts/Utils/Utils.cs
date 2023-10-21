@@ -13,6 +13,7 @@ namespace Urchin.Utils
         public static Vector3 CCF_LAMBDA = new Vector3(9.7f, 5.7f, 0.332f);
 
         public static Vector3 WXH_BREGMA = new Vector3(14.469f, 10.374f, 2.808f);
+        public static Vector3 WXH_LAMBDA = new Vector3(23.469f, 10.374f, 2.808f);
 
         public static Dictionary<string, Vector3> BregmaDefaults = new Dictionary<string, Vector3>
         {
@@ -23,7 +24,7 @@ namespace Urchin.Utils
         public static Dictionary<string, Vector3> LambdaDefaults = new Dictionary<string, Vector3>
         {
             {"allen_mouse_25um", CCF_LAMBDA},
-            {"whs_sd_rat_39um", Vector3.zero},
+            {"whs_sd_rat_39um", WXH_LAMBDA},
         };
 
 
