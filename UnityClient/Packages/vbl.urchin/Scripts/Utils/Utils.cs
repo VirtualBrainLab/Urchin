@@ -10,7 +10,7 @@ namespace Urchin.Utils
     public class Utils : MonoBehaviour
     {
         public static Vector3 CCF_BREGMA = new Vector3(5.2f, 5.7f, 0.332f);
-        public static Vector3 CCF_LAMBDA = new Vector3(9.7f, 5.7f, 0.332f);
+        public static Vector3 CCF_LAMBDA = new Vector3(9.35f, 5.7f, 0.332f);
 
         public static Vector3 WXH_BREGMA = new Vector3(14.469f, 10.374f, 2.808f);
         public static Vector3 WXH_LAMBDA = new Vector3(23.469f, 10.374f, 2.808f);
