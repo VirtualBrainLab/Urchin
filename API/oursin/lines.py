@@ -8,17 +8,11 @@ from . import utils
 counter = 0
 
 class Line:
-  def __init__(self, position= [0.0,0.0,0.0], color= '#FFFFFF'):
+  def __init__(self, position= [[0.0,0.0,0.0]], color= '#FFFFFF'):
     self.create()
 
-    position = utils.sanitize_vector3(position)
-    self.position = position
-    client.sio.emit('SetLinePosition', {self.id: position})
-
-
-    color = utils.sanitize_color(color)
-    self.color = color
-    client.sio.emit('SetLineColor',{self.id: color})
+    self.set_position(position)
+    self.set_color(color)
 
   def create(self):
     """Creates lines
@@ -54,19 +48,21 @@ class Line:
     
     Parameters
     ---------- 
-    position : list of three floats
-        vertex positions of the line
+    position : list of vector3 [[ap,ml,dv],[ap,ml,dv]]
+        vertex positions of the line in the ReferenceAtlas space (um)
 
     Examples
     --------
-    >>>l1.set_position([0, 0, 0])
+    >>>l1.set_position([[0, 0, 0],[13200,11400,8000]])
     """
     if self.in_unity == False:
       raise Exception("Line does not exist in Unity, call create method first.")
 
-    position = utils.sanitize_vector3(position)
+    for i, vec3 in enumerate(position):
+      position[i] = utils.sanitize_vector3(vec3)
     self.position = position
-    client.sio.emit('SetLinePosition', {self.id: position})
+
+    client.sio.emit('SetLinePosition', {self.id: self.position})
 
   def set_color(self, color):
     """Set the color of line renderer
@@ -87,6 +83,21 @@ class Line:
     self.color = color
     client.sio.emit('SetLineColor',{self.id: color})
 
+def create (n):
+  """Create Line objects
+
+  Parameters
+  ----------
+  n : int
+      Number of objects to create
+  """
+  lines_list = []
+  
+  for i in range(n):
+    line = Line()
+    lines_list.append(line)
+
+  return lines_list
 
 def delete (lines_list):
   """Deletes lines

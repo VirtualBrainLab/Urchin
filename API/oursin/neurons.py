@@ -60,12 +60,12 @@ class Neuron:
 		self.in_unity = False
 
 	def set_position(self, position):
-		"""Set the position of neuron position in ml/ap/dv coordinates relative to the CCF (0,0,0) point
+		"""Set the position of neuron position in ap/ml/dv coordinates relative to the CCF (0,0,0) point
 		
 		Parameters
 		---------- 
 		position : list of three floats
-			vertex positions of the neuron relative to the CCF point
+			vertex positions of the neuron relative to the CCF point in um
 
 		Examples
 		--------
@@ -298,7 +298,7 @@ def set_shapes(neurons_list, shapes_list):
 	for i in range(len(neurons_list)):
 		neuron = neurons_list[i]
 		if neuron.in_unity:
-			neurons_shapes[neuron.id] = utils.sanitize_shape(shapes_list[i])
+			neurons_shapes[neuron.id] = shapes_list[i]
 		else:
 			warnings.warn(f"Neuron with id {neuron.id} does not exist in Unity, call create method first.")
 	client.sio.emit('SetNeuronShape', neurons_shapes)

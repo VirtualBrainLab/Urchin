@@ -17,7 +17,7 @@ PlayerSettings:
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
-  m_ShowUnitySplashScreen: 1
+  m_ShowUnitySplashScreen: 0
   m_ShowUnitySplashLogo: 1
   m_SplashScreenOverlayOpacity: 1
   m_SplashScreenAnimation: 1
@@ -134,7 +134,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 0.4.6
+  bundleVersion: 0.4.9
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -748,11 +748,11 @@ PlayerSettings:
     m_VersionName: 
   apiCompatibilityLevel: 6
   activeInputHandler: 0
-  cloudProjectId: 02ab49d6-18b4-4d3f-8b6f-ca46c1f3786c
+  cloudProjectId: f9928966-c3fd-465a-a037-85ec2deb8013
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Virtual Brain Lab
-  organizationId: shnufflewuffle
+  projectName: Urchin
+  organizationId: danbirman-uw
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   playerDataPath: 

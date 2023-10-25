@@ -2,6 +2,9 @@
 
 from .. import client
 
+def load():
+	client.sio.emit('LoadAtlas', 'ccf25')
+
 def load_beryl():
 	"""Load all beryl areas and set visibility to True
 

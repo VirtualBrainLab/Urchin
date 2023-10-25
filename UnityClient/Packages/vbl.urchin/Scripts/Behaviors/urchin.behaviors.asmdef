@@ -1,0 +1,20 @@
+{
+    "name": "urchin.behaviors",
+    "rootNamespace": "",
+    "references": [
+        "GUID:20582ac19d7f4684f93b0c5ef62b2bcd",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:5dedf88781c06a443aeac3e770ba73f9",
+        "GUID:baba835d3f6de1948879ba12c4c45295",
+        "GUID:0e68f56b71507ea46a7a7e86308f8eef"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
