@@ -44,7 +44,7 @@ def image(image_url):
 	"""
 	from IPython.display import Image, display
 
-	image_url = utils.sanitize_drive_url(image_url)
+	#image_url = utils.sanitize_drive_url(image_url)
 
 	display(Image(url=image_url))
 	
