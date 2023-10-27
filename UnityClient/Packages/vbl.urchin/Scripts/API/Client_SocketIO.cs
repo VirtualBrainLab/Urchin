@@ -12,6 +12,10 @@ namespace Urchin.API
  /// </summary>
     public class Client_SocketIO : MonoBehaviour
     {
+        #region Static
+        public static readonly int SOCKET_IO_MAX_CHUNK_BYTES = 100000;
+        #endregion
+
         #region Events
         public UnityEvent<string> IDChangedEvent;
         #endregion

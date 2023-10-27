@@ -53,9 +53,6 @@ namespace Urchin.Behaviors
                 }
             }
         }
-        #region private var
-        private const int SOCKET_IO_MAX_CHUNK_BYTES = 500000;
-        #endregion
 
         private void Update()
         {
@@ -150,16 +147,18 @@ namespace Urchin.Behaviors
 
             Debug.Log(JsonUtility.ToJson(meta));
 
-            int nChunks = Mathf.CeilToInt((float)bytes.Length / (float)SOCKET_IO_MAX_CHUNK_BYTES);
+            int nChunks = Mathf.CeilToInt((float)bytes.Length / (float)Client_SocketIO.SOCKET_IO_MAX_CHUNK_BYTES);
+
+            Debug.Log(nChunks);
 
             for (int i = 0; i < nChunks; i++)
             {
                 ScreenshotChunk chunk = new();
                 chunk.name = Name;
 
-                int cChunkSize = Mathf.Min(SOCKET_IO_MAX_CHUNK_BYTES, bytes.Length - i * SOCKET_IO_MAX_CHUNK_BYTES);
+                int cChunkSize = Mathf.Min(Client_SocketIO.SOCKET_IO_MAX_CHUNK_BYTES, bytes.Length - i * Client_SocketIO.SOCKET_IO_MAX_CHUNK_BYTES);
                 chunk.data = new byte[cChunkSize];
-                Buffer.BlockCopy(bytes, i * SOCKET_IO_MAX_CHUNK_BYTES, chunk.data, 0, cChunkSize);
+                Buffer.BlockCopy(bytes, i * Client_SocketIO.SOCKET_IO_MAX_CHUNK_BYTES, chunk.data, 0, cChunkSize);
                 Client_SocketIO.Emit("ReceiveCameraImg", JsonUtility.ToJson(chunk));
             }
         }
