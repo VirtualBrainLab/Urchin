@@ -7,6 +7,7 @@ using Urchin.API;
 
 namespace Urchin.Behaviors
 {
+
     public class CameraBehavior : MonoBehaviour
     {
         #region Serialized
@@ -53,7 +54,7 @@ namespace Urchin.Behaviors
             }
         }
         #region private var
-        private const int SOCKET_IO_MAX_CHUNK_BYTES = 1000000;
+        private const int SOCKET_IO_MAX_CHUNK_BYTES = 500000;
         #endregion
 
         private void Update()
@@ -138,11 +139,16 @@ namespace Urchin.Behaviors
             // Convert to PNG
             byte[] bytes = screenshotTexture.EncodeToPNG();
 
+            Debug.Log(bytes.Length);
+
             // Build the messages and send them
             ScreenshotReturnMeta meta = new();
             meta.name = Name;
             meta.totalBytes = bytes.Length;
             Client_SocketIO.Emit("ReceiveCameraImgMeta", JsonUtility.ToJson(meta));
+
+
+            Debug.Log(JsonUtility.ToJson(meta));
 
             int nChunks = Mathf.CeilToInt((float)bytes.Length / (float)SOCKET_IO_MAX_CHUNK_BYTES);
 
@@ -165,8 +171,8 @@ namespace Urchin.Behaviors
             public int totalBytes;
         }
 
-        [Serializable]
-        private struct ScreenshotChunk
+        [Serializable, PreferBinarySerialization]
+        private class ScreenshotChunk
         {
             public string name;
             public byte[] data;

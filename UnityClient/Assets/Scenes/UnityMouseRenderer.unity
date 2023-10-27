@@ -1810,18 +1810,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1366211727439126398, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1366211727439126398, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1366211727439126398, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1424787917973710077, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -9960,6 +9948,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 231208878819221204, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
       propertyPath: m_RenderMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 231208878819221204, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_AdditionalShaderChannelsFlag
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 231208878819221206, guid: 797f30df999d646458e9984856b9b1f7, type: 3}

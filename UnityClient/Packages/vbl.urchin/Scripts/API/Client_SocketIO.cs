@@ -308,7 +308,7 @@ namespace Urchin.API
         //// SOCKET FUNCTIONS
         ////
 
-        public static void Emit(string header, object data)
+        public static void Emit(string header, string data)
         {
             manager.Socket.Emit(header, data);
         }
