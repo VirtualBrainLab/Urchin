@@ -13,7 +13,7 @@ namespace Urchin.API
     public class Client_SocketIO : MonoBehaviour
     {
         #region Static
-        public static readonly int SOCKET_IO_MAX_CHUNK_BYTES = 100000;
+        public static readonly int SOCKET_IO_MAX_CHUNK_BYTES = 10000000; // maximum SocketIO message size seems to be 256KB
         #endregion
 
         #region Events

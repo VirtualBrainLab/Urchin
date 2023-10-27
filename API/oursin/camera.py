@@ -3,6 +3,7 @@
 from . import client
 from . import utils
 
+import PIL
 from PIL import Image
 import io
 import json
@@ -11,6 +12,8 @@ import numpy as np
 receive_fnames = {}
 receive_totalBytes = {}
 receive_bytes = {}
+
+PIL.Image.MAX_IMAGE_PIXELS = 225000000
 
 def receive_camera_img_meta(data_str):
 	global receive_totalBytes
@@ -348,6 +351,10 @@ class Camera:
 		print(self.id)
 		print(filename)
 		receive_fnames[self.id] = filename
+
+		if size[0] > 15000 or size[1] > 15000:
+			raise Exception('(urchin.camera) Screenshots can''t exceed 15000x15000')
+		
 		client.sio.emit('RequestCameraImg', json.dumps({"name":self.id, "size":size}))
 
 def set_light_rotation(angles):
