@@ -30,3 +30,6 @@ from . import colors
 
 # load the atlases
 from .atlas import *
+
+# load the io
+from . import io
