@@ -60,32 +60,27 @@ def clear():
 	"""
 	client.sio.emit('Clear', 'all')
 
-def clear_neurons():
-	"""Clear all neuron objects
-	"""
-	client.sio.emit('Clear', 'neurons')
-
 def clear_probes():
 	"""Clear all probe objects
 	"""
-	client.sio.emit('Clear', 'probes')
+	client.sio.emit('Clear', 'probe')
 
 def clear_areas():
 	"""Clear all CCF area models
 	"""
-	client.sio.emit('Clear', 'areas')
+	client.sio.emit('Clear', 'area')
 
 def clear_volumes():
 	"""Clear all 3D volumes
 	"""
-	client.sio.emit('Clear', 'volumes')
+	client.sio.emit('Clear', 'volume')
 
 def clear_texts():
 	"""Clear all text
 	"""
-	client.sio.emit('Clear', 'texts')
+	client.sio.emit('Clear', 'text')
 
-def clear_primitives():
+def clear_meshes():
 	"""Clear all primitives
 	"""
-	client.sio.emit('Clear','primitives')
+	client.sio.emit('Clear','mesh')

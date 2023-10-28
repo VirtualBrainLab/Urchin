@@ -18,7 +18,6 @@ public class ParticleManager : MonoBehaviour
     private void Start()
     {
         Client_SocketIO.CreateParticles += CreateParticles;
-        Client_SocketIO.DeleteParticles += DeleteParticles;
         Client_SocketIO.SetParticlePosition += SetPosition;
         Client_SocketIO.SetParticleSize += SetSize;
         //Client_SocketIO.SetParticleShape += SetShape;
@@ -51,25 +50,6 @@ public class ParticleManager : MonoBehaviour
     {
         _particleSystem.Clear();
         _particleMapping.Clear();
-    }
-
-    public void DeleteParticles(List<string> particleNames)
-    {
-        // Deleting particles is a little complicated, since the particle system is data-oriented
-        // and only holds references to particle by index
-        // This means that each time we delete a particle we need to update the indexes of all the other particles
-        // which makes this a very expensive operation to run. Users should be warned not to send individual delete
-        // messages!
-
-        // TODO
-        //throw new NotImplementedException();
-        //ParticleSystem.Particle[] particles = new ParticleSystem.Particle[_particleSystem.particleCount];
-        //int nParticles = _particleSystem.GetParticles(particles);
-
-        //for (int i = 0; i < nParticles; i++)
-        //{
-        //    // For each particle, 
-        //}
     }
 
     public void SetPosition(Dictionary<string, float[]> particlePositions)

@@ -119,22 +119,20 @@ namespace Urchin.API
         }
 
         public static Action<List<string>> CreateParticles;
-        public static Action<List<string>> DeleteParticles;
         public static Action<Dictionary<string, float[]>> SetParticlePosition;
         public static Action<Dictionary<string, float>> SetParticleSize;
-        public static Action<Dictionary<string, string>> SetParticleShape;
+        //public static Action<Dictionary<string, string>> SetParticleShape;
         public static Action<Dictionary<string, string>> SetParticleColor;
-        public static Action<Dictionary<string, string>> SetParticleMaterial;
+        //public static Action<Dictionary<string, string>> SetParticleMaterial;
 
         private void Start_Particles()
         {
-            manager.Socket.On<List<string>>("CreateNeurons", x => CreateParticles.Invoke(x));
-            manager.Socket.On<List<string>>("DeleteNeurons", x => DeleteParticles.Invoke(x));
-            manager.Socket.On<Dictionary<string, float[]>>("SetNeuronPos", x => SetParticlePosition.Invoke(x));
-            manager.Socket.On<Dictionary<string, float>>("SetNeuronSize", x => SetParticleSize.Invoke(x));
-            manager.Socket.On<Dictionary<string, string>>("SetNeuronShape", x => SetParticleShape.Invoke(x));
-            manager.Socket.On<Dictionary<string, string>>("SetNeuronColor", x => SetParticleColor.Invoke(x));
-            manager.Socket.On<Dictionary<string, string>>("SetNeuronMaterial", x => SetParticleMaterial.Invoke(x));
+            manager.Socket.On<List<string>>("CreateParticles", x => CreateParticles.Invoke(x));
+            manager.Socket.On<Dictionary<string, float[]>>("SetParticlePos", x => SetParticlePosition.Invoke(x));
+            manager.Socket.On<Dictionary<string, float>>("SetParticleSize", x => SetParticleSize.Invoke(x));
+            //manager.Socket.On<Dictionary<string, string>>("SetNeuronShape", x => SetParticleShape.Invoke(x));
+            manager.Socket.On<Dictionary<string, string>>("SetParticleColor", x => SetParticleColor.Invoke(x));
+            //manager.Socket.On<Dictionary<string, string>>("SetNeuronMaterial", x => SetParticleMaterial.Invoke(x));
         }
 
         public static Action<List<string>> CreateProbes;
@@ -273,36 +271,34 @@ namespace Urchin.API
         public static Action ClearText;
         public static Action ClearParticles;
         public static Action ClearMeshes;
+        public static List<Action> ClearAll = new List<Action> { ClearProbes, ClearAreas, ClearVolumes, 
+            ClearText, ClearParticles, ClearMeshes };
 
         private void Clear(string val)
         {
             switch (val)
             {
                 case "all":
-                    ClearProbes.Invoke();
-                    ClearAreas.Invoke();
-                    ClearVolumes.Invoke();
-                    ClearText.Invoke();
-                    ClearMeshes.Invoke();
-                    ClearParticles.Invoke();
+                    foreach (var action in ClearAll)
+                        action.Invoke();
                     break;
-                case "probes":
+                case "probe":
                     ClearProbes.Invoke();
                     break;
-                case "areas":
+                case "area":
                     ClearAreas.Invoke();
                     break;
-                case "volumes":
+                case "volume":
                     ClearVolumes.Invoke();
                     break;
-                case "texts":
+                case "text":
                     ClearText.Invoke();
                     break;
-                case "primitives":
-                    ClearMeshes.Invoke();
-                    break;
-                case "particles":
+                case "particle":
                     ClearParticles.Invoke();
+                    break;
+                case "mesh":
+                    ClearMeshes.Invoke();
                     break;
             }
         }

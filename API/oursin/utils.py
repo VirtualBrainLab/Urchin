@@ -74,7 +74,18 @@ def sanitize_material(material):
         raise Exception("Material is not properly passed in as a string. Please pass in material as a string.")
 
 def sanitize_list(input, length=0):
-    # resize to match list size
+    """Guarantee that a list is of at least size length, or try to broadcast to that size
+
+    Parameters
+    ----------
+    input : list
+    length : int, optional
+        length to broadcast to, by default 0
+
+    Returns
+    -------
+    list
+    """
     if length > 0 and len(input) != length:
         input = input * length
 
