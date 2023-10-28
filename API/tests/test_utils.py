@@ -30,7 +30,11 @@ class TestUtils(TestCase):
         self.assertEqual(urchin.utils.sanitize_drive_url("https://drive.google.com/file/d/1zE3Vobs5HBH_ne4KOpaPNKZFjhdxl6yQ/view?usp=sharing"), "https://drive.google.com/uc?id=1zE3Vobs5HBH_ne4KOpaPNKZFjhdxl6yQ") #test array npy
         self.assertRaises(Exception, urchin.utils.sanitize_drive_url)
         self.assertRaises(Exception, urchin.utils.sanitize_drive_url, "test")
+<<<<<<< Updated upstream
         self.assertRaises(Exception, urchin.utils.sanitize_drive_url("https://drive.google.com/drive/folders/1vaHEXjG0M2jjlMceSvZhbOFCer4cdbR4"))
+=======
+        self.assertRaises(Exception, urchin.utils.sanitize_drive_url,"https://drive.google.com/drive/folders/1vaHEXjG0M2jjlMceSvZhbOFCer4cdbR4")
+>>>>>>> Stashed changes
         
 
 
