@@ -16,6 +16,13 @@ receive_bytes = {}
 PIL.Image.MAX_IMAGE_PIXELS = 225000000
 
 def receive_camera_img_meta(data_str):
+	"""Handler for receiving metadata about incoming images
+
+	Parameters
+	----------
+	data_str : string
+		JSON with two fields {"name":"", "totalBytes":""}
+	"""
 	global receive_totalBytes
 
 	data = json.loads(data_str)
@@ -29,6 +36,13 @@ def receive_camera_img_meta(data_str):
 	print(f'(Camera receive meta) {name} receiving {totalBytes} bytes')
 
 def receive_camera_img(data_str):
+	"""Handler for receiving data about incoming images
+
+	Parameters
+	----------
+	data_str : string
+		JSON with two fields {"name":"", "bytes":""}
+	"""
 	global receive_totalBytes, receive_bytes
 
 	data = json.loads(data_str)
@@ -52,45 +66,14 @@ def receive_camera_img(data_str):
 counter = 0
 
 class Camera:
-	def __init__(self, target = [0,0,0], position = [0,0,0], preserve_target = True, rotation = [0,0,0], zoom = 1, pan_x = 3, pan_y = 4, mode = "orthographic", controllable = False, main = False):		
-		if(main):
-			self.id = "CameraMain"
-			self.in_unity = True
-		else:
-			global counter
-			counter += 1
-			self.id = f'Camera{counter}'
-			client.sio.emit('CreateCamera', [self.id])
-			self.in_unity = True
-		#in theory, the target value can stand for either coordinate or area? (and taking coordinate as default)
-		# target_coordinate = utils.sanitize_vector3(target)
-		# self.target = target_coordinate
-		# client.sio.emit('SetCameraTarget', {self.id: self.target})
+	def __init__(self):		
+		global counter
+		counter += 1
+		self.id = f'Camera{counter}'
+		client.sio.emit('CreateCamera', [self.id])
+		self.in_unity = True
 
-		# position = utils.sanitize_vector3(position)
-		# self.position = position
-		# packet = position.copy()
-		# packet.append(preserve_target)
-		# client.sio.emit('SetCameraPosition', {self.id: packet})
-
-		# rotation = utils.sanitize_vector3(rotation)
-		# self.rotation = rotation
-		# client.sio.emit('SetCameraRotation', {self.id: self.rotation})
-
-		# self.zoom = zoom
-		# client.sio.emit('SetCameraZoom', {self.id: self.zoom})
-
-		# # target_area = utils.sanitize_string(target_area)
-		# # self.target_area = target_area
-		# # client.sio.emit('SetCameraTargetArea', self.target_area)
-
-		# self.pan = [pan_x, pan_y]
-		# client.sio.emit('SetCameraPan', {self.id: self.pan})
-
-		# self.mode = mode
-		# client.sio.emit('SetCameraMode', {self.id: self.mode})
-
-	def create(self,main):
+	def create(self):
 		"""Creates camera
 		
 		Parameters
