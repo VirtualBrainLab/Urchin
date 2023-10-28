@@ -65,7 +65,7 @@ public class UrchinCore : MonoBehaviour
         if (Instance == null)
             Instance = this;
         else
-            throw new Exception("There should only be on UM_Launch component in the scene");
+            throw new Exception("There should only be one UrchinCore component in the scene");
 
 
         originalTransformPositionsLeft = new();

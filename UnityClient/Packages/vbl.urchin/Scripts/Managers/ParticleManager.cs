@@ -1,6 +1,5 @@
 //using System;
 using BrainAtlas;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Urchin.API;
@@ -33,7 +32,7 @@ public class ParticleManager : MonoBehaviour
         foreach (string particleName in particleNames)
         {
             if (_particleMapping.ContainsKey(particleName))
-                Debug.Log($"MParticleesh id {particleName} already exists.");
+                Debug.Log($"Particle id {particleName} already exists.");
 
 #if UNITY_EDITOR
             Debug.Log($"Creating particle {particleName}");
