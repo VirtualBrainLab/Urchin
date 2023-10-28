@@ -341,15 +341,29 @@ class Camera:
 		client.sio.emit('RequestCameraImg', json.dumps({"name":self.id, "size":size}))
 
 def set_light_rotation(angles):
-    angles = utils.sanitize_vector3(angles)
-    print(angles)
-    print(isinstance(angles,list))
-    client.sio.emit('SetLightRotation', angles)
+	"""Override the rotation of the main camera light
+
+	Parameters
+	----------
+	angles : vector3
+		Euler angles of light
+	"""
+	angles = utils.sanitize_vector3(angles)
+	print(angles)
+	print(isinstance(angles,list))
+	client.sio.emit('SetLightRotation', angles)
 
 def set_light_camera(camera_name = None):
-    if (camera_name is None):
-        client.sio.emit('ResetLightLink')
-    else:
-        client.sio.emit('SetLightLink', camera_name)
+	"""Change the camera that the main light is linked to (the light will rotate the camera)
+
+	Parameters
+	----------
+	camera_name : string, optional
+		Name of camera to attach light to, by default None
+	"""
+	if (camera_name is None):
+		client.sio.emit('ResetLightLink')
+	else:
+		client.sio.emit('SetLightLink', camera_name)
 	
 main = Camera(main = True)
