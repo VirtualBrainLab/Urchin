@@ -3,6 +3,7 @@
 from . import utils
 import pandas as pd
 import numpy as np
+import requests
 from google.colab import files
 
 def upload_file(file_name, url):
@@ -22,7 +23,14 @@ def upload_file(file_name, url):
 	"""
 	file_name = utils.sanitize_extension(file_name)
 	url = utils.sanitize_drive_url(url)
-	!wget -O {file_name} {url}
+	import requests
+	response = requests.get(url)
+	if response.status_code == 200:
+		with open(file_name, 'wb') as file:
+			file.write(response.content)
+		print(f"File '{file_name}' downloaded successfully.")
+	else:
+		print(f"Failed to download file from {url}. Status code: {response.status_code}")
 
 
 
@@ -67,7 +75,7 @@ def load_df(url):
 	return pd.read_csv(url)
 
 
-def load_npy(url, file_title):
+def load_npy(url, file_name):
 	"""Loads a numpy array from a npy file on drive
 
 	
@@ -77,19 +85,24 @@ def load_npy(url, file_title):
 		the sharing link of the file to be uploaded
 		Ensure that the file is viewable by anyone with the link
 
-	file_title : string
-		Name of the file to be loaded, will be saved locally on colab
+	file_name : string
+		Name of the file to be loaded (INCLUDING EXTENSION), will be saved locally on colab
 
 	Examples
 	--------
-	>>> test = urchin.io.load_npy('https://drive.google.com/file/d/1zE3Vobs5HBH_ne4KOpaPNKZFjhdxl6yQ/view?usp=drive_link', 'tester')
+	>>> test = urchin.io.load_npy('https://drive.google.com/file/d/1zE3Vobs5HBH_ne4KOpaPNKZFjhdxl6yQ/view?usp=drive_link', 'tester.npy')
 	"""
-	file_title = utils.sanitize_string(file_title)
+	file_name = utils.sanitize_string(file_name)
 	url = utils.sanitize_drive_url(url)
-	!wget -O {file_title}.npy {url}
-	return np.load(f'/content/{file_title}.npy')
+	response = requests.get(url)
+	if response.status_code == 200:
+		with open(file_name, 'wb') as file:
+			file.write(response.content)
+		return np.load(f'/content/{file_name}')
+	else:
+		print(f"Failed to download file from {url}. Status code: {response.status_code}")
 
-def load_parquet(url, file_title):
+def load_parquet(url, file_name):
 	"""Loads a parquet file from a parquet file on drive
 
 	
@@ -100,16 +113,22 @@ def load_parquet(url, file_title):
 		Ensure that the file is viewable by anyone with the link
 
 	file_title : string
-		Name of the file to be loaded, will be saved locally on colab
+		Name of the file to be loaded INCLUDING extension, will be saved locally on colab
 
 	Examples
 	--------
-	>>> test = urchin.io.load_parquet("https://drive.google.com/file/d/13_YNx5ATSGb5LlV4X24yq6PH-E22mvQX/view?usp=drive_link","pq_test")
+	>>> test = urchin.io.load_parquet("https://drive.google.com/file/d/13_YNx5ATSGb5LlV4X24yq6PH-E22mvQX/view?usp=drive_link","pq_test.parquet")
 	"""
-	file_title = utils.sanitize_string(file_title)
+	file_name = utils.sanitize_string(file_name)
 	url = utils.sanitize_drive_url(url)
-	!wget -O {file_title}.parquet {url}
-	return pd.read_parquet(f'/content/{file_title}.parquet')
+	response = requests.get(url)
+	if response.status_code == 200:
+		with open(file_name, 'wb') as file:
+			file.write(response.content)
+		return pd.read_parquet(f'/content/{file_name}')
+	else:
+		print(f"Failed to download file from {url}. Status code: {response.status_code}")
+	
 
 def download_to_csv(df_name):
 	"""Downloads a pandas dataframe to a csv file on local machine
