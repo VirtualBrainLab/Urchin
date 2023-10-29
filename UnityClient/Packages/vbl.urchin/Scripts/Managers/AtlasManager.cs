@@ -404,14 +404,11 @@ namespace Urchin.Managers
 
             await node.LoadMesh(OntologyNode.OntologyNodeSide.All);
 
-            if (full)
-                node.SetVisibility(visibility, OntologyNode.OntologyNodeSide.Full);
+            node.SetVisibility(full && visibility, OntologyNode.OntologyNodeSide.Full);
 
             await node.SideLoaded;
-            if (leftSide)
-                node.SetVisibility(visibility, OntologyNode.OntologyNodeSide.Left);
-            if (rightSide)
-                node.SetVisibility(visibility, OntologyNode.OntologyNodeSide.Right);
+            node.SetVisibility(leftSide && visibility, OntologyNode.OntologyNodeSide.Left);
+            node.SetVisibility(rightSide && visibility, OntologyNode.OntologyNodeSide.Right);
 
             NodeVisibleEvent.Invoke(node);
         }
