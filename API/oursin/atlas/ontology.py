@@ -24,7 +24,7 @@ class Atlas:
         """Load this atlas
         """
         if self.loaded:
-            raise Exception("Atlas is already loaded")
+            print("(Warning) Atlas was already loaded, the renderer can have issues if you try to load an atlas twice.")
         
         self.loaded = True
         client.sio.emit('LoadAtlas', self.atlas_name)

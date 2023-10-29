@@ -136,20 +136,13 @@ namespace Urchin.Behaviors
             // Convert to PNG
             byte[] bytes = screenshotTexture.EncodeToPNG();
 
-            Debug.Log(bytes.Length);
-
             // Build the messages and send them
             ScreenshotReturnMeta meta = new();
             meta.name = Name;
             meta.totalBytes = bytes.Length;
-            Client_SocketIO.Emit("ReceiveCameraImgMeta", JsonUtility.ToJson(meta));
-
-
-            Debug.Log(JsonUtility.ToJson(meta));
+            Client_SocketIO.Emit("CameraImgMeta", JsonUtility.ToJson(meta));
 
             int nChunks = Mathf.CeilToInt((float)bytes.Length / (float)Client_SocketIO.SOCKET_IO_MAX_CHUNK_BYTES);
-
-            Debug.Log(nChunks);
 
             for (int i = 0; i < nChunks; i++)
             {
@@ -159,7 +152,7 @@ namespace Urchin.Behaviors
                 int cChunkSize = Mathf.Min(Client_SocketIO.SOCKET_IO_MAX_CHUNK_BYTES, bytes.Length - i * Client_SocketIO.SOCKET_IO_MAX_CHUNK_BYTES);
                 chunk.data = new byte[cChunkSize];
                 Buffer.BlockCopy(bytes, i * Client_SocketIO.SOCKET_IO_MAX_CHUNK_BYTES, chunk.data, 0, cChunkSize);
-                Client_SocketIO.Emit("ReceiveCameraImg", JsonUtility.ToJson(chunk));
+                Client_SocketIO.Emit("CameraImg", JsonUtility.ToJson(chunk));
             }
         }
 

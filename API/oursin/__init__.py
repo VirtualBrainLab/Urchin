@@ -18,8 +18,8 @@ from . import camera
 
 # load the object controls
 from . import lines
+from . import meshes
 from . import particles
-from . import primitives
 from . import probes
 from . import text
 from . import volumes
