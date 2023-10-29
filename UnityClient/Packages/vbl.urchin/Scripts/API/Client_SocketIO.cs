@@ -84,7 +84,7 @@ namespace Urchin.API
         public static Action<Dictionary<string, float>> SetAreaAlpha;
         public static Action<Dictionary<string, List<float>>> SetAreaData;
         public static Action<int> SetAreaIndex;
-        public static Action<string> LoadDefaultAreas;
+        public static Action LoadDefaultAreas;
 
         private void Start_Atlas()
         {
@@ -98,7 +98,7 @@ namespace Urchin.API
             manager.Socket.On<Dictionary<string, float>>("SetAreaAlpha", x => SetAreaAlpha.Invoke(x));
             manager.Socket.On<Dictionary<string, List<float>>>("SetAreaData", x => SetAreaData.Invoke(x));
             manager.Socket.On<int>("SetAreaIndex", x => SetAreaIndex.Invoke(x));
-            manager.Socket.On<string>("LoadDefaultAreas", x => LoadDefaultAreas.Invoke(x));
+            manager.Socket.On<string>("LoadDefaultAreas", x => LoadDefaultAreas.Invoke());
         }
 
         public static Action<List<object>> SetVolumeVisibility;

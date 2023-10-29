@@ -290,7 +290,7 @@ namespace Urchin.Managers
         }
 
         // Auto-loaders
-        public async void LoadDefaultAreasVoid(string defaultName)
+        public async void LoadDefaultAreasVoid()
         {
             int[] defaultAreaIDs = BrainAtlasManager.ActiveReferenceAtlas.DefaultAreas;
 
@@ -306,6 +306,8 @@ namespace Urchin.Managers
                 node.SetVisibility(false, OntologyNode.OntologyNodeSide.Full);
                 node.SetVisibility(true, OntologyNode.OntologyNodeSide.Left);
                 node.SetVisibility(true, OntologyNode.OntologyNodeSide.Right);
+
+                VisibleNodes.Add(node);
             }
         }
 
@@ -327,6 +329,8 @@ namespace Urchin.Managers
                 node.SetVisibility(false, OntologyNode.OntologyNodeSide.Full);
                 node.SetVisibility(true, OntologyNode.OntologyNodeSide.Left);
                 node.SetVisibility(true, OntologyNode.OntologyNodeSide.Right);
+
+                VisibleNodes.Add(node);
             }
 
             return nodes;

@@ -65,11 +65,6 @@ def clear_probes():
 	"""
 	client.sio.emit('Clear', 'probe')
 
-def clear_areas():
-	"""Clear all CCF area models
-	"""
-	client.sio.emit('Clear', 'area')
-
 def clear_volumes():
 	"""Clear all 3D volumes
 	"""

@@ -86,16 +86,23 @@ def sanitize_list(input, length=0):
     -------
     list
     """
-    if length > 0 and len(input) != length:
-        input = input * length
+    if length > 0 and not isinstance(input, list):
+        input = [input] * length
 
-    if isinstance(input,list):
-        return input
-    else:
-        return(list(input))
+    return input
     
 def sanitize_string(string):
     if isinstance(string, str):
         return(string)
     else:
         raise Exception("Input is not properly passed in as a string. Please pass in input as a string.")
+    
+def sanitize_side(acronym, sided):
+    if sided == "full":
+        return acronym
+    elif sided == "left":
+        return f'{acronym}-lh'
+    elif sided == "right":
+        return f'{acronym}-rh'
+    else:
+        raise Exception(f'Sided enum {sided} not properly defined, should be full/left/right')

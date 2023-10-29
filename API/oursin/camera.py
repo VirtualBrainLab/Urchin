@@ -66,11 +66,14 @@ def receive_camera_img(data_str):
 counter = 0
 
 class Camera:
-	def __init__(self):		
-		global counter
-		counter += 1
-		self.id = f'Camera{counter}'
-		client.sio.emit('CreateCamera', [self.id])
+	def __init__(self, main = False):		
+		if main:
+			self.id = 'main'
+		else:
+			global counter
+			counter += 1
+			self.id = f'Camera{counter}'
+			client.sio.emit('CreateCamera', [self.id])
 		self.in_unity = True
 
 	def create(self):

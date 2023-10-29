@@ -27,3 +27,6 @@ dependencies = [
 [project.urls]
 "Homepage" = "https://virtualbrainlab.org/urchin/installation_and_use.html"
 "Bug Tracker" = "https://github.com/VirtualBrainLab/Urchin/issues"
+
+[tool.setuptools.package_data]
+oursin = ["atlas/data/*.json"]
