@@ -74,7 +74,10 @@ def sanitize_float(value):
     if isinstance(value, float):
         return value
     else:
-        raise Exception("Parameter needs to be passed as a float.")
+        try:
+            return float(value)
+        except:
+            raise Exception("Value could not be coerced to a float.")
 
 def sanitize_material(material):
     if isinstance(material, str):
