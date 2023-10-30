@@ -55,15 +55,25 @@ class Atlas:
         --------
         >>> area_list = urchin.get_areas(["root", "VISp"])
         """
-        return [getattr(self, name) for name in area_list]
+        areas = []
+        for name in area_list:
+            try:
+                area = getattr(self, name)
+                areas.append(area)
+            except:
+                print(f'(Warning): Area {name} couldn''t be found in this atlas!')
+        return areas
 
-    def set_visibilities(self, area_list, area_visibility, sided = "full"):
+    def set_visibilities(self, area_list, area_visibility, side = utils.Side.FULL):
         """Set visibility of multiple areas at once
 
         Parameters
         ----------
-        area_visibilities : dict {string : bool}
-            dictionary of area IDs or acronyms and visibility values
+        area_list : list of string
+            List of acronyms
+        area_visibility : list of bool
+        sided : string, optional
+            Brain area side to control "full"/"left"/"right", default = "full"
 
         Examples
         --------
@@ -72,12 +82,20 @@ class Atlas:
         """
         area_visibility = utils.sanitize_list(area_visibility, len(area_list))
 
+        # output dictionary should match JSON schema AreaData:
+        #{"acronym": ["a", "b", "c"], "side": [-1, 0, 1], "visible": [true, true, false]}
         data_dict = {}
+        data_dict['acronym'] = []
+        data_dict['side'] = []
+        data_dict['visible'] = []
         for i, area in enumerate(area_list):
-            area_name = utils.sanitize_side(area.acronym, sided)
-            data_dict[area_name] = area_visibility[i]
+            data_dict['acronym'].append(area.acronym)
+            data_dict['visible'].append(area_visibility[i])
+            data_dict['side'].append(side.value)
 
-        client.sio.emit('SetAreaVisibility', data_dict)
+        print(json.dumps(data_dict))
+
+        client.sio.emit('SetAreaVisibility', json.dumps(data_dict))
 
     def set_colors(self, area_list, area_colors, sided="full"):
         """Set color of multiple areas at once.
@@ -101,6 +119,25 @@ class Atlas:
             data_dict[area_name] = area_colors[i]
 
         client.sio.emit('SetAreaColors', data_dict)
+        
+    def set_colormap(colormap_name):
+        """Set colormap used for mapping area *intensity* values to colors
+
+
+        Options are
+        - cool (default, teal 0 -> magenta 1)
+        - grey (black 0 -> white 1)
+        - grey-green (grey 0, light 1/255 -> dark 1)
+        - grey-purple (grey 0, light 1/255 -> dark 1)
+        - grey-red (grey 0, light 1/255 -> dark 1)
+        - grey-rainbow (grey 0, rainbow colors from 1/255 -> 1)
+
+        Parameters
+        ----------
+        colormap_name : string
+            colormap name
+        """
+        client.sio.emit('SetAreaColormap', colormap_name)
 
     def set_alphas(self, area_list, area_alphas, sided="full"):
         """Set transparency of multiple areas at once. Requires a transparent material. 
@@ -172,7 +209,7 @@ class Structure:
     def set_test(self):
         print(self)
 
-    def set_visibility(self, visibility, sided = "full"):
+    def set_visibility(self, visibility, sided = utils.Side.FULL):
         """Set area visibility
 
         Parameters
@@ -184,15 +221,15 @@ class Structure:
         Examples
         --------
         >>> urchin.ccf25.root.set_visibility(True)
-        >>> urchin.ccf25.root.set_visibility(True, "left")
+        >>> urchin.ccf25.root.set_visibility(True, urchin.utils.Side.LEFT)
         """
-        area_name = self.acronym
-        if sided == "right":
-            area_name += '-rh'
-        elif sided == "left":
-            area_name += '-lh'
+        data_dict = {
+            'acronym':self.acronym,
+            'side':sided.value,
+            'visible':visibility
+        }
 
-        client.sio.emit('SetAreaVisibility', {area_name:visibility})
+        client.sio.emit('SetAreaVisibility', data_dict)
 
     def set_color(self, color, sided = "full"):
         """Set area color.
@@ -212,39 +249,22 @@ class Structure:
 
         client.sio.emit('SetAreaColors', {area_name:color})
 
-    # def set_intensity(area_intensities):
-    #     """Set color of CCF area models using colormap.
+    def set_intensity(self, intensity, sided = "full"):
+        """Set color based on the intensity value through the active colormap.
 
-    #     Parameters
-    #     ----------
-    #     area_intensities : dict {string: float}
-    #         keys are area IDs or acronyms, values are hex colors
+        Parameters
+        ----------
+        intensity : float
+            0->1
 
-    #     Examples
-    #     --------
-    #     >>> urn.set_intensity( {'grey':1.0})
-    #     >>> urn.set_intensity({8:1.0})
-    #     """
-    #     client.sio.emit('SetAreaIntensity', area_intensities)
+        Examples
+        --------
+        >>> urn.set_intensity(0.5)
+        """
+        intensity = utils.sanitize_float(intensity)
+        area_name = utils.sanitize_side(self.acronym, sided)
 
-    # def set_colormap(colormap_name):
-    #     """Set colormap used for CCF area intensity mapping
-
-
-    #     Options are
-    #     - cool (default, teal 0 -> magenta 1)
-    #     - grey (black 0 -> white 1)
-    #     - grey-green (grey 0, light 1/255 -> dark 1)
-    #     - grey-purple (grey 0, light 1/255 -> dark 1)
-    #     - grey-red (grey 0, light 1/255 -> dark 1)
-    #     - grey-rainbow (grey 0, rainbow colors from 1/255 -> 1)
-
-    #     Parameters
-    #     ----------
-    #     colormap_name : string
-    #         colormap name
-    #     """
-    #     client.sio.emit('SetAreaColormap', colormap_name)
+        client.sio.emit('SetAreaIntensity', {area_name:intensity})
 
     def set_alpha(self, alpha, sided = "full"):
         """Set transparency. 
