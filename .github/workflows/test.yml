@@ -38,6 +38,7 @@ jobs:
       # Install dependencies (if any). They will be cached with saved for next time with the cache command above
 
       - name: Install
+        run: pip install poetry
         run: pip install API/.
 
       # 3.4.3. Run tests (execute arbitrary commands in shell)
