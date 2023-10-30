@@ -4921,6 +4921,53 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!1 &1354364206413206436
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6315221786318199943}
+  - component: {fileID: 2058539603744147609}
+  m_Layer: 0
+  m_Name: Utils
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6315221786318199943
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1354364206413206436}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5428924515040814815}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2058539603744147609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1354364206413206436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8479056271361b4aa5ed167afdd2807, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MainColormapChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1366211727439126396
 GameObject:
   m_ObjectHideFlags: 0
@@ -5142,6 +5189,7 @@ Transform:
   - {fileID: 2757818260648243688}
   - {fileID: 1585022055348087818}
   - {fileID: 2408366950687850817}
+  - {fileID: 6315221786318199943}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5499955737624851356
@@ -5352,6 +5400,7 @@ MonoBehaviour:
   _lightBehavior: {fileID: 6701840750721492199}
   _areaManager: {fileID: 7683298792840207488}
   _uiCanvas: {fileID: 0}
+  _cameraUIGOs: []
 --- !u!1 &8426956946971419449
 GameObject:
   m_ObjectHideFlags: 0

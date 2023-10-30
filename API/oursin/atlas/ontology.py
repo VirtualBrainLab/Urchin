@@ -120,7 +120,7 @@ class Atlas:
 
         client.sio.emit('SetAreaColors', data_dict)
         
-    def set_colormap(colormap_name):
+    def set_colormap(self, colormap_name):
         """Set colormap used for mapping area *intensity* values to colors
 
 
@@ -138,6 +138,29 @@ class Atlas:
             colormap name
         """
         client.sio.emit('SetAreaColormap', colormap_name)
+
+    def set_color_intensity(self, area_list, area_intensities, sided="full"):
+        """Set intensity values, colors will be set according to the active colormap
+
+        Parameters
+        ----------
+        area_intensities : list of float
+            0->1
+
+        Examples
+        --------
+        >>> urchin.ccf25.set_color_intensity(urchin.ccf25.get_areas(["root", "VISp"]), [0, 1])
+        """
+        for i in range(0,len(area_intensities)):
+            area_intensities[i] = utils.sanitize_float(area_intensities[i])
+        area_intensities = utils.sanitize_list(area_intensities, len(area_list))
+
+        data_dict = {}
+        for i, area in enumerate(area_list):
+            area_name = utils.sanitize_side(area.acronym, sided)
+            data_dict[area_name] = area_intensities[i]
+
+        client.sio.emit('SetAreaIntensity', data_dict)
 
     def set_alphas(self, area_list, area_alphas, sided="full"):
         """Set transparency of multiple areas at once. Requires a transparent material. 

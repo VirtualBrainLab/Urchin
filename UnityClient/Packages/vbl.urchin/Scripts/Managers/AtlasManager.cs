@@ -250,6 +250,7 @@ namespace Urchin.Managers
         {
             foreach (KeyValuePair<string, float> kvp in areaIntensity)
             {
+                Debug.Log((kvp.Key, kvp.Value));
                 (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
                 OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(ID);
 
@@ -272,6 +273,7 @@ namespace Urchin.Managers
                 else
                     Debug.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
             }
+            UpdateAreaColorFromColormap();
         }
 
         public void UpdateAreaColorFromColormap()
@@ -283,9 +285,9 @@ namespace Urchin.Managers
                 if (node.FullLoaded.IsCompleted && kvp.Value.full >= 0)
                     node.SetColor(_localColormap.Value(kvp.Value.full), OntologyNode.OntologyNodeSide.Full);
                 if (node.SideLoaded.IsCompleted && kvp.Value.left >= 0)
-                    node.SetColor(_localColormap.Value(kvp.Value.full), OntologyNode.OntologyNodeSide.Left);
+                    node.SetColor(_localColormap.Value(kvp.Value.left), OntologyNode.OntologyNodeSide.Left);
                 if (node.SideLoaded.IsCompleted && kvp.Value.right >= 0)
-                    node.SetColor(_localColormap.Value(kvp.Value.full), OntologyNode.OntologyNodeSide.Right);
+                    node.SetColor(_localColormap.Value(kvp.Value.right), OntologyNode.OntologyNodeSide.Right);
             }
         }
 
