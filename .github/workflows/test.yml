@@ -34,13 +34,18 @@ jobs:
         with:
           python-version-file: API/pyproject.toml
           # cache: 'pip'
+
+      # 3.4.3. Install Poetry
+      - name: Install Poetry
+        run: |
+          pip install poetry
+          poetry --version
           
       # Install dependencies (if any). They will be cached with saved for next time with the cache command above
 
       - name: Install
-        run: pip install poetry
         run: pip install API/.
 
-      # 3.4.3. Run tests (execute arbitrary commands in shell)
+      # 3.4.4. Run tests (execute arbitrary commands in shell)
       - name: 🏃Run tests
         run: python -m unittest discover -s API
