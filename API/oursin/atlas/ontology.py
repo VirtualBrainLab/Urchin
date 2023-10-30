@@ -2,7 +2,6 @@ from .. import client
 from .. import utils
 
 import json
-from pkg_resources import resource_filename
 
 class Atlas:
     def __init__(self, atlas_name):
@@ -10,7 +9,7 @@ class Atlas:
         self.atlas_name = atlas_name
         self.loaded = False
 
-        data_file_path = resource_filename(__name__, f'data/{atlas_name}.structures.json')
+        data_file_path = f'data/{atlas_name}.structures.json'
         with open(data_file_path,'r') as f:
             temp = json.load(f)
 
