@@ -101,6 +101,9 @@ def sanitize_list(input, length=0):
     if length > 0 and not isinstance(input, list):
         input = [input] * length
 
+    if not isinstance(input, list):
+        raise Exception("List parameter needs to be a list.")
+
     return input
     
 def sanitize_string(string):
