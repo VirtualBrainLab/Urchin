@@ -81,27 +81,27 @@ namespace Urchin.Managers
             }
         }
 
-        public void SetAreaVisibility(Dictionary<string, bool> areaVisibility)
+        public void SetAreaVisibility(AreaData data)
         {
-            foreach (KeyValuePair<string, bool> kvp in areaVisibility)
+            for (int i = 0; i < data.acronym.Length; i++)
             {
-                (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
-                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(ID);
+                int areaID = BrainAtlasManager.ActiveReferenceAtlas.Ontology.Acronym2ID(data.acronym[i]);
+
+                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(areaID);
+                OntologyNode.OntologyNodeSide side = (OntologyNode.OntologyNodeSide)data.side[i];
 
                 if (node == null)
                     return;
 
-                //if (_missing.Contains(node.ID))
-                //{
-                //    Client.LogWarning("The mesh file for area " + node.ID + " does not exist, we can't load it");
-                //    continue;
-                //}
-
                 bool set = false;
+
+                bool full = side == OntologyNode.OntologyNodeSide.Full;
+                bool leftSide = side == OntologyNode.OntologyNodeSide.Left;
+                bool rightSide = side == OntologyNode.OntologyNodeSide.Right;
 
                 if (full && node.FullLoaded.IsCompleted)
                 {
-                    node.SetVisibility(kvp.Value, OntologyNode.OntologyNodeSide.Full);
+                    node.SetVisibility(data.visible[i], OntologyNode.OntologyNodeSide.Full);
                     VisibleNodes.Add(node);
                     set = true;
 #if UNITY_EDITOR
@@ -110,7 +110,7 @@ namespace Urchin.Managers
                 }
                 if (leftSide && node.SideLoaded.IsCompleted)
                 {
-                    node.SetVisibility(kvp.Value, OntologyNode.OntologyNodeSide.Left);
+                    node.SetVisibility(data.visible[i], OntologyNode.OntologyNodeSide.Left);
                     VisibleNodes.Add(node);
                     set = true;
 #if UNITY_EDITOR
@@ -119,7 +119,7 @@ namespace Urchin.Managers
                 }
                 if (rightSide && node.SideLoaded.IsCompleted)
                 {
-                    node.SetVisibility(kvp.Value, OntologyNode.OntologyNodeSide.Right);
+                    node.SetVisibility(data.visible[i], OntologyNode.OntologyNodeSide.Right);
                     VisibleNodes.Add(node);
                     set = true;
 #if UNITY_EDITOR
@@ -130,7 +130,7 @@ namespace Urchin.Managers
                 if (set)
                     NodeVisibleEvent.Invoke(node);
                 else
-                    LoadIndividualArea(node, full, leftSide, rightSide, kvp.Value);
+                    LoadIndividualArea(node, full, leftSide, rightSide, data.visible[i]);
             }
         }
 

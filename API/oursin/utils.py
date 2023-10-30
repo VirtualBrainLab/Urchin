@@ -1,5 +1,14 @@
 """Sanitizing inputs to send through API"""
 import numpy as np
+from enum import Enum
+
+### ENUMS
+class Side(Enum):
+    LEFT = -1
+    FULL = 0
+    RIGHT = 1
+
+### SANITIZING FUNCTIONS
 
 def sanitize_vector3(vector):
   """Guarantee that a vector is a vector 3, or raise an exception
