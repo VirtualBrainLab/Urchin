@@ -6,7 +6,7 @@ from . import utils
 
   ## Primitive Mesh Renderer
 counter = 0
-class Primitive:
+class Mesh:
   #Run everytime an object is created, sets the fields to defaults if one is not given, and sends the info to Unity
   #id = int index counter
   def __init__(self,position= [0.0,0.0,0.0], scale= [1,1,1], color= '#FFFFFF', material = 'default'):
@@ -160,7 +160,7 @@ def create(num_objects):
   """
   prim_names = []
   for i in range(num_objects):
-    prim_names.append(Primitive())
+    prim_names.append(Mesh())
   return(prim_names)
 
 def delete(meshes_list):

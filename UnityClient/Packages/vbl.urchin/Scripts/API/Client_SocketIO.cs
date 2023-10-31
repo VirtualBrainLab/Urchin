@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using BestHTTP.SocketIO3;
 using System;
-using Urchin.Managers;
+using UnityEngine.Events;
+using System.Collections.Specialized;
 
 namespace Urchin.API
 {/// <summary>
@@ -11,40 +12,34 @@ namespace Urchin.API
  /// </summary>
     public class Client_SocketIO : MonoBehaviour
     {
-        private const string ID_SAVE_KEY = "id";
-        [SerializeField] private bool localhost;
-
-        #region Managers
-        [SerializeField] private LineRendererManager _lineRendererManager;
-        [SerializeField] private PrimitiveMeshManager _primitiveMeshManager;
-        [SerializeField] private ProbeManager _probeManager;
-        [SerializeField] private AtlasManager _areaManager;
-        [SerializeField] private TextManager _textManager;
-        [SerializeField] private VolumeManager _volumeManager;
-        [SerializeField] private CameraManager _cameraManager;
-        [SerializeField] private FOVManager _fovManager;//TODO
-        [SerializeField] private ParticleManager _particleManager;
+        #region Static
+        public static readonly int SOCKET_IO_MAX_CHUNK_BYTES = 10000000; // maximum SocketIO message size seems to be 256KB
         #endregion
 
-        // NODES
+        #region Events
+        public UnityEvent<string> IDChangedEvent;
+        #endregion
 
-        private string ID;
-
-        private static SocketManager manager;
-
-        /// <summary>
-        /// Unity internal startup function, initializes internal variables and allocates memory
-        /// </summary>
-        private void Awake()
+        #region variables
+        private const string ID_SAVE_KEY = "id";
+        private string _ID;
+        public string ID
         {
-            if (_lineRendererManager == null || _primitiveMeshManager == null || _probeManager == null || _areaManager == null ||
-                _textManager == null || _volumeManager == null || _cameraManager == null)
-                throw new Exception("All managers must be linked in the editor!");
+            get { return _ID; }
+            set
+            {
+                _ID = value;
+                PlayerPrefs.SetString(ID_SAVE_KEY, ID);
+                manager.Socket.Emit("ID", new List<string>() { ID, "receive" });
+                IDChangedEvent.Invoke(ID);
+            }
         }
 
-        /// <summary>
-        /// Unity internal startup function, runs before the first frame Update()
-        /// </summary>
+        [SerializeField] private bool localhost;
+
+        private static SocketManager manager;
+        #endregion
+
         void Start()
         {
             // Only allow localhost when running in the editor
@@ -62,156 +57,248 @@ namespace Urchin.API
         manager.Socket.On("reconnect", () => { Debug.Log("(Client) client reconnected -- could be sign of a timeout issue"); });
 #endif
 
-            // CCF Areas
-            manager.Socket.On<string>("LoadAtlas", _areaManager.LoadAtlas);
-            manager.Socket.On<Dictionary<string, bool>>("SetAreaVisibility", _areaManager.SetAreaVisibility);
-            manager.Socket.On<Dictionary<string, string>>("SetAreaColors", _areaManager.SetAreaColor);
-            manager.Socket.On<Dictionary<string, float>>("SetAreaIntensity", _areaManager.SetAreaColorIntensity);
-            manager.Socket.On<string>("SetAreaColormap", _areaManager.SetAreaColormap);
-            manager.Socket.On<Dictionary<string, string>>("SetAreaMaterial", _areaManager.SetAreaMaterial);
-            manager.Socket.On<Dictionary<string, float>>("SetAreaAlpha", _areaManager.SetAreaAlpha);
-            manager.Socket.On<Dictionary<string, List<float>>>("SetAreaData", _areaManager.SetAreaData);
-            manager.Socket.On<int>("SetAreaIndex", _areaManager.SetAreaDataIndex);
-            manager.Socket.On<string>("LoadDefaultAreas", _areaManager.LoadDefaultAreas);
-
-            // 3D Volumes
-            manager.Socket.On<List<object>>("SetVolumeVisibility", _volumeManager.SetVisibility);
-            manager.Socket.On<List<object>>("SetVolumeDataMeta", _volumeManager.SetMetadata);
-            manager.Socket.On<byte[]>("SetVolumeData", _volumeManager.SetData);
-            manager.Socket.On<string>("CreateVolume", _volumeManager.Create);
-            manager.Socket.On<string>("DeleteVolume", _volumeManager.Delete);
-            manager.Socket.On<List<string>>("SetVolumeColormap", _volumeManager.SetVolumeColormap);
-
-            // Neurons
-            manager.Socket.On<List<string>>("CreateNeurons", _particleManager.CreateParticles);
-            //manager.Socket.On<List<string>>("DeleteNeurons", DeleteNeurons);
-            manager.Socket.On<Dictionary<string, float[]>>("SetNeuronPos", _particleManager.SetPosition);
-            manager.Socket.On<Dictionary<string, float>>("SetNeuronSize", _particleManager.SetSize);
-            //manager.Socket.On<Dictionary<string, string>>("SetNeuronShape", UpdateNeuronShape);
-            manager.Socket.On<Dictionary<string, string>>("SetNeuronColor", _particleManager.SetColor);
-            //manager.Socket.On<Dictionary<string, string>>("SetNeuronMaterial", UpdateNeuronMaterial);
-
-            // Probes
-            manager.Socket.On<List<string>>("CreateProbes", _probeManager.CreateProbes);
-            manager.Socket.On<List<string>>("DeleteProbes", _probeManager.DeleteProbes);
-            manager.Socket.On<Dictionary<string, string>>("SetProbeColors", _probeManager.SetProbeColor);
-            manager.Socket.On<Dictionary<string, List<float>>>("SetProbePos", _probeManager.SetProbePosition);
-            manager.Socket.On<Dictionary<string, List<float>>>("SetProbeAngles", _probeManager.SetProbeAngle);
-            manager.Socket.On<Dictionary<string, string>>("SetProbeStyle", _probeManager.SetProbeStyle);
-            manager.Socket.On<Dictionary<string, List<float>>>("SetProbeSize", _probeManager.SetProbeScale);
-
-            // Camera
-            manager.Socket.On<Dictionary<string, List<float>>>("SetCameraTarget", _cameraManager.SetCameraTarget);
-            manager.Socket.On<Dictionary<string, List<float>>>("SetCameraPosition", _cameraManager.SetCameraPosition);
-            manager.Socket.On<Dictionary<string, List<float>>>("SetCameraRotation", _cameraManager.SetCameraRotation);
-            manager.Socket.On<Dictionary<string, string>>("SetCameraTargetArea", _cameraManager.SetCameraTargetArea);
-            manager.Socket.On<Dictionary<string, float>>("SetCameraZoom", _cameraManager.SetCameraZoom);
-            manager.Socket.On<Dictionary<string, List<float>>>("SetCameraPan", _cameraManager.SetCameraPan);
-            manager.Socket.On<Dictionary<string, string>>("SetCameraMode", _cameraManager.SetCameraMode);
-            manager.Socket.On<string>("SetCameraControl", _cameraManager.SetCameraControl);
-            manager.Socket.On<string>("RequestCameraImg", _cameraManager.Screenshot);
-            manager.Socket.On<Dictionary<string, float>>("SetCameraYAngle", _cameraManager.SetCameraYAngle);
-            manager.Socket.On<List<string>>("CreateCamera", _cameraManager.CreateCamera);
-            manager.Socket.On<List<string>>("DeleteCamera", _cameraManager.DeleteCamera);
-
-            // Lights
-            manager.Socket.On("ResetLightLink", _cameraManager.SetLightCameraLink);
-            manager.Socket.On<string>("SetLightLink", _cameraManager.SetLightCameraLink);
-            manager.Socket.On<List<float>>("SetLightRotation", _cameraManager.SetLightRotation);
-
-            // Text
-            manager.Socket.On<List<string>>("CreateText", _textManager.Create);
-            manager.Socket.On<List<string>>("DeleteText", _textManager.Delete);
-            manager.Socket.On<Dictionary<string, string>>("SetTextText", _textManager.SetText);
-            manager.Socket.On<Dictionary<string, string>>("SetTextColors", _textManager.SetColor);
-            manager.Socket.On<Dictionary<string, int>>("SetTextSizes", _textManager.SetSize);
-            manager.Socket.On<Dictionary<string, List<float>>>("SetTextPositions", _textManager.SetPosition);
-
-            // Line Renderer
-            manager.Socket.On<List<string>>("CreateLine", _lineRendererManager.CreateLine);
-            manager.Socket.On<Dictionary<string, List<List<float>>>>("SetLinePosition", _lineRendererManager.SetLinePosition);
-            manager.Socket.On<List<string>>("DeleteLine", _lineRendererManager.DeleteLine);
-            manager.Socket.On<Dictionary<string, string>>("SetLineColor", _lineRendererManager.SetLineColor);
-
-            //Primitive Mesh Renderer
-            manager.Socket.On<List<string>>("CreateMesh", _primitiveMeshManager.CreateMesh);
-            manager.Socket.On<List<string>>("DeleteMesh", _primitiveMeshManager.DeleteMesh);
-            manager.Socket.On<Dictionary<string, List<float>>>("SetPosition", _primitiveMeshManager.SetPosition);
-            manager.Socket.On<Dictionary<string, List<float>>>("SetScale", _primitiveMeshManager.SetScale);
-            manager.Socket.On<Dictionary<string, string>>("SetColor", _primitiveMeshManager.SetColor);
-            manager.Socket.On<Dictionary<string, string>>("SetMaterial", _primitiveMeshManager.SetMaterial);
-
-            // Calcium FOV Renderer
-            manager.Socket.On<List<string>>("CreateFOV", _fovManager.Create);
-            manager.Socket.On<List<string>>("DeleteFOV", _fovManager.Delete);
-            manager.Socket.On<Dictionary<string, List<List<float>>>>("SetFOVPos", _fovManager.SetPosition);
-            //manager.Socket.On<Dictionary<string, float>>("SetFOVOffset", _fovManager.SetOffset);
-            //manager.Socket.On<List<object>>("SetFOVTextureDataMetaInit", _fovManager.SetTextureDataMetaInit);
-            //manager.Socket.On<List<object>>("SetFOVTextureDataMeta", _fovManager.SetTextureDataMeta);
-            //manager.Socket.On<byte[]>("SetFOVTextureData", _fovManager.SetTextureData);
-            manager.Socket.On<Dictionary<string, bool>>("SetFOVVisibility", _fovManager.SetVisibility);
-
+            // Call the startup functions, these bind all the Socket.on events and setup the static Actions, which
+            // other scripts can then listen to
+            Start_Atlas();
+            Start_Volume();
+            Start_Particles();
+            Start_Probes();
+            Start_Camera();
+            Start_Light();
+            Start_Text();
+            Start_LineRenderer();
+            Start_PrimitiveMeshRenderer();
+            Start_FOV();
 
             // Misc
             manager.Socket.On<string>("Clear", Clear);
+        }
 
-            // If we are building to WebGL or to Standalone, switch how you acquire the user's ID
+        #region Socket setup by action group
+        public static Action<string> LoadAtlas;
+        public static Action<AreaData> SetAreaVisibility;
+        public static Action<Dictionary<string, string>> SetAreaColors;
+        public static Action<Dictionary<string, float>> SetAreaIntensity;
+        public static Action<string> SetAreaColormap;
+        public static Action<Dictionary<string, string>> SetAreaMaterial;
+        public static Action<Dictionary<string, float>> SetAreaAlpha;
+        public static Action<Dictionary<string, List<float>>> SetAreaData;
+        public static Action<int> SetAreaIndex;
+        public static Action LoadDefaultAreas;
 
-#if UNITY_WEBGL && !UNITY_EDITOR
-        // get the url
-        string appURL = Application.absoluteURL;
-        // parse for query strings
-        int queryIdx = appURL.IndexOf("?");
-        if (queryIdx > 0)
+        private void Start_Atlas()
         {
-            Debug.Log("Found query string");
-            string queryString = appURL.Substring(queryIdx);
-            Debug.Log(queryString);
-            NameValueCollection qscoll = System.Web.HttpUtility.ParseQueryString(queryString);
-            foreach (string query in qscoll)
-            {
-                Debug.Log(query);
-                Debug.Log(qscoll[query]);
-                if (query.Equals("ID"))
-                {
-                    ID = qscoll[query];
-                    Debug.Log("Found ID in URL querystring, setting to: " + ID);
-                }
-            }
+            // CCF Areas
+            manager.Socket.On<string>("LoadAtlas", x => LoadAtlas.Invoke(x));
+            manager.Socket.On<string>("SetAreaVisibility", x => SetAreaVisibility.Invoke(JsonUtility.FromJson<AreaData>(x)));
+            manager.Socket.On<Dictionary<string, string>>("SetAreaColors", x => SetAreaColors.Invoke(x));
+            manager.Socket.On<Dictionary<string, float>>("SetAreaIntensity", x => SetAreaIntensity.Invoke(x));
+            manager.Socket.On<string>("SetAreaColormap", x => SetAreaColormap.Invoke(x));
+            manager.Socket.On<Dictionary<string, string>>("SetAreaMaterial", x => SetAreaMaterial.Invoke(x));
+            manager.Socket.On<Dictionary<string, float>>("SetAreaAlpha", x => SetAreaAlpha.Invoke(x));
+            manager.Socket.On<Dictionary<string, List<float>>>("SetAreaData", x => SetAreaData.Invoke(x));
+            manager.Socket.On<int>("SetAreaIndex", x => SetAreaIndex.Invoke(x));
+            manager.Socket.On<string>("LoadDefaultAreas", x => LoadDefaultAreas.Invoke());
         }
-#endif
+
+        public static Action<List<object>> SetVolumeVisibility;
+        public static Action<List<object>> SetVolumeDataMeta;
+        public static Action<byte[]> SetVolumeData;
+        public static Action<string> CreateVolume;
+        public static Action<string> DeleteVolume;
+        public static Action<List<string>> SetVolumeColormap;
+
+        private void Start_Volume()
+        {
+            manager.Socket.On<List<object>>("SetVolumeVisibility", x => SetVolumeVisibility.Invoke(x));
+            manager.Socket.On<List<object>>("SetVolumeDataMeta", x => SetVolumeDataMeta.Invoke(x));
+            manager.Socket.On<byte[]>("SetVolumeData", x => SetVolumeData.Invoke(x));
+            manager.Socket.On<string>("CreateVolume", x => CreateVolume.Invoke(x));
+            manager.Socket.On<string>("DeleteVolume", x => DeleteVolume.Invoke(x));
+            manager.Socket.On<List<string>>("SetVolumeColormap", x => SetVolumeColormap.Invoke(x));
         }
+
+        public static Action<List<string>> CreateParticles;
+        public static Action<Dictionary<string, float[]>> SetParticlePosition;
+        public static Action<Dictionary<string, float>> SetParticleSize;
+        //public static Action<Dictionary<string, string>> SetParticleShape;
+        public static Action<Dictionary<string, string>> SetParticleColor;
+        //public static Action<Dictionary<string, string>> SetParticleMaterial;
+
+        private void Start_Particles()
+        {
+            manager.Socket.On<List<string>>("CreateParticles", x => CreateParticles.Invoke(x));
+            manager.Socket.On<Dictionary<string, float[]>>("SetParticlePos", x => SetParticlePosition.Invoke(x));
+            manager.Socket.On<Dictionary<string, float>>("SetParticleSize", x => SetParticleSize.Invoke(x));
+            //manager.Socket.On<Dictionary<string, string>>("SetNeuronShape", x => SetParticleShape.Invoke(x));
+            manager.Socket.On<Dictionary<string, string>>("SetParticleColor", x => SetParticleColor.Invoke(x));
+            //manager.Socket.On<Dictionary<string, string>>("SetNeuronMaterial", x => SetParticleMaterial.Invoke(x));
+        }
+
+        public static Action<List<string>> CreateProbes;
+        public static Action<List<string>> DeleteProbes;
+        public static Action<Dictionary<string, string>> SetProbeColors;
+        public static Action<Dictionary<string, List<float>>> SetProbePos;
+        public static Action<Dictionary<string, List<float>>> SetProbeAngles;
+        public static Action<Dictionary<string, string>> SetProbeStyle;
+        public static Action<Dictionary<string, List<float>>> SetProbeSize;
+
+        private void Start_Probes()
+        {
+            manager.Socket.On<List<string>>("CreateProbes", x => CreateProbes.Invoke(x));
+            manager.Socket.On<List<string>>("DeleteProbes", x => DeleteProbes.Invoke(x));
+            manager.Socket.On<Dictionary<string, string>>("SetProbeColors", x => SetProbeColors.Invoke(x));
+            manager.Socket.On<Dictionary<string, List<float>>>("SetProbePos", x => SetProbePos.Invoke(x));
+            manager.Socket.On<Dictionary<string, List<float>>>("SetProbeAngles", x => SetProbeAngles.Invoke(x));
+            manager.Socket.On<Dictionary<string, string>>("SetProbeStyle", x => SetProbeStyle.Invoke(x));
+            manager.Socket.On<Dictionary<string, List<float>>>("SetProbeSize", x => SetProbeSize.Invoke(x));
+        }
+
+        public static Action<Dictionary<string, List<float>>> SetCameraTarget;
+        public static Action<Dictionary<string, List<float>>> SetCameraRotation;
+        public static Action<Dictionary<string, string>> SetCameraTargetArea;
+        public static Action<Dictionary<string, float>> SetCameraZoom;
+        public static Action<Dictionary<string, List<float>>> SetCameraPan;
+        public static Action<Dictionary<string, string>> SetCameraMode;
+        public static Action<string> SetCameraControl;
+        public static Action<string> RequestScreenshot;
+        public static Action<Dictionary<string, float>> SetCameraYAngle;
+        public static Action<List<string>> CreateCamera;
+        public static Action<List<string>> DeleteCamera;
+
+        private void Start_Camera()
+        {
+            manager.Socket.On<Dictionary<string, List<float>>>("SetCameraTarget", x => SetCameraTarget.Invoke(x));
+            manager.Socket.On<Dictionary<string, List<float>>>("SetCameraRotation", x => SetCameraRotation.Invoke(x));
+            manager.Socket.On<Dictionary<string, string>>("SetCameraTargetArea", x => SetCameraTargetArea.Invoke(x));
+            manager.Socket.On<Dictionary<string, float>>("SetCameraZoom", x => SetCameraZoom.Invoke(x));
+            manager.Socket.On<Dictionary<string, List<float>>>("SetCameraPan", x => SetCameraPan.Invoke(x));
+            manager.Socket.On<Dictionary<string, string>>("SetCameraMode", x => SetCameraMode.Invoke(x));
+            manager.Socket.On<string>("SetCameraControl", x => SetCameraControl.Invoke(x));
+            manager.Socket.On<string>("RequestCameraImg", x => RequestScreenshot.Invoke(x));
+            manager.Socket.On<Dictionary<string, float>>("SetCameraYAngle", x => SetCameraYAngle.Invoke(x));
+            manager.Socket.On<List<string>>("CreateCamera", x => CreateCamera.Invoke(x));
+            manager.Socket.On<List<string>>("DeleteCamera", x => DeleteCamera.Invoke(x));
+        }
+
+        public static Action ResetLightLink;
+        public static Action<string> SetLightLink;
+        public static Action<List<float>> SetLightRotation;
+
+        private void Start_Light()
+        {
+            manager.Socket.On("ResetLightLink", () => ResetLightLink.Invoke());
+            manager.Socket.On<string>("SetLightLink", x => SetLightLink.Invoke(x));
+            manager.Socket.On<List<float>>("SetLightRotation", x => SetLightRotation.Invoke(x));
+        }
+
+        public static Action<List<string>> CreateText;
+        public static Action<List<string>> DeleteText;
+        public static Action<Dictionary<string, string>> SetTextText;
+        public static Action<Dictionary<string, string>> SetTextColors;
+        public static Action<Dictionary<string, int>> SetTextSizes;
+        public static Action<Dictionary<string, List<float>>> SetTextPositions;
+
+        private void Start_Text()
+        {
+            manager.Socket.On<List<string>>("CreateText", x => CreateText.Invoke(x));
+            manager.Socket.On<List<string>>("DeleteText", x => DeleteText.Invoke(x));
+            manager.Socket.On<Dictionary<string, string>>("SetTextText", x => SetTextText.Invoke(x));
+            manager.Socket.On<Dictionary<string, string>>("SetTextColors", x => SetTextColors.Invoke(x));
+            manager.Socket.On<Dictionary<string, int>>("SetTextSizes", x => SetTextSizes.Invoke(x));
+            manager.Socket.On<Dictionary<string, List<float>>>("SetTextPositions", x => SetTextPositions.Invoke(x));
+        }
+
+        public static Action<List<string>> CreateLine;
+        public static Action<Dictionary<string, List<List<float>>>> SetLinePosition;
+        public static Action<List<string>> DeleteLine;
+        public static Action<Dictionary<string, string>> SetLineColor;
+
+        private void Start_LineRenderer()
+        {
+            manager.Socket.On<List<string>>("CreateLine", x => CreateLine.Invoke(x));
+            manager.Socket.On<Dictionary<string, List<List<float>>>>("SetLinePosition", x => SetLinePosition.Invoke(x));
+            manager.Socket.On<List<string>>("DeleteLine", x => DeleteLine.Invoke(x));
+            manager.Socket.On<Dictionary<string, string>>("SetLineColor", x => SetLineColor.Invoke(x));
+        }
+
+        public static Action<List<string>> CreateMesh;
+        public static Action<List<string>> DeleteMesh;
+        public static Action<Dictionary<string, List<float>>> SetPosition;
+        public static Action<Dictionary<string, List<float>>> SetScale;
+        public static Action<Dictionary<string, string>> SetColor;
+        public static Action<Dictionary<string, string>> SetMaterial;
+
+        private void Start_PrimitiveMeshRenderer()
+        {
+            manager.Socket.On<List<string>>("CreateMesh", x => CreateMesh.Invoke(x));
+            manager.Socket.On<List<string>>("DeleteMesh", x => DeleteMesh.Invoke(x));
+            manager.Socket.On<Dictionary<string, List<float>>>("SetPosition", x => SetPosition.Invoke(x));
+            manager.Socket.On<Dictionary<string, List<float>>>("SetScale", x => SetScale.Invoke(x));
+            manager.Socket.On<Dictionary<string, string>>("SetColor", x => SetColor.Invoke(x));
+            manager.Socket.On<Dictionary<string, string>>("SetMaterial", x => SetMaterial.Invoke(x));
+        }
+
+        public static Action<List<string>> CreateFOV;
+        public static Action<List<string>> DeleteFOV;
+        public static Action<Dictionary<string, List<List<float>>>> SetFOVPos;
+        public static Action<Dictionary<string, float>> SetFOVOffset;
+        public static Action<List<object>> SetFOVTextureDataMetaInit;
+        public static Action<List<object>> SetFOVTextureDataMeta;
+        public static Action<byte[]> SetFOVTextureData;
+        public static Action<Dictionary<string, bool>> SetFOVVisibility;
+
+        private void Start_FOV()
+        {
+            manager.Socket.On<List<string>>("CreateFOV", x => CreateFOV.Invoke(x));
+            manager.Socket.On<List<string>>("DeleteFOV", x => DeleteFOV.Invoke(x));
+            manager.Socket.On<Dictionary<string, List<List<float>>>>("SetFOVPos", x => SetFOVPos.Invoke(x));
+            manager.Socket.On<Dictionary<string, float>>("SetFOVOffset", x => SetFOVOffset.Invoke(x));
+            manager.Socket.On<List<object>>("SetFOVTextureDataMetaInit", x => SetFOVTextureDataMetaInit.Invoke(x));
+            manager.Socket.On<List<object>>("SetFOVTextureDataMeta", x => SetFOVTextureDataMeta.Invoke(x));
+            manager.Socket.On<byte[]>("SetFOVTextureData", x => SetFOVTextureData.Invoke(x));
+            manager.Socket.On<Dictionary<string, bool>>("SetFOVVisibility", x => SetFOVVisibility.Invoke(x));
+        }
+
+
+        #endregion
 
         #region Clear
+
+        public static Action ClearProbes;
+        public static Action ClearAreas;
+        public static Action ClearVolumes;
+        public static Action ClearText;
+        public static Action ClearParticles;
+        public static Action ClearMeshes;
+        public static List<Action> ClearAll = new List<Action> { ClearProbes, ClearAreas, ClearVolumes, 
+            ClearText, ClearParticles, ClearMeshes };
 
         private void Clear(string val)
         {
             switch (val)
             {
                 case "all":
-                    _probeManager.ClearProbes();
-                    _areaManager.ClearAreas();
-                    _volumeManager.Clear();
-                    _textManager.Clear();
-                    _particleManager.Clear();
+                    foreach (var action in ClearAll)
+                        action.Invoke();
                     break;
-                case "probes":
-                    _probeManager.ClearProbes();
+                case "probe":
+                    ClearProbes.Invoke();
                     break;
-                case "areas":
-                    _areaManager.ClearAreas();
+                case "area":
+                    ClearAreas.Invoke();
                     break;
-                case "volumes":
-                    _volumeManager.Clear();
+                case "volume":
+                    ClearVolumes.Invoke();
                     break;
-                case "texts":
-                    _textManager.Clear();
+                case "text":
+                    ClearText.Invoke();
                     break;
-                case "primitives":
-                    _primitiveMeshManager.Clear();
+                case "particle":
+                    ClearParticles.Invoke();
                     break;
-                case "particles":
-                    _particleManager.Clear();
+                case "mesh":
+                    ClearMeshes.Invoke();
                     break;
             }
         }
@@ -221,7 +308,7 @@ namespace Urchin.API
         //// SOCKET FUNCTIONS
         ////
 
-        public static void Emit(string header, object data)
+        public static void Emit(string header, string data)
         {
             manager.Socket.Emit(header, data);
         }
@@ -229,8 +316,6 @@ namespace Urchin.API
         public void UpdateID(string newID)
         {
             ID = newID;
-            PlayerPrefs.SetString(ID_SAVE_KEY, ID);
-            manager.Socket.Emit("ID", new List<string>() { ID, "receive" });
             Debug.Log($"ID updated to {ID}");
         }
 
@@ -242,9 +327,20 @@ namespace Urchin.API
         private void Connected()
         {
 
-            if (PlayerPrefs.HasKey(ID_SAVE_KEY))
-                ID = PlayerPrefs.GetString(ID_SAVE_KEY);
-            UpdateID(ID);
+            // If we are building to WebGL or to Standalone, switch how you acquire the user's ID
+            string queryID;
+            bool webGLID = Utils.Utils.ParseQueryForID(out queryID);
+
+            if (webGLID)
+            {
+                UpdateID(queryID);
+                Debug.Log("Found ID in Query string, setting to: " + ID);
+            }
+            else if (PlayerPrefs.HasKey(ID_SAVE_KEY))
+            {
+                UpdateID(PlayerPrefs.GetString(ID_SAVE_KEY));
+                Debug.Log("Found ID in PlayerPrefs, setting to: " + ID);
+            }
         }
 
         public static void Log(string msg)

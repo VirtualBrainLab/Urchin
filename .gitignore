@@ -106,3 +106,4 @@ UnityClient/Packages/*
 
 API/build/*
 editable_venv/*
+API/poetry.lock

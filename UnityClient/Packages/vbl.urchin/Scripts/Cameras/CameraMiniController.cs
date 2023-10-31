@@ -6,9 +6,16 @@ namespace Urchin.Cameras
 {
     public class CameraMiniController : MonoBehaviour
     {
+        Quaternion _initialRotation;
+
+        private void Awake()
+        {
+            _initialRotation = transform.localRotation;
+        }
+
         public void UpdateRotation(Vector3 pitchYawRoll)
         {
-            transform.localRotation = Quaternion.Euler(new Vector3(-pitchYawRoll.x, -pitchYawRoll.z, pitchYawRoll.y));
+            transform.localRotation = _initialRotation * Quaternion.Euler(pitchYawRoll);
         }
     }
 }

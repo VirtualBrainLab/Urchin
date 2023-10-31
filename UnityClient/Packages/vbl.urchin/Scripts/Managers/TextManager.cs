@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.PackageManager;
 using UnityEngine;
+using Urchin.API;
 
 namespace Urchin.Managers
 {
@@ -22,6 +22,16 @@ namespace Urchin.Managers
         private void Awake()
         {
             _textGOs = new Dictionary<string, GameObject>();
+        }
+
+        private void Start()
+        {
+            Client_SocketIO.CreateText += Create;
+            Client_SocketIO.DeleteText += Delete;
+            Client_SocketIO.SetTextText += SetText;
+            Client_SocketIO.SetTextColors += SetColor;
+            Client_SocketIO.SetTextSizes += SetSize;
+            Client_SocketIO.SetTextPositions += SetPosition;
         }
         #endregion
 

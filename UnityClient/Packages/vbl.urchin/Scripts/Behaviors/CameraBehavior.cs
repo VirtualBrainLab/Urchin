@@ -1,13 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.PackageManager;
 using UnityEngine;
-using Urchin.Cameras;
 using BrainAtlas;
+using Urchin.API;
 
 namespace Urchin.Behaviors
 {
+
     public class CameraBehavior : MonoBehaviour
     {
         #region Serialized
@@ -53,9 +53,6 @@ namespace Urchin.Behaviors
                 }
             }
         }
-        #region private var
-        private const int SOCKET_IO_MAX_CHUNK_BYTES = 1000000;
-        #endregion
 
         private void Update()
         {
@@ -69,9 +66,9 @@ namespace Urchin.Behaviors
             _cameraControl.UserControllable = controllable;
         }
 
-        public void SetCameraRotation(List<float> obj)
+        public void SetCameraRotation(Vector3 yawPitchRoll)
         {
-            _cameraControl.SetBrainAxisAngles(new Vector3(obj[1], obj[0], obj[2]));
+            _cameraControl.SetBrainAxisAngles(yawPitchRoll);
         }
 
         public void SetCameraZoom(float obj)
@@ -143,21 +140,19 @@ namespace Urchin.Behaviors
             ScreenshotReturnMeta meta = new();
             meta.name = Name;
             meta.totalBytes = bytes.Length;
-            throw new NotImplementedException();
-            //Client_SocketIO.Emit("ReceiveCameraImgMeta", JsonUtility.ToJson(meta));
+            Client_SocketIO.Emit("CameraImgMeta", JsonUtility.ToJson(meta));
 
-            int nChunks = Mathf.CeilToInt((float)bytes.Length / (float)SOCKET_IO_MAX_CHUNK_BYTES);
+            int nChunks = Mathf.CeilToInt((float)bytes.Length / (float)Client_SocketIO.SOCKET_IO_MAX_CHUNK_BYTES);
 
             for (int i = 0; i < nChunks; i++)
             {
                 ScreenshotChunk chunk = new();
                 chunk.name = Name;
 
-                int cChunkSize = Mathf.Min(SOCKET_IO_MAX_CHUNK_BYTES, bytes.Length - i * SOCKET_IO_MAX_CHUNK_BYTES);
+                int cChunkSize = Mathf.Min(Client_SocketIO.SOCKET_IO_MAX_CHUNK_BYTES, bytes.Length - i * Client_SocketIO.SOCKET_IO_MAX_CHUNK_BYTES);
                 chunk.data = new byte[cChunkSize];
-                Buffer.BlockCopy(bytes, i * SOCKET_IO_MAX_CHUNK_BYTES, chunk.data, 0, cChunkSize);
-                throw new NotImplementedException();
-                //Client.Emit("ReceiveCameraImg", JsonUtility.ToJson(chunk));
+                Buffer.BlockCopy(bytes, i * Client_SocketIO.SOCKET_IO_MAX_CHUNK_BYTES, chunk.data, 0, cChunkSize);
+                Client_SocketIO.Emit("CameraImg", JsonUtility.ToJson(chunk));
             }
         }
 
@@ -168,60 +163,33 @@ namespace Urchin.Behaviors
             public int totalBytes;
         }
 
-        [Serializable]
-        private struct ScreenshotChunk
+        [Serializable, PreferBinarySerialization]
+        private class ScreenshotChunk
         {
             public string name;
             public byte[] data;
         }
 
-        public void SetCameraPosition(List<float> obj)
+        public void SetCameraYAngle(float yaw)
         {
-            // position in ml/ap/dv relative to ccf 0,0,0
-            throw new NotImplementedException();
-            //Client.LogError("Setting camera position not implemented yet. Use set_camera_target and set_camera_rotation instead.");
-            //Vector3 ccfPosition25 = new Vector3(obj[0]/25, obj[1]/25, obj[2]/25);
-            //cameraControl.SetOffsetPosition(Utils.apdvlr2World(ccfPosition25));
+            Vector3 angles = _cameraControl.PitchYawRoll;
+            angles.y += yaw;
+            _cameraControl.SetBrainAxisAngles(angles);
         }
 
-        public void SetCameraYAngle(float obj)
-        {
-            throw new NotImplementedException();
-            //_cameraControl.SetSpin(obj);
-        }
-
-        public void SetCameraTargetArea(string obj)
-        {
-            throw new NotImplementedException();
-            //(int ID, bool full, bool leftSide, bool rightSide) = AreaManager.GetID(obj);
-            //CCFTreeNode node = ModelControl.tree.findNode(ID);
-            //if (node != null)
-            //{
-            //    Vector3 center;
-            //    if (full)
-            //        center = node.GetMeshCenterFull();
-            //    else
-            //        center = node.GetMeshCenterSided(leftSide);
-            //    _cameraControl.SetCameraTarget(center);
-            //}
-            //else
-            //    Debug.Log("Failed to find node to set camera target: " + obj);
-        }
-
-        public void SetCameraTarget(List<float> apmldv)
+        public void SetCameraTarget(Vector3 coordAtlas)
         {
             // data comes in in um units in ml/ap/dv
             // note that (0,0,0) in world is the center of the brain
             // so offset by (-6.6 ap, -4 dv, -5.7 lr) to get to the corner
             // in world space, x = ML, y = DV, z = AP
-            Vector3 coordAtlas = new Vector3(apmldv[0], apmldv[1], apmldv[2]);
             _cameraControl.SetCameraTarget(BrainAtlasManager.ActiveReferenceAtlas.Atlas2World(coordAtlas));
         }
 
         public void SetCameraPan(List<float> panXY)
         {
             throw new NotImplementedException();
-            //_cameraControl.SetCameraPan(new Vector2(panXY[0], panXY[1]));
+            //_cameraControl.SetP(new Vector2(panXY[0], panXY[1]));
         }
         #endregion
     }

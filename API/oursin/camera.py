@@ -3,16 +3,27 @@
 from . import client
 from . import utils
 
+import PIL
 from PIL import Image
 import io
 import json
-import numpy as np
+import asyncio
 		  
-receive_fnames = {}
 receive_totalBytes = {}
 receive_bytes = {}
+receive_camera = {}
 
-def receive_camera_img_meta(data_str):
+PIL.Image.MAX_IMAGE_PIXELS = 22500000
+
+# Handle receiving camera images back as screenshots
+def on_camera_img_meta(data_str):
+	"""Handler for receiving metadata about incoming images
+
+	Parameters
+	----------
+	data_str : string
+		JSON with two fields {"name":"", "totalBytes":""}
+	"""
 	global receive_totalBytes
 
 	data = json.loads(data_str)
@@ -23,10 +34,17 @@ def receive_camera_img_meta(data_str):
 	receive_totalBytes[name] = totalBytes
 	receive_bytes[name] = bytearray()
 
-	print(f'(Camera receive meta) {name} receiving {totalBytes} bytes')
+	# print(f'(Camera receive meta) {name} receiving {totalBytes} bytes')
 
-def receive_camera_img(data_str):
-	global receive_totalBytes, receive_bytes
+def on_camera_img(data_str):
+	"""Handler for receiving data about incoming images
+
+	Parameters
+	----------
+	data_str : string
+		JSON with two fields {"name":"", "bytes":""}
+	"""
+	global receive_totalBytes, receive_bytes, receive_camera
 
 	data = json.loads(data_str)
 
@@ -35,59 +53,30 @@ def receive_camera_img(data_str):
 
 	receive_bytes[name] = receive_bytes[name] + byte_data
 
-	print(f'(Camera receive) {name} receiving {len(byte_data)} bytes')
+	# print(f'(Camera receive) {name} receiving {len(byte_data)} bytes')
 	
 	if len(receive_bytes[name]) == receive_totalBytes[name]:
-		Image.open(io.BytesIO(receive_bytes[name])).save(receive_fnames[name])
-
-		print(f'(Camera receive) {name} complete')
-		del receive_fnames[name]
-		del receive_totalBytes[name]
-		del receive_bytes[name]
+		print(f'(Camera receive) Camera {name} received an image')
+		receive_camera[name].image_received = True
+		# receive_camera[name].loop.call_soon_threadsafe(receive_camera[name].image_received_event.set())
 
 ## Camera renderer
 counter = 0
 
 class Camera:
-	def __init__(self, target = [0,0,0], position = [0,0,0], preserve_target = True, rotation = [0,0,0], zoom = 1, pan_x = 3, pan_y = 4, mode = "orthographic", controllable = False, main = False):		
-		if(main):
-			self.id = "CameraMain"
-			self.in_unity = True
+	def __init__(self, main = False):		
+		if main:
+			self.id = 'CameraMain'
 		else:
 			global counter
 			counter += 1
 			self.id = f'Camera{counter}'
 			client.sio.emit('CreateCamera', [self.id])
-			self.in_unity = True
-		#in theory, the target value can stand for either coordinate or area? (and taking coordinate as default)
-		# target_coordinate = utils.sanitize_vector3(target)
-		# self.target = target_coordinate
-		# client.sio.emit('SetCameraTarget', {self.id: self.target})
+		self.in_unity = True
+		self.image_received_event = asyncio.Event()
+		self.loop = asyncio.get_event_loop()
 
-		# position = utils.sanitize_vector3(position)
-		# self.position = position
-		# packet = position.copy()
-		# packet.append(preserve_target)
-		# client.sio.emit('SetCameraPosition', {self.id: packet})
-
-		# rotation = utils.sanitize_vector3(rotation)
-		# self.rotation = rotation
-		# client.sio.emit('SetCameraRotation', {self.id: self.rotation})
-
-		# self.zoom = zoom
-		# client.sio.emit('SetCameraZoom', {self.id: self.zoom})
-
-		# # target_area = utils.sanitize_string(target_area)
-		# # self.target_area = target_area
-		# # client.sio.emit('SetCameraTargetArea', self.target_area)
-
-		# self.pan = [pan_x, pan_y]
-		# client.sio.emit('SetCameraPan', {self.id: self.pan})
-
-		# self.mode = mode
-		# client.sio.emit('SetCameraMode', {self.id: self.mode})
-
-	def create(self,main):
+	def create(self):
 		"""Creates camera
 		
 		Parameters
@@ -132,28 +121,29 @@ class Camera:
 		self.target = camera_target_coordinate
 		client.sio.emit('SetCameraTarget', {self.id: camera_target_coordinate})
 
-	def set_position(self, position, preserve_target = True):
-		"""Set the camera position in CCF space in um relative to CCF (0,0,0), coordinates can be outside CCF space. 
+	# temporarily removed
+	# def set_position(self, position, preserve_target = True):
+	# 	"""Set the camera position in CCF space in um relative to CCF (0,0,0), coordinates can be outside CCF space. 
 
-		Parameters
-		----------
-		position : float list
-			list of coordinates in ml/ap/dv in um
-		preserve_target : bool, optional
-			when True keeps the camera aimed at the current target, when False preserves the camera rotation, by default True
+	# 	Parameters
+	# 	----------
+	# 	position : float list
+	# 		list of coordinates in ml/ap/dv in um
+	# 	preserve_target : bool, optional
+	# 		when True keeps the camera aimed at the current target, when False preserves the camera rotation, by default True
 		
-		Examples
-		--------
-		>>> c1.set_position([500,1500,1000])
-		"""
-		if self.in_unity == False:
-			raise Exception("Camera is not created. Please create camera before calling method.")
+	# 	Examples
+	# 	--------
+	# 	>>> c1.set_position([500,1500,1000])
+	# 	"""
+	# 	if self.in_unity == False:
+	# 		raise Exception("Camera is not created. Please create camera before calling method.")
 		
-		position = utils.sanitize_vector3(position)
-		self.position = position
-		packet = position.copy()
-		packet.append(preserve_target)
-		client.sio.emit('SetCameraPosition', {self.id: packet})
+	# 	position = utils.sanitize_vector3(position)
+	# 	self.position = position
+	# 	packet = position.copy()
+	# 	packet.append(preserve_target)
+	# 	client.sio.emit('SetCameraPosition', {self.id: packet})
 
 	def set_rotation(self, rotation):
 		"""Set the camera rotation (pitch, yaw, roll). The camera is locked to a target, so this rotation rotates around the target.
@@ -333,32 +323,68 @@ class Camera:
 		self.controllable = True
 		client.sio.emit('SetCameraControl', self.id)
 		
-	def screenshot(self, filename, size=[1024,768]):
+	async def screenshot(self, size=[1024,768], filename = 'return'):
 		"""Capture a screenshot
 
 		Parameters
 		----------
-		filename: string
-			Filename to save to, relative to local path
 		size : list, optional
 			Size of the screenshot, by default [1024,768]
+		filename: string, optional
+			Filename to save to, relative to local path
 		"""
-		global receive_fnames
-		print(self.id)
-		print(filename)
-		receive_fnames[self.id] = filename
+		global receive_totalBytes, receive_bytes, receive_camera
+		self.image_received_event.clear()
+		self.image_received = False
+		receive_camera[self.id] = self
+
+		if size[0] > 15000 or size[1] > 15000:
+			raise Exception('(urchin.camera) Screenshots can''t exceed 15000x15000')
+		
 		client.sio.emit('RequestCameraImg', json.dumps({"name":self.id, "size":size}))
 
+		while not self.image_received:
+			await asyncio.sleep(0.1)
+		# await self.image_received_event.wait()
+
+		# image is here, reconstruct it
+		img = Image.open(io.BytesIO(receive_bytes[self.id]))
+		
+		print(f'(Camera receive) {self.id} complete')
+		del receive_totalBytes[self.id]
+		del receive_bytes[self.id]
+		del receive_camera[self.id]
+
+		if not filename == 'return':
+			img.save(filename)
+		else:
+			return img
+
+
 def set_light_rotation(angles):
-    angles = utils.sanitize_vector3(angles)
-    print(angles)
-    print(isinstance(angles,list))
-    client.sio.emit('SetLightRotation', angles)
+	"""Override the rotation of the main camera light
+
+	Parameters
+	----------
+	angles : vector3
+		Euler angles of light
+	"""
+	angles = utils.sanitize_vector3(angles)
+	print(angles)
+	print(isinstance(angles,list))
+	client.sio.emit('SetLightRotation', angles)
 
 def set_light_camera(camera_name = None):
-    if (camera_name is None):
-        client.sio.emit('ResetLightLink')
-    else:
-        client.sio.emit('SetLightLink', camera_name)
+	"""Change the camera that the main light is linked to (the light will rotate the camera)
+
+	Parameters
+	----------
+	camera_name : string, optional
+		Name of camera to attach light to, by default None
+	"""
+	if (camera_name is None):
+		client.sio.emit('ResetLightLink')
+	else:
+		client.sio.emit('SetLightLink', camera_name)
 	
 main = Camera(main = True)

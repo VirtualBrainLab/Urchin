@@ -1,7 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.PackageManager;
 using UnityEngine;
+using Urchin.API;
 
 namespace Urchin.Managers
 {
@@ -43,6 +42,17 @@ namespace Urchin.Managers
                 throw new System.Exception("Number of prefab options and names must match");
         }
 
+        private void Start()
+        {
+            Client_SocketIO.CreateProbes += CreateProbes;
+            Client_SocketIO.DeleteProbes += DeleteProbes;
+            Client_SocketIO.SetProbeColors += SetColors;
+            Client_SocketIO.SetProbePos += SetPositions;
+            Client_SocketIO.SetProbeAngles += SetAngles;
+            Client_SocketIO.SetProbeStyle += SetStyles;
+            Client_SocketIO.SetProbeSize += SetSizes;
+        }
+
         #endregion
 
         #region Public object functions
@@ -75,7 +85,7 @@ namespace Urchin.Managers
             }
         }
 
-        public void SetProbeColor(Dictionary<string, string> probeColors)
+        public void SetColors(Dictionary<string, string> probeColors)
         {
             foreach (KeyValuePair<string, string> kvp in probeColors)
             {
@@ -93,7 +103,7 @@ namespace Urchin.Managers
             }
         }
 
-        public void SetProbePosition(Dictionary<string, List<float>> probePositions)
+        public void SetPositions(Dictionary<string, List<float>> probePositions)
         {
             foreach (KeyValuePair<string, List<float>> kvp in probePositions)
             {
@@ -108,7 +118,7 @@ namespace Urchin.Managers
             }
         }
 
-        public void SetProbeAngle(Dictionary<string, List<float>> probeAngles)
+        public void SetAngles(Dictionary<string, List<float>> probeAngles)
         {
             foreach (KeyValuePair<string, List<float>> kvp in probeAngles)
             {
@@ -123,7 +133,7 @@ namespace Urchin.Managers
             }
         }
 
-        public void SetProbeStyle(Dictionary<string, string> probeStyles)
+        public void SetStyles(Dictionary<string, string> probeStyles)
         {
             foreach (KeyValuePair<string, string> kvp in probeStyles)
             {
@@ -138,7 +148,7 @@ namespace Urchin.Managers
             }
         }
 
-        public void SetProbeScale(Dictionary<string, List<float>> probeScales)
+        public void SetSizes(Dictionary<string, List<float>> probeScales)
         {
             foreach (KeyValuePair<string, List<float>> kvp in probeScales)
             {

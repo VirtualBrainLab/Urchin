@@ -19,14 +19,15 @@ const io = require("socket.io")(server, {
     "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
     "preflightContinue": false,
     "optionsSuccessStatus": 204
-  } 
+  },
+  maxHttpBufferSize: 1e8 
 });
 
 ID2Socket = {}; // keeps track of all sockets with the same ID
 Socket2ID = {}; // keeps track of the ID of each socket
 Socket2Type = {};
 
-reserved_messages = ['connection','disconnect','ID','ReceiveCameraImgMeta','ReceiveCameraImg','log','log-warning','log-error']
+reserved_messages = ['connection','disconnect','ID','CameraImgMeta','CameraImg','log','log-warning','log-error']
 
 io.on("connection", function (socket) {
   console.log("Client connected with ID: " + socket.id);
@@ -74,11 +75,11 @@ io.on("connection", function (socket) {
   // Make sure that these receive events are listed in the reserved_messages list
   
   // Camera receive events
-  socket.on('ReceiveCameraImgMeta', function(data) {
-    emitToSender(socket.id, 'ReceiveCameraImgMeta', data);
+  socket.on('CameraImgMeta', function(data) {
+    emitToSender(socket.id, 'CameraImgMeta', data);
   });
-  socket.on('ReceiveCameraImg', function(data) {
-    emitToSender(socket.id, 'ReceiveCameraImg', data);
+  socket.on('CameraImg', function(data) {
+    emitToSender(socket.id, 'CameraImg', data);
   });
   
   // Receiver events

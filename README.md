@@ -28,7 +28,7 @@ urchin.setup()
 
 ## Examples
 
-Head over to [urchin-examples/basics](https://github.com/VirtualBrainLab/urchin-examples/tree/colab/basics) to find tutorials that introduce the functionality in Urchin.
+Head over to [urchin-examples/basics](https://github.com/VirtualBrainLab/urchin-examples/tree/main/basics) to find tutorials that introduce the functionality in Urchin.
 
 To get you started, try running the code below to load the root brain model. 
 

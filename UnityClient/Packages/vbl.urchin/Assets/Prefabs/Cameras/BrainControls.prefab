@@ -25,14 +25,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1961916998269465997}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1961916998455722552}
+  - {fileID: 4882189122998301958}
+  - {fileID: 7539420012798258991}
   m_Father: {fileID: 1961917000311605967}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!114 &1961916998269465987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -72,7 +73,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1961916998455722553}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -83,8 +84,8 @@ Transform:
   - {fileID: 1961916999436259260}
   - {fileID: 1961916998806602265}
   - {fileID: 1961916998979379205}
-  m_Father: {fileID: 1961916998269465996}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Father: {fileID: 1961917000311605967}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!33 &1961916998455722557
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -277,7 +278,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraController: {fileID: 0}
-  eulerAngles: {x: -90, y: 90, z: 0}
+  eulerAngles: {x: 0, y: 90, z: -90}
 --- !u!1 &1961916998806602266
 GameObject:
   m_ObjectHideFlags: 0
@@ -399,7 +400,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraController: {fileID: 0}
-  eulerAngles: {x: 90, y: 90, z: 0}
+  eulerAngles: {x: 0, y: -90, z: 90}
 --- !u!1 &1961916998979379206
 GameObject:
   m_ObjectHideFlags: 0
@@ -501,7 +502,7 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5000001
   m_Height: 2
@@ -608,7 +609,7 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5000001
   m_Height: 2
@@ -628,7 +629,7 @@ GameObject:
   - component: {fileID: 1961917000157152739}
   - component: {fileID: 1961917000157152736}
   m_Layer: 14
-  m_Name: DV
+  m_Name: Axial
   m_TagString: BrainRotatorMiniControls
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -857,7 +858,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraController: {fileID: 0}
-  eulerAngles: {x: 0, y: 90, z: 0}
+  eulerAngles: {x: -90, y: 0, z: 0}
 --- !u!1 &1961917000311605960
 GameObject:
   m_ObjectHideFlags: 0
@@ -888,8 +889,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1961916998269465996}
-  - {fileID: 4882189122998301958}
-  - {fileID: 7539420012798258991}
+  - {fileID: 1961916998455722552}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4278882032191029948
@@ -918,13 +918,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4278882032191029948}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalRotation: {x: -0.35355344, y: 0.1464466, z: -0.35355335, w: 0.85355335}
+  m_LocalPosition: {x: -2, y: -2, z: -2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1961917000311605967}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Father: {fileID: 1961916998269465996}
+  m_LocalEulerAnglesHint: {x: 45, y: 45, z: 0}
 --- !u!108 &2498237085475250022
 Light:
   m_ObjectHideFlags: 0
@@ -934,10 +934,10 @@ Light:
   m_GameObject: {fileID: 4278882032191029948}
   m_Enabled: 1
   serializedVersion: 10
-  m_Type: 0
+  m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 3
+  m_Intensity: 1
   m_Range: 1000
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -1020,7 +1020,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4882189122998301958}
   - component: {fileID: 2396504726548320862}
-  - component: {fileID: 5428780862859445703}
   - component: {fileID: 4583640294701092575}
   m_Layer: 14
   m_Name: ControlsCamera
@@ -1042,7 +1041,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1961917000311605967}
+  m_Father: {fileID: 1961916998269465996}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &2396504726548320862
 Camera:
@@ -1095,14 +1094,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &5428780862859445703
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5917770569156638772}
-  m_Enabled: 1
 --- !u!114 &4583640294701092575
 MonoBehaviour:
   m_ObjectHideFlags: 0

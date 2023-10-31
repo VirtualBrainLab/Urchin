@@ -1,7 +1,7 @@
 """Client for communicating with the echo server"""
 import socketio
-import os
 import uuid
+import asyncio
 
 from . import camera
 
@@ -33,13 +33,17 @@ def message(data):
 def message(data):
 	print('(Renderer) ' + bcolors.FAIL + data)
 
-@sio.on('ReceiveCameraImgMeta')
+###### CALLBACKS #######
+
+@sio.on('CameraImgMeta')
 def receive_camera_img_meta(data):
-	camera.receive_camera_img_meta(data)
+	camera.on_camera_img_meta(data)
 	
-@sio.on('ReceiveCameraImg')
+@sio.on('CameraImg')
 def receive_camera_img(data):
-  camera.receive_camera_img(data)
+	camera.on_camera_img(data)
+	
+# Helper functions
 def connected():
 	return sio.connected
 

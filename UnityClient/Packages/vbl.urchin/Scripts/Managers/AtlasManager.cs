@@ -5,14 +5,12 @@ using BrainAtlas;
 using UnityEngine.Events;
 using Urchin.Utils;
 using System.Threading.Tasks;
+using Urchin.API;
 
 namespace Urchin.Managers
 {
     public class AtlasManager : MonoBehaviour
     {
-        #region Serialized fields
-        [SerializeField] BrainAtlasManager _brainAtlasManager;
-        #endregion
 
         #region static
         public static HashSet<OntologyNode> VisibleNodes { get; private set; }
@@ -52,6 +50,19 @@ namespace Urchin.Managers
         private void Start()
         {
             _localColormap = Colormaps.MainColormap;
+
+            Client_SocketIO.ClearAreas += ClearAreas;
+
+            Client_SocketIO.LoadAtlas += LoadAtlas;
+            Client_SocketIO.SetAreaVisibility += SetAreaVisibility;
+            Client_SocketIO.SetAreaColors += SetAreaColors;
+            Client_SocketIO.SetAreaIntensity += SetAreaIntensity;
+            Client_SocketIO.SetAreaColormap += SetAreaColormap;
+            Client_SocketIO.SetAreaMaterial += SetAreaMaterial;
+            Client_SocketIO.SetAreaAlpha += SetAreaAlpha;
+            Client_SocketIO.SetAreaData += SetAreaData;
+            Client_SocketIO.SetAreaIndex += SetAreaIndex;
+            Client_SocketIO.LoadDefaultAreas += LoadDefaultAreasVoid;
         }
         #endregion
 
@@ -70,27 +81,27 @@ namespace Urchin.Managers
             }
         }
 
-        public void SetAreaVisibility(Dictionary<string, bool> areaVisibility)
+        public void SetAreaVisibility(AreaData data)
         {
-            foreach (KeyValuePair<string, bool> kvp in areaVisibility)
+            for (int i = 0; i < data.acronym.Length; i++)
             {
-                (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
-                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(ID);
+                int areaID = BrainAtlasManager.ActiveReferenceAtlas.Ontology.Acronym2ID(data.acronym[i]);
+
+                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(areaID);
+                OntologyNode.OntologyNodeSide side = (OntologyNode.OntologyNodeSide)data.side[i];
 
                 if (node == null)
                     return;
 
-                //if (_missing.Contains(node.ID))
-                //{
-                //    Client.LogWarning("The mesh file for area " + node.ID + " does not exist, we can't load it");
-                //    continue;
-                //}
-
                 bool set = false;
+
+                bool full = side == OntologyNode.OntologyNodeSide.Full;
+                bool leftSide = side == OntologyNode.OntologyNodeSide.Left;
+                bool rightSide = side == OntologyNode.OntologyNodeSide.Right;
 
                 if (full && node.FullLoaded.IsCompleted)
                 {
-                    node.SetVisibility(kvp.Value, OntologyNode.OntologyNodeSide.Full);
+                    node.SetVisibility(data.visible[i], OntologyNode.OntologyNodeSide.Full);
                     VisibleNodes.Add(node);
                     set = true;
 #if UNITY_EDITOR
@@ -99,7 +110,7 @@ namespace Urchin.Managers
                 }
                 if (leftSide && node.SideLoaded.IsCompleted)
                 {
-                    node.SetVisibility(kvp.Value, OntologyNode.OntologyNodeSide.Left);
+                    node.SetVisibility(data.visible[i], OntologyNode.OntologyNodeSide.Left);
                     VisibleNodes.Add(node);
                     set = true;
 #if UNITY_EDITOR
@@ -108,7 +119,7 @@ namespace Urchin.Managers
                 }
                 if (rightSide && node.SideLoaded.IsCompleted)
                 {
-                    node.SetVisibility(kvp.Value, OntologyNode.OntologyNodeSide.Right);
+                    node.SetVisibility(data.visible[i], OntologyNode.OntologyNodeSide.Right);
                     VisibleNodes.Add(node);
                     set = true;
 #if UNITY_EDITOR
@@ -119,11 +130,11 @@ namespace Urchin.Managers
                 if (set)
                     NodeVisibleEvent.Invoke(node);
                 else
-                    LoadIndividualArea(node, full, leftSide, rightSide, kvp.Value);
+                    LoadIndividualArea(node, full, leftSide, rightSide, data.visible[i]);
             }
         }
 
-        public async void SetAreaColor(Dictionary<string, string> areaColor)
+        public async void SetAreaColors(Dictionary<string, string> areaColor)
         {
             foreach (KeyValuePair<string, string> kvp in areaColor)
             {
@@ -228,17 +239,18 @@ namespace Urchin.Managers
             }
         }
 
-        public void SetAreaDataIndex(int areaDataIdx)
+        public void SetAreaIndex(int areaDataIdx)
         {
             _areaDataIndex = areaDataIdx;
             UpdateAreaDataIntensity();
         }
 
         // Area intensity colormaps
-        public async void SetAreaColorIntensity(Dictionary<string, float> areaIntensity)
+        public void SetAreaIntensity(Dictionary<string, float> areaIntensity)
         {
             foreach (KeyValuePair<string, float> kvp in areaIntensity)
             {
+                Debug.Log((kvp.Key, kvp.Value));
                 (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
                 OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(ID);
 
@@ -261,6 +273,7 @@ namespace Urchin.Managers
                 else
                     Debug.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
             }
+            UpdateAreaColorFromColormap();
         }
 
         public void UpdateAreaColorFromColormap()
@@ -272,14 +285,14 @@ namespace Urchin.Managers
                 if (node.FullLoaded.IsCompleted && kvp.Value.full >= 0)
                     node.SetColor(_localColormap.Value(kvp.Value.full), OntologyNode.OntologyNodeSide.Full);
                 if (node.SideLoaded.IsCompleted && kvp.Value.left >= 0)
-                    node.SetColor(_localColormap.Value(kvp.Value.full), OntologyNode.OntologyNodeSide.Left);
+                    node.SetColor(_localColormap.Value(kvp.Value.left), OntologyNode.OntologyNodeSide.Left);
                 if (node.SideLoaded.IsCompleted && kvp.Value.right >= 0)
-                    node.SetColor(_localColormap.Value(kvp.Value.full), OntologyNode.OntologyNodeSide.Right);
+                    node.SetColor(_localColormap.Value(kvp.Value.right), OntologyNode.OntologyNodeSide.Right);
             }
         }
 
         // Auto-loaders
-        public async void LoadDefaultAreas(string defaultName)
+        public async void LoadDefaultAreasVoid()
         {
             int[] defaultAreaIDs = BrainAtlasManager.ActiveReferenceAtlas.DefaultAreas;
 
@@ -295,7 +308,34 @@ namespace Urchin.Managers
                 node.SetVisibility(false, OntologyNode.OntologyNodeSide.Full);
                 node.SetVisibility(true, OntologyNode.OntologyNodeSide.Left);
                 node.SetVisibility(true, OntologyNode.OntologyNodeSide.Right);
+
+                VisibleNodes.Add(node);
             }
+        }
+
+        public async Task<List<OntologyNode>> LoadDefaultAreas(string defaultName)
+        {
+            List<OntologyNode> nodes = new();
+            int[] defaultAreaIDs = BrainAtlasManager.ActiveReferenceAtlas.DefaultAreas;
+
+            foreach (int areaID in defaultAreaIDs)
+            {
+                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(areaID);
+                nodes.Add(node);
+
+                // Load all models
+                _ = node.LoadMesh(OntologyNode.OntologyNodeSide.All);
+
+                await Task.WhenAll(new Task[] { node.FullLoaded, node.SideLoaded });
+
+                node.SetVisibility(false, OntologyNode.OntologyNodeSide.Full);
+                node.SetVisibility(true, OntologyNode.OntologyNodeSide.Left);
+                node.SetVisibility(true, OntologyNode.OntologyNodeSide.Right);
+
+                VisibleNodes.Add(node);
+            }
+
+            return nodes;
         }
 
         #endregion
@@ -314,7 +354,7 @@ namespace Urchin.Managers
         /// </summary>
         /// <param name="idOrAcronym">An ID number (e.g. 0) or an acronym (e.g. "root")</param>
         /// <returns>(int Allen CCF ID, bool left side model, bool right side model)</returns>
-        public (int ID, bool full, bool leftSide, bool rightSide) GetID(string idOrAcronym)
+        public static (int ID, bool full, bool leftSide, bool rightSide) GetID(string idOrAcronym)
         {
             // Check whether a suffix was included
             int leftIndex = idOrAcronym.IndexOf("-lh");
@@ -336,8 +376,6 @@ namespace Urchin.Managers
             if (lower.Equals("void"))
                 return (-1, full, leftSide, rightSide);
 
-            // Figure out what the acronym was by asking CCFModelControl
-            Debug.Log(idOrAcronym);
             try
             {
                 int ID = BrainAtlasManager.ActiveReferenceAtlas.Ontology.Acronym2ID(idOrAcronym);
@@ -368,14 +406,11 @@ namespace Urchin.Managers
 
             await node.LoadMesh(OntologyNode.OntologyNodeSide.All);
 
-            if (full)
-                node.SetVisibility(visibility, OntologyNode.OntologyNodeSide.Full);
+            node.SetVisibility(full && visibility, OntologyNode.OntologyNodeSide.Full);
 
             await node.SideLoaded;
-            if (leftSide)
-                node.SetVisibility(visibility, OntologyNode.OntologyNodeSide.Left);
-            if (rightSide)
-                node.SetVisibility(visibility, OntologyNode.OntologyNodeSide.Right);
+            node.SetVisibility(leftSide && visibility, OntologyNode.OntologyNodeSide.Left);
+            node.SetVisibility(rightSide && visibility, OntologyNode.OntologyNodeSide.Right);
 
             NodeVisibleEvent.Invoke(node);
         }
