@@ -50,13 +50,6 @@ def display_image(image_url):
 	>>> urchin.io.image('https://picsum.photos/200/300')
 	"""
 	from IPython.display import Image, display
-<<<<<<< Updated upstream
-
-	image_url = utils.sanitize_drive_url(image_url)
-
-	display(Image(url=image_url))
-	
-=======
 	try:
 		response = requests.get(image_url)
 		response.raise_for_status()
@@ -67,7 +60,6 @@ def display_image(image_url):
 		display(Image(url=image_url))
 	except Exception as e:
 		display("Failed to display the image. Please make sure the URL is valid.")
->>>>>>> Stashed changes
 
 def load_df(url):
 	"""Loads a pandas dataframe from a csv file on drive
