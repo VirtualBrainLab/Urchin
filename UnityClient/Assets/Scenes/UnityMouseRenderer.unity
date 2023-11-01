@@ -1906,6 +1906,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3393775226405738686, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
+      propertyPath: near clip plane
+      value: -50
+      objectReference: {fileID: 0}
     - target: {fileID: 4417393973230421729, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
       propertyPath: m_Name
       value: Urchin

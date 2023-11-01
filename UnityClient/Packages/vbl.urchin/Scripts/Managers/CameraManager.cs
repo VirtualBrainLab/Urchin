@@ -188,8 +188,10 @@ namespace Urchin.Managers
 
                     coordAtlas /= 1000f;
 
+                    Vector3 coordWorld = BrainAtlasManager.ActiveReferenceAtlas.Atlas2World(coordAtlas);
+
                     Debug.LogWarning("Mesh center needs to target full/left/right correctly!!");
-                    _cameras[kvp.Key].SetCameraTarget(coordAtlas);
+                    _cameras[kvp.Key].SetCameraTarget(coordWorld);
                 }
             }
         }
