@@ -412,6 +412,8 @@ namespace Urchin.Managers
             node.SetVisibility(leftSide && visibility, OntologyNode.OntologyNodeSide.Left);
             node.SetVisibility(rightSide && visibility, OntologyNode.OntologyNodeSide.Right);
 
+            node.SetColor(node.Color);
+
             NodeVisibleEvent.Invoke(node);
         }
 

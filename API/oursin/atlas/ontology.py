@@ -95,8 +95,6 @@ class Atlas:
             data_dict['visible'].append(area_visibility[i])
             data_dict['side'].append(side.value)
 
-        print(json.dumps(data_dict))
-
         client.sio.emit('SetAreaVisibility', json.dumps(data_dict))
 
     def set_colors(self, area_list, area_colors, sided="full"):
@@ -111,9 +109,9 @@ class Atlas:
         >>> urchin.ccf25.set_visibilities(urchin.ccf25.get_areas(["root", "VISp"]), ['#ff0000', '#00ff00'])
         >>> urchin.ccf25.set_visibilities(urchin.ccf25.get_areas(["root", "VISp"]), [255, 255, 255])
         """
+        area_colors = utils.sanitize_list(area_colors, len(area_list))
         for i in range(0,len(area_colors)):
             area_colors[i] = utils.sanitize_color(area_colors[i])
-        area_colors = utils.sanitize_list(area_colors, len(area_list))
 
         data_dict = {}
         for i, area in enumerate(area_list):
@@ -153,9 +151,9 @@ class Atlas:
         --------
         >>> urchin.ccf25.set_color_intensity(urchin.ccf25.get_areas(["root", "VISp"]), [0, 1])
         """
+        area_intensities = utils.sanitize_list(area_intensities, len(area_list))
         for i in range(0,len(area_intensities)):
             area_intensities[i] = utils.sanitize_float(area_intensities[i])
-        area_intensities = utils.sanitize_list(area_intensities, len(area_list))
 
         data_dict = {}
         for i, area in enumerate(area_list):
@@ -177,9 +175,9 @@ class Atlas:
         >>> urchin.ccf25.set_alphas(urchin.ccf25.get_areas(["root", "VISp"]), [0.15, 0.15])
         >>> urchin.ccf25.set_alphas(urchin.ccf25.get_areas(["root", "VISp"]), [0.5])
         """
+        area_alphas = utils.sanitize_list(area_alphas, len(area_list))
         for i in range(0,len(area_alphas)):
             area_alphas[i] = utils.sanitize_float(area_alphas[i])
-        area_alphas = utils.sanitize_list(area_alphas, len(area_list))
 
         data_dict = {}
         for i, area in enumerate(area_list):
@@ -207,9 +205,9 @@ class Atlas:
         >>> urchin.ccf25.set_materials(urchin.ccf25.get_areas(["root", "VISp"]), ['transparent-lit', 'opaque-lit'])
         >>> urchin.ccf25.set_materials(urchin.ccf25.get_areas(["root", "VISp"]), ['transparent-lit])
         """
+        area_materials = utils.sanitize_list(area_materials, len(area_list))
         for i in range(0,len(area_materials)):
             area_materials[i] = utils.sanitize_string(area_materials[i])
-        area_materials = utils.sanitize_list(area_materials, len(area_list))
 
         data_dict = {}
         for i, area in enumerate(area_list):
@@ -249,12 +247,12 @@ class Structure:
         >>> urchin.ccf25.root.set_visibility(True, urchin.utils.Side.LEFT)
         """
         data_dict = {
-            'acronym':self.acronym,
-            'side':sided.value,
-            'visible':visibility
+            'acronym':[self.acronym],
+            'side':[sided.value],
+            'visible':[visibility]
         }
 
-        client.sio.emit('SetAreaVisibility', data_dict)
+        client.sio.emit('SetAreaVisibility', json.dumps(data_dict))
 
     def set_color(self, color, sided = "full"):
         """Set area color.
