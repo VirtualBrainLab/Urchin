@@ -186,6 +186,8 @@ namespace Urchin.Managers
                         coordAtlas.y = BrainAtlasManager.ActiveReferenceAtlas.Dimensions.y - coordAtlas.y;
                     }
 
+                    coordAtlas /= 1000f;
+
                     Debug.LogWarning("Mesh center needs to target full/left/right correctly!!");
                     _cameras[kvp.Key].SetCameraTarget(coordAtlas);
                 }
