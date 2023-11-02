@@ -215,7 +215,7 @@ public class UrchinCore : MonoBehaviour
 
     public void UpdateDataIndex(float newIdx)
     {
-        Debug.Log(newIdx);
+        //TODO
     }
 
     public void UpdateTextColor(bool state)

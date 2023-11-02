@@ -51,6 +51,7 @@ namespace Urchin.Managers
             Client_SocketIO.SetCameraZoom += SetCameraZoom;
             Client_SocketIO.SetCameraPan += SetCameraPan;
             Client_SocketIO.SetCameraMode += SetCameraMode;
+            Client_SocketIO.SetCameraColor += SetCameraColor;
             Client_SocketIO.SetCameraControl += SetCameraControl;
             Client_SocketIO.RequestScreenshot += RequestScreenshot;
             Client_SocketIO.SetCameraYAngle += SetCameraYAngle;
@@ -146,6 +147,17 @@ namespace Urchin.Managers
             }
         }
 
+        public void SetCameraColor(Dictionary<string, string> cameraColor)
+        {
+            foreach (var kvp in cameraColor)
+            {
+                if (_cameras.ContainsKey(kvp.Key))
+                    _cameras[kvp.Key].SetBackgroundColor(kvp.Value);
+                else
+                    Client_SocketIO.LogError($"(CameraManager) Camera {kvp.Key} does not exist, cannot set background color to {kvp.Value}");
+            }
+        }
+
         public void RequestScreenshot(string data)
         {
             ScreenshotData screenshotData = JsonUtility.FromJson<ScreenshotData>(data);
@@ -186,8 +198,12 @@ namespace Urchin.Managers
                         coordAtlas.y = BrainAtlasManager.ActiveReferenceAtlas.Dimensions.y - coordAtlas.y;
                     }
 
+                    coordAtlas /= 1000f;
+
+                    Vector3 coordWorld = BrainAtlasManager.ActiveReferenceAtlas.Atlas2World(coordAtlas);
+
                     Debug.LogWarning("Mesh center needs to target full/left/right correctly!!");
-                    _cameras[kvp.Key].SetCameraTarget(coordAtlas);
+                    _cameras[kvp.Key].SetCameraTarget(coordWorld);
                 }
             }
         }

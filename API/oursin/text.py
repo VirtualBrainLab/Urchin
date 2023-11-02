@@ -109,7 +109,7 @@ class Text:
     self.size = text_size
     client.sio.emit('SetTextSizes',{self.id: text_size})
 
-  def set_position(self,text_pos):
+  def set_position(self,position):
     """Set the positions of a set of text objects in UI canvas space
     Bottom left corner is [-1,-1], top right [1,1]
 
@@ -126,9 +126,8 @@ class Text:
     """
     if self.in_unity == False:
       raise Exception("Object does not exist in Unity, call create method first.")
-    position = utils.sanitize_list(position)
-    self.position = position
-    client.sio.emit('SetTextPositions',{self.id: position})
+    self.position = utils.sanitize_list(position)
+    client.sio.emit('SetTextPositions',{self.id: self.position})
 
 
 def create(n):

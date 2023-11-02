@@ -18,6 +18,7 @@ public class ParticleManager : MonoBehaviour
     private void Start()
     {
         Client_SocketIO.CreateParticles += CreateParticles;
+        Client_SocketIO.ClearParticles += Clear;
         Client_SocketIO.SetParticlePosition += SetPosition;
         Client_SocketIO.SetParticleSize += SetSize;
         //Client_SocketIO.SetParticleShape += SetShape;

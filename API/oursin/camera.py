@@ -34,8 +34,6 @@ def on_camera_img_meta(data_str):
 	receive_totalBytes[name] = totalBytes
 	receive_bytes[name] = bytearray()
 
-	# print(f'(Camera receive meta) {name} receiving {totalBytes} bytes')
-
 def on_camera_img(data_str):
 	"""Handler for receiving data about incoming images
 
@@ -52,13 +50,10 @@ def on_camera_img(data_str):
 	byte_data = bytes(data["data"])
 
 	receive_bytes[name] = receive_bytes[name] + byte_data
-
-	# print(f'(Camera receive) {name} receiving {len(byte_data)} bytes')
 	
 	if len(receive_bytes[name]) == receive_totalBytes[name]:
 		print(f'(Camera receive) Camera {name} received an image')
 		receive_camera[name].image_received = True
-		# receive_camera[name].loop.call_soon_threadsafe(receive_camera[name].image_received_event.set())
 
 ## Camera renderer
 counter = 0
@@ -75,6 +70,8 @@ class Camera:
 		self.in_unity = True
 		self.image_received_event = asyncio.Event()
 		self.loop = asyncio.get_event_loop()
+
+		self.background_color = '#ffffff'
 
 	def create(self):
 		"""Creates camera
@@ -152,15 +149,27 @@ class Camera:
 
 		Parameters
 		----------
-		rotation : float list
+		rotation : float list OR string
 			list of euler angles to set the camera rotation in (pitch, yaw, roll)
+			OR
+			string: "axial", "coronal", "sagittal", or "angled"
 
 		Examples
 		--------
 		>>> c1.set_rotation([0,0,0])
+		>>> c1.set_rotation("angled")
 		"""
 		if self.in_unity == False:
 			raise Exception("Camera is not created. Please create camera before calling method.")
+		
+		if rotation == 'axial':
+			rotation = [0,0,0]
+		elif rotation == 'sagittal':
+			rotation = [0,90,-90]
+		elif rotation == 'coronal':
+			rotation = [-90,0,0]
+		elif rotation == 'angled':
+			rotation = [22.5,22.5,225]
 		
 		rotation = utils.sanitize_vector3(rotation)
 		self.rotation = rotation
@@ -310,6 +319,24 @@ class Camera:
 			raise Exception("Camera is not created. Please create camera before calling method.")
 		self.mode = mode
 		client.sio.emit('SetCameraMode', {self.id: mode})
+
+	def set_background_color(self, background_color):
+		"""Set camera background color
+
+		Parameters
+		----------
+		background_color : hex color string
+
+		Examples
+		--------
+		>>> c1.set_background_color('#000000') # black background
+		"""
+		if self.in_unity == False:
+			raise Exception("Camera is not created. Please create camera before calling method.")
+		
+		self.background_color = utils.sanitize_color(background_color)
+
+		client.sio.emit('SetCameraColor', {self.id: self.background_color})
 
 	def set_controllable(self):
 		"""Sets camera to controllable

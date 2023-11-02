@@ -160,6 +160,7 @@ namespace Urchin.API
         public static Action<Dictionary<string, float>> SetCameraZoom;
         public static Action<Dictionary<string, List<float>>> SetCameraPan;
         public static Action<Dictionary<string, string>> SetCameraMode;
+        public static Action<Dictionary<string, string>> SetCameraColor;
         public static Action<string> SetCameraControl;
         public static Action<string> RequestScreenshot;
         public static Action<Dictionary<string, float>> SetCameraYAngle;
@@ -174,6 +175,7 @@ namespace Urchin.API
             manager.Socket.On<Dictionary<string, float>>("SetCameraZoom", x => SetCameraZoom.Invoke(x));
             manager.Socket.On<Dictionary<string, List<float>>>("SetCameraPan", x => SetCameraPan.Invoke(x));
             manager.Socket.On<Dictionary<string, string>>("SetCameraMode", x => SetCameraMode.Invoke(x));
+            manager.Socket.On<Dictionary<string, string>>("SetCameraColor", x => SetCameraColor.Invoke(x));
             manager.Socket.On<string>("SetCameraControl", x => SetCameraControl.Invoke(x));
             manager.Socket.On<string>("RequestCameraImg", x => RequestScreenshot.Invoke(x));
             manager.Socket.On<Dictionary<string, float>>("SetCameraYAngle", x => SetCameraYAngle.Invoke(x));
