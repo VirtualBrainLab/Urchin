@@ -73,10 +73,18 @@ namespace Urchin.Managers
             switch (atlasName)
             {
                 case "ccf25":
-                    BrainAtlasManager.LoadAtlas(BrainAtlasManager.AtlasNames[0]);
+                    BrainAtlasManager.LoadAtlas("allen_mouse_25um");
                     break;
+#if !UNITY_WEBGL
                 case "waxholm39":
-                    BrainAtlasManager.LoadAtlas(BrainAtlasManager.AtlasNames[1]);
+                    BrainAtlasManager.LoadAtlas("whs_sd_rat_39um");
+                    break;
+#endif
+                case "waxholm78":
+                    BrainAtlasManager.LoadAtlas("whs_sd_rat_78um");
+                    break;
+                default:
+                    Client_SocketIO.LogError($"Atlas {atlasName} does not exist, or is not available on this platform.");
                     break;
             }
         }
