@@ -6,6 +6,7 @@ oursin/__init__.py
 oursin/camera.py
 oursin/client.py
 oursin/fov.py
+oursin/io.py
 oursin/lines.py
 oursin/neurons.py
 oursin/primitives.py
@@ -21,7 +22,10 @@ oursin.egg-info/requires.txt
 oursin.egg-info/top_level.txt
 oursin/atlas/__init__.py
 oursin/atlas/ccf.py
+oursin/atlas/waxholm.py
 oursin/colors/__init__.py
 oursin/colors/colors.py
 oursin/colors/xkcd_rgb.py
+tests/test_io.py
 tests/test_urchin_core.py
+tests/test_utils.py

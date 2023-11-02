@@ -103,4 +103,7 @@ UnityClient/Assets/Data/ZYE12_phase.mp4.meta
 UnityClient/Assets/Packages/*
 UnityClient/Packages/*
 !UnityClient/Packages/vbl.urchin
+
+API/build/*
+editable_venv/*
 API/poetry.lock
