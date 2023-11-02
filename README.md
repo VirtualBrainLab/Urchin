@@ -7,14 +7,8 @@ urchin
 Universal Renderer Creating Helpful Images for Neuroscience (Urchin) is a python package that links your analysis scripts to a standalone brain renderer program, to create graphics like the ones below.
 
 # Gallery
-<p float="left">
- <img src="https://github.com/VirtualBrainLab/Urchin/raw/develop/gallery/flatmap_layout.png" width="25%"> 
- <img src="https://github.com/VirtualBrainLab/Urchin/raw/develop/gallery/data_onesided.png" width="25%"> 
- <img src="https://github.com/VirtualBrainLab/Urchin/raw/develop/gallery/RS_fig1.png " width="35%">
-</p>
-
 <p float="center">
- <img src="https://github.com/VirtualBrainLab/Urchin/raw/develop/gallery/brain_rotate_cropped.gif" width="45%"> 
+ <img src="https://github.com/VirtualBrainLab/Urchin/raw/develop/gallery/RS_fig1.png " width="100%">
 </p>
 
 # Quickstart
@@ -26,24 +20,9 @@ import oursin as urchin
 urchin.setup()
 ```
 
-## Examples
+## Tutorials
 
-Head over to [urchin-examples/basics](https://github.com/VirtualBrainLab/urchin-examples/tree/main/basics) to find tutorials that introduce the functionality in Urchin.
-
-To get you started, try running the code below to load the root brain model. 
-
-### Render all Allen CCF areas
-```
-urchin.ccf.load_beryl()
-```
-
-### Render the root area
-
-```
-urchin.ccf.set_visibility({"grey":True})
-urchin.ccf.set_material({"grey":"transparent-lit"})
-urchin.ccf.set_alpha({"grey":0.25})
-```
+We have many [tutorials](https://virtualbrainlab.org/urchin/tutorial.html) available that introduce the functionality in Urchin.
 
 # Documentation
 
