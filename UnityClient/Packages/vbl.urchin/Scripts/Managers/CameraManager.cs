@@ -146,6 +146,17 @@ namespace Urchin.Managers
             }
         }
 
+        public void SetCameraColor(Dictionary<string, string> cameraColor)
+        {
+            foreach (var kvp in cameraColor)
+            {
+                if (_cameras.ContainsKey(kvp.Key))
+                    _cameras[kvp.Key].SetBackgroundColor(kvp.Value);
+                else
+                    Client_SocketIO.LogError($"(CameraManager) Camera {kvp.Key} does not exist, cannot set background color to {kvp.Value}");
+            }
+        }
+
         public void RequestScreenshot(string data)
         {
             ScreenshotData screenshotData = JsonUtility.FromJson<ScreenshotData>(data);

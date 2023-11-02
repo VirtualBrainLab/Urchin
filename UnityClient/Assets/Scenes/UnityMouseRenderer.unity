@@ -1914,6 +1914,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Urchin
       objectReference: {fileID: 0}
+    - target: {fileID: 5167816034593033511, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
+      propertyPath: uiCanvas
+      value: 
+      objectReference: {fileID: 858013925}
+    - target: {fileID: 5167816034593033511, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
+      propertyPath: _textParent
+      value: 
+      objectReference: {fileID: 1096435099}
     - target: {fileID: 5422044978898989536, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 90
@@ -4762,6 +4770,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1081936865}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1096435099 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 231208879634202657, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+  m_PrefabInstance: {fileID: 231208879068536369}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1113022679
 GameObject:
   m_ObjectHideFlags: 0
@@ -10259,16 +10272,24 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 231208879664146763, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 231208879664146763, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1170116141}
+      objectReference: {fileID: 1793010831}
     - target: {fileID: 231208879664146763, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 231208879664146763, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: 
+      value: SetBackgroundWhite
+      objectReference: {fileID: 0}
+    - target: {fileID: 231208879664146763, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Urchin.Behaviors.CameraBehavior, urchin.behaviors
       objectReference: {fileID: 0}
     - target: {fileID: 231208879810997292, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
       propertyPath: m_AnchorMax.y

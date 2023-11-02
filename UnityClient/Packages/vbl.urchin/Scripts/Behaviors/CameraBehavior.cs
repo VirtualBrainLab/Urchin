@@ -98,6 +98,21 @@ namespace Urchin.Behaviors
             }
         }
 
+        public void SetBackgroundWhite(bool backgroundWhite)
+        {
+            SetBackgroundColor(backgroundWhite ? Color.white : Color.black);
+        }
+
+        public void SetBackgroundColor(string hexColor)
+        {
+            Utils.Utils.Hex2Color(hexColor);
+        }
+
+        public void SetBackgroundColor(Color newColor)
+        {
+            ActiveCamera.backgroundColor = newColor;
+        }
+
         /// <summary>
         /// Take a screenshot and send it back via the ReceiveCameraImgMeta and ReceiveCameraImg messages
         /// </summary>
