@@ -162,7 +162,6 @@ namespace Urchin.Managers
         {
             ScreenshotData screenshotData = JsonUtility.FromJson<ScreenshotData>(data);
 
-            Debug.Log(data);
             _cameras[screenshotData.name].Screenshot(screenshotData.size);
         }
 

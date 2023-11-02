@@ -128,8 +128,6 @@ namespace Urchin.Behaviors
         /// <returns></returns>
         private IEnumerator ScreenshotHelper(int[] size)
         {
-            Debug.Log($"{size[0]},{size[1]}");
-
             RenderTexture originalTexture = ActiveCamera.targetTexture;
 
             RenderTexture captureTexture = new RenderTexture(size[0], size[1], 24);
