@@ -105,7 +105,7 @@ namespace Urchin.Behaviors
 
         public void SetBackgroundColor(string hexColor)
         {
-            Utils.Utils.Hex2Color(hexColor);
+            SetBackgroundColor(Utils.Utils.Hex2Color(hexColor));
         }
 
         public void SetBackgroundColor(Color newColor)

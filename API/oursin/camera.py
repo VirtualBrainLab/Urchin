@@ -149,15 +149,27 @@ class Camera:
 
 		Parameters
 		----------
-		rotation : float list
+		rotation : float list OR string
 			list of euler angles to set the camera rotation in (pitch, yaw, roll)
+			OR
+			string: "axial", "coronal", "sagittal", or "angled"
 
 		Examples
 		--------
 		>>> c1.set_rotation([0,0,0])
+		>>> c1.set_rotation("angled")
 		"""
 		if self.in_unity == False:
 			raise Exception("Camera is not created. Please create camera before calling method.")
+		
+		if rotation == 'axial':
+			rotation = [0,0,0]
+		elif rotation == 'sagittal':
+			rotation = [0,90,-90]
+		elif rotation == 'coronal':
+			rotation = [-90,0,0]
+		elif rotation == 'angled':
+			rotation = [22.5,22.5,225]
 		
 		rotation = utils.sanitize_vector3(rotation)
 		self.rotation = rotation

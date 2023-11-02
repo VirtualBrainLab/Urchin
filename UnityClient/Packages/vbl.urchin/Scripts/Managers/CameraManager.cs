@@ -51,6 +51,7 @@ namespace Urchin.Managers
             Client_SocketIO.SetCameraZoom += SetCameraZoom;
             Client_SocketIO.SetCameraPan += SetCameraPan;
             Client_SocketIO.SetCameraMode += SetCameraMode;
+            Client_SocketIO.SetCameraColor += SetCameraColor;
             Client_SocketIO.SetCameraControl += SetCameraControl;
             Client_SocketIO.RequestScreenshot += RequestScreenshot;
             Client_SocketIO.SetCameraYAngle += SetCameraYAngle;
