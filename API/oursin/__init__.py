@@ -24,6 +24,7 @@ from . import probes
 from . import text
 from . import volumes
 from . import fov
+from . import io
 
 # load the colors
 from . import colors

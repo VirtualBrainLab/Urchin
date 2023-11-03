@@ -1,10 +1,9 @@
 """Files"""
 
 from . import utils
-import pandas as pd
 import numpy as np
 import requests
-from google.colab import files
+#from google.colab import files
 
 def upload_file(file_name, url):
 	"""Uploads a file from Google drive to colab
@@ -36,7 +35,7 @@ def upload_file(file_name, url):
 
 #CHANGE NAMES TO LOAD
 
-def image(image_url):
+def display_image(image_url):
 	"""Displays an image from a url.
 
 	
@@ -51,11 +50,16 @@ def image(image_url):
 	>>> urchin.io.image('https://picsum.photos/200/300')
 	"""
 	from IPython.display import Image, display
-
-	#image_url = utils.sanitize_drive_url(image_url)
-
-	display(Image(url=image_url))
-	
+	try:
+		response = requests.get(image_url)
+		response.raise_for_status()
+		try:
+			image_url = utils.sanitize_drive_url(image_url)
+		except:
+			image_url = image_url
+		display(Image(url=image_url))
+	except Exception as e:
+		display("Failed to display the image. Please make sure the URL is valid.")
 
 def load_df(url):
 	"""Loads a pandas dataframe from a csv file on drive
@@ -71,11 +75,15 @@ def load_df(url):
 	--------
 	>>> probes_data = urchin.io.load_df('https://drive.google.com/file/d/1Vn5OpFRkEu_GYSmi9kZYXH8WlwmJ6Qs6/view?usp=drive_link')
 	"""
+	try:
+		import pandas as pd
+	except ImportError:
+		raise ImportError("Pandas is not installed. Please install Pandas to use this function.")
 	url = utils.sanitize_drive_url(url)
 	return pd.read_csv(url)
 
 
-def load_npy(url, file_name):
+def load_npy(url):
 	"""Loads a numpy array from a npy file on drive
 
 	
@@ -92,17 +100,17 @@ def load_npy(url, file_name):
 	--------
 	>>> test = urchin.io.load_npy('https://drive.google.com/file/d/1zE3Vobs5HBH_ne4KOpaPNKZFjhdxl6yQ/view?usp=drive_link', 'tester.npy')
 	"""
-	file_name = utils.sanitize_string(file_name)
+	from io import BytesIO
 	url = utils.sanitize_drive_url(url)
 	response = requests.get(url)
 	if response.status_code == 200:
-		with open(file_name, 'wb') as file:
-			file.write(response.content)
-		return np.load(f'/content/{file_name}')
+		content = BytesIO(response.content)
+		return np.load(content)
 	else:
 		print(f"Failed to download file from {url}. Status code: {response.status_code}")
+		
 
-def load_parquet(url, file_name):
+def load_parquet(url):
 	"""Loads a parquet file from a parquet file on drive
 
 	
@@ -119,13 +127,19 @@ def load_parquet(url, file_name):
 	--------
 	>>> test = urchin.io.load_parquet("https://drive.google.com/file/d/13_YNx5ATSGb5LlV4X24yq6PH-E22mvQX/view?usp=drive_link","pq_test.parquet")
 	"""
-	file_name = utils.sanitize_string(file_name)
+	from io import BytesIO
+	try:
+		import pandas as pd
+	except ImportError:
+		raise ImportError("Pandas is not installed. Please install Pandas to use this function.")
+	try:
+		import pyarrow
+	except ImportError:
+		raise ImportError("pyarrow is not installed. Please pip install pyarrow to use this function.")
 	url = utils.sanitize_drive_url(url)
 	response = requests.get(url)
 	if response.status_code == 200:
-		with open(file_name, 'wb') as file:
-			file.write(response.content)
-		return pd.read_parquet(f'/content/{file_name}')
+		return pd.read_parquet(BytesIO(response.content))
 	else:
 		print(f"Failed to download file from {url}. Status code: {response.status_code}")
 	
@@ -144,6 +158,7 @@ def download_to_csv(df_name):
 	--------
 	>>> urchin.io.download_to_csv(data)
 	"""
+	#IF ON COLAB:
 	csv_file_path = f'/content/{df_name}.csv'
 	df_name.to_csv(csv_file_path, index=False)
 	files.download(csv_file_path)
