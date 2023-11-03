@@ -1,8 +1,8 @@
 //using System;
 using BrainAtlas;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Urchin.API;
 
 public class ParticleManager : MonoBehaviour
 {
@@ -14,6 +14,17 @@ public class ParticleManager : MonoBehaviour
     {
         _particleMapping = new();
     }
+
+    private void Start()
+    {
+        Client_SocketIO.CreateParticles += CreateParticles;
+        Client_SocketIO.ClearParticles += Clear;
+        Client_SocketIO.SetParticlePosition += SetPosition;
+        Client_SocketIO.SetParticleSize += SetSize;
+        //Client_SocketIO.SetParticleShape += SetShape;
+        Client_SocketIO.SetParticleColor += SetColor;
+        //Client_SocketIO.SetParticleMaterial += SetMaterial;
+    }
     #endregion
 
     public void CreateParticles(List<string> particleNames) //instantiates cube as default
@@ -21,7 +32,7 @@ public class ParticleManager : MonoBehaviour
         foreach (string particleName in particleNames)
         {
             if (_particleMapping.ContainsKey(particleName))
-                Debug.Log($"MParticleesh id {particleName} already exists.");
+                Debug.Log($"Particle id {particleName} already exists.");
 
 #if UNITY_EDITOR
             Debug.Log($"Creating particle {particleName}");
@@ -29,7 +40,7 @@ public class ParticleManager : MonoBehaviour
             ParticleSystem.EmitParams emitParams = new ParticleSystem.EmitParams();
             emitParams.position = Vector3.zero;
             emitParams.startColor = Color.red;
-            emitParams.startSize = 0.02f;
+            emitParams.startSize = 0.1f;
             _particleSystem.Emit(emitParams, 1);
 
             _particleMapping.Add(particleName, _particleSystem.particleCount - 1);
@@ -42,25 +53,6 @@ public class ParticleManager : MonoBehaviour
         _particleMapping.Clear();
     }
 
-    public void DeleteParticles(List<string> particleNames)
-    {
-        // Deleting particles is a little complicated, since the particle system is data-oriented
-        // and only holds references to particle by index
-        // This means that each time we delete a particle we need to update the indexes of all the other particles
-        // which makes this a very expensive operation to run. Users should be warned not to send individual delete
-        // messages!
-
-        // TODO
-        //throw new NotImplementedException();
-        //ParticleSystem.Particle[] particles = new ParticleSystem.Particle[_particleSystem.particleCount];
-        //int nParticles = _particleSystem.GetParticles(particles);
-
-        //for (int i = 0; i < nParticles; i++)
-        //{
-        //    // For each particle, 
-        //}
-    }
-
     public void SetPosition(Dictionary<string, float[]> particlePositions)
     {
         ParticleSystem.Particle[] particles = new ParticleSystem.Particle[_particleSystem.particleCount];
@@ -69,7 +61,7 @@ public class ParticleManager : MonoBehaviour
         foreach (var kvp in particlePositions)
         {
             Vector3 coordU = new Vector3(kvp.Value[0], kvp.Value[1], kvp.Value[2]);
-            particles[_particleMapping[kvp.Key]].position = BrainAtlasManager.ActiveReferenceAtlas.Atlas2World(coordU);
+            particles[_particleMapping[kvp.Key]].position = BrainAtlasManager.ActiveReferenceAtlas.Atlas2World(coordU, false);
         }
 
         _particleSystem.SetParticles(particles);

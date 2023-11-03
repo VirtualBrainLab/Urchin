@@ -107,3 +107,4 @@ UnityClient/Packages/*
 editable_venv/*
 API/build/*
 API/oursin.egg-info/*
+API/poetry.lock

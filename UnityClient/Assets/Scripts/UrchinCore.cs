@@ -65,7 +65,7 @@ public class UrchinCore : MonoBehaviour
         if (Instance == null)
             Instance = this;
         else
-            throw new Exception("There should only be on UM_Launch component in the scene");
+            throw new Exception("There should only be one UrchinCore component in the scene");
 
 
         originalTransformPositionsLeft = new();
@@ -116,7 +116,7 @@ public class UrchinCore : MonoBehaviour
         }
 
         // Before checking for keydown events, return if the user is typing in the input box
-        if (idPanel.GetComponent<TMP_InputField>().isFocused)
+        if (idPanel.activeSelf && idPanel.GetComponentInChildren<TMP_InputField>().isFocused)
             return;
 
         // Check for key down events
@@ -215,7 +215,7 @@ public class UrchinCore : MonoBehaviour
 
     public void UpdateDataIndex(float newIdx)
     {
-        Debug.Log(newIdx);
+        //TODO
     }
 
     public void UpdateTextColor(bool state)

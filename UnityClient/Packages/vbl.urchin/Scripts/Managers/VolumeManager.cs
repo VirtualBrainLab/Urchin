@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Urchin.API;
 
 namespace Urchin.Managers
 {
@@ -11,16 +12,27 @@ namespace Urchin.Managers
         [SerializeField] private VolumeRenderer volRenderer;
         #endregion
 
+        private void Start()
+        {
+
+            Client_SocketIO.SetVolumeVisibility += SetVisibility;
+            Client_SocketIO.SetVolumeDataMeta += SetMetadata;
+            Client_SocketIO.SetVolumeData += SetData;
+            Client_SocketIO.CreateVolume += Create;
+            Client_SocketIO.DeleteVolume += Delete;
+            Client_SocketIO.SetVolumeColormap += SetColormap;
+        }
+
         #region Public functions
         public void SetVisibility(List<object> data)
         {
             if (((string)data[0]).Equals("allen"))
-                volRenderer.DisplayAllenVolume((bool)data[1]);
+                volRenderer.DisplayAnnotationVolume((bool)data[1]);
             else
                 volRenderer.SetVolumeVisibility((string)data[0], (bool)data[1]);
         }
 
-        public void SetVolumeColormap(List<string> obj)
+        public void SetColormap(List<string> obj)
         {
             string name = obj[0];
             obj.RemoveAt(0);

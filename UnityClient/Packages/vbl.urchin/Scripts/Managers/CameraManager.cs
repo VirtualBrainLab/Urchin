@@ -1,9 +1,8 @@
+using BrainAtlas;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEditor.PackageManager;
 using UnityEngine;
+using Urchin.API;
 using Urchin.Behaviors;
 using Urchin.Cameras;
 
@@ -43,6 +42,23 @@ namespace Urchin.Managers
             mainCamera.Name = "CameraMain";
         }
 
+        private void Start()
+        {
+
+            Client_SocketIO.SetCameraTarget += SetCameraTarget;
+            Client_SocketIO.SetCameraRotation += SetCameraRotation;
+            Client_SocketIO.SetCameraTargetArea += SetCameraTargetArea;
+            Client_SocketIO.SetCameraZoom += SetCameraZoom;
+            Client_SocketIO.SetCameraPan += SetCameraPan;
+            Client_SocketIO.SetCameraMode += SetCameraMode;
+            Client_SocketIO.SetCameraColor += SetCameraColor;
+            Client_SocketIO.SetCameraControl += SetCameraControl;
+            Client_SocketIO.RequestScreenshot += RequestScreenshot;
+            Client_SocketIO.SetCameraYAngle += SetCameraYAngle;
+            Client_SocketIO.CreateCamera += CreateCamera;
+            Client_SocketIO.DeleteCamera += DeleteCamera;
+        }
+
         #endregion
 
 
@@ -50,12 +66,13 @@ namespace Urchin.Managers
 
         public void CreateCamera(List<string> cameraNames)
         {
+            
             //instantiating game object w camera component
             foreach (string cameraName in cameraNames)
             {
-                if (_cameras.Keys.Contains(cameraName))
+                if (_cameras.ContainsKey(cameraName))
                 {
-                    //Client.LogWarning($"Camera {cameraName} was created twice. The camera will not be re-created");
+                    Debug.LogWarning($"Camera {cameraName} was created twice. The camera will not be re-created");
                     continue;
                 }
 
@@ -66,13 +83,8 @@ namespace Urchin.Managers
                 tempObject.name = $"camera_{cameraName}";
                 CameraBehavior cameraBehavior = tempObject.GetComponent<CameraBehavior>();
                 cameraBehavior.RenderTexture = textures.Pop();
-                //cameraBehavior.AreaManager = _areaManager;
-                throw new NotImplementedException();
-                //cameraBehavior.ModelControl = _modelControl;
                 cameraBehavior.Name = cameraName;
-                // Get all Camera components attached to children of the script's GameObject (since there are multiple)
                 _cameras.Add(cameraName, cameraBehavior);
-
             }
             UpdateVisibleUI();
 
@@ -102,7 +114,8 @@ namespace Urchin.Managers
             {
                 if (_cameras.ContainsKey(kvp.Key))
                 {
-                    _cameras[kvp.Key].SetCameraRotation(kvp.Value);
+                    Vector3 yawPitchRoll = new Vector3(kvp.Value[0], kvp.Value[1], kvp.Value[2]);
+                    _cameras[kvp.Key].SetCameraRotation(yawPitchRoll);
                 }
             }
         }
@@ -134,22 +147,22 @@ namespace Urchin.Managers
             }
         }
 
-        public void Screenshot(string data)
+        public void SetCameraColor(Dictionary<string, string> cameraColor)
+        {
+            foreach (var kvp in cameraColor)
+            {
+                if (_cameras.ContainsKey(kvp.Key))
+                    _cameras[kvp.Key].SetBackgroundColor(kvp.Value);
+                else
+                    Client_SocketIO.LogError($"(CameraManager) Camera {kvp.Key} does not exist, cannot set background color to {kvp.Value}");
+            }
+        }
+
+        public void RequestScreenshot(string data)
         {
             ScreenshotData screenshotData = JsonUtility.FromJson<ScreenshotData>(data);
 
             _cameras[screenshotData.name].Screenshot(screenshotData.size);
-        }
-
-        public void SetCameraPosition(Dictionary<string, List<float>> cameraPosition)
-        {
-            foreach (var kvp in cameraPosition)
-            {
-                if (_cameras.ContainsKey(kvp.Key))
-                {
-                    _cameras[kvp.Key].SetCameraPosition(kvp.Value);
-                }
-            }
         }
 
         public void SetCameraYAngle(Dictionary<string, float> cameraYAngle)
@@ -169,7 +182,27 @@ namespace Urchin.Managers
             {
                 if (_cameras.ContainsKey(kvp.Key))
                 {
-                    _cameras[kvp.Key].SetCameraTargetArea(kvp.Value);
+                    // target area needs to be parsed by AtlasManager
+                    var areaData = AtlasManager.GetID(kvp.Value);
+
+                    Vector3 coordAtlas = Vector3.zero;
+                    if (areaData.leftSide)
+                        coordAtlas = BrainAtlasManager.ActiveReferenceAtlas.MeshCenters[areaData.ID].left;
+                    else if (areaData.full)
+                        coordAtlas = BrainAtlasManager.ActiveReferenceAtlas.MeshCenters[areaData.ID].full;
+                    else if (areaData.rightSide)
+                    {
+                        coordAtlas = BrainAtlasManager.ActiveReferenceAtlas.MeshCenters[areaData.ID].left;
+                        // invert the ML axis
+                        coordAtlas.y = BrainAtlasManager.ActiveReferenceAtlas.Dimensions.y - coordAtlas.y;
+                    }
+
+                    coordAtlas /= 1000f;
+
+                    Vector3 coordWorld = BrainAtlasManager.ActiveReferenceAtlas.Atlas2World(coordAtlas);
+
+                    Debug.LogWarning("Mesh center needs to target full/left/right correctly!!");
+                    _cameras[kvp.Key].SetCameraTarget(coordWorld);
                 }
             }
         }
@@ -180,7 +213,8 @@ namespace Urchin.Managers
             {
                 if (_cameras.ContainsKey(kvp.Key))
                 {
-                    _cameras[kvp.Key].SetCameraTarget(kvp.Value);
+                    Vector3 coordAtlas = new Vector3(kvp.Value[0], kvp.Value[1], kvp.Value[2]);
+                    _cameras[kvp.Key].SetCameraTarget(coordAtlas);
                 }
             }
         }
@@ -200,18 +234,7 @@ namespace Urchin.Managers
         {
             //set everything to false except for given camera
             foreach (var kvp in _cameras)
-            {
-                if (kvp.Key == cameraName)
-                {
-                    kvp.Value.SetCameraControl(true);
-                }
-                else
-                {
-                    kvp.Value.SetCameraControl(false);
-                }
-
-                //kvp.Value.SetCameraControl(kvp.Key == cameraName);
-            }
+                kvp.Value.SetCameraControl(kvp.Key == cameraName);
         }
         #endregion
 

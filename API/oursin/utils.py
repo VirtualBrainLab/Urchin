@@ -1,5 +1,14 @@
 """Sanitizing inputs to send through API"""
 import numpy as np
+from enum import Enum
+
+### ENUMS
+class Side(Enum):
+    LEFT = -1
+    FULL = 0
+    RIGHT = 1
+
+### SANITIZING FUNCTIONS
 
 def sanitize_vector3(vector):
   """Guarantee that a vector is a vector 3, or raise an exception
@@ -65,7 +74,10 @@ def sanitize_float(value):
     if isinstance(value, float):
         return value
     else:
-        raise Exception("Parameter needs to be passed as a float.")
+        try:
+            return float(value)
+        except:
+            raise Exception("Value could not be coerced to a float.")
 
 def sanitize_material(material):
     if isinstance(material, str):
@@ -74,14 +86,25 @@ def sanitize_material(material):
         raise Exception("Material is not properly passed in as a string. Please pass in material as a string.")
 
 def sanitize_list(input, length=0):
-    # resize to match list size
-    if length > 0 and len(input) != length:
-        input = input * length
+    """Guarantee that a list is of at least size length, or try to broadcast to that size
 
-    if isinstance(input,list):
-        return input
-    else:
-        return(list(input))
+    Parameters
+    ----------
+    input : list
+    length : int, optional
+        length to broadcast to, by default 0
+
+    Returns
+    -------
+    list
+    """
+    if length > 0 and not isinstance(input, list):
+        input = [input] * length
+
+    if not isinstance(input, list):
+        raise Exception("List parameter needs to be a list.")
+
+    return input
     
 def sanitize_string(string):
     if isinstance(string, str):
@@ -106,3 +129,12 @@ def sanitize_extension(file_name): #NOT VERIFIED
         return(file_name)
     else:
         raise Exception("The file name is not valid. Please make sure the file name is valid.")
+def sanitize_side(acronym, sided):
+    if sided == "full":
+        return acronym
+    elif sided == "left":
+        return f'{acronym}-lh'
+    elif sided == "right":
+        return f'{acronym}-rh'
+    else:
+        raise Exception(f'Sided enum {sided} not properly defined, should be full/left/right')

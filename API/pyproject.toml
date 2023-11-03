@@ -1,29 +1,31 @@
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
 
-
-[project]
+[tool.poetry]
 name = "oursin"
-version = "0.4.11"
-authors = [
-  { name="Daniel Birman", email="danbirman@gmail.com" },
-]
+version = "0.5.0"
 description = "Urchin - Universal Renderer Creating Helpful Images for Neuroscience Python API"
 readme = "README.md"
-license = { file="LICENSE" }
-requires-python = ">=3.7"
+authors = [
+  "Daniel Birman <dbirman@uw.edu>"
+]
+license = "MIT"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dependencies = [
-  "python-socketio[client] >= 5.8,< 5.10",
-  "numpy >= 1.24.3,< 1.27.0",
-  "Pillow >= 9.5,< 10.1"
-]
+include = ["atlas/data/*.json"]
 
-[project.urls]
-"Homepage" = "https://virtualbrainlab.org/urchin/installation_and_use.html"
-"Bug Tracker" = "https://github.com/VirtualBrainLab/Urchin/issues"
+[tool.poetry.dependencies]
+python = ">=3.8, <4.0"
+python-socketio = { version = ">=5.8, <5.11", extras = ["client"] }
+numpy = ">=1.24.3, <1.27.0"
+Pillow = ">=9.5, <10.2"
+
+[tool.poetry.scripts]
+
+[tool.poetry.urls]
+homepage = "https://virtualbrainlab.org/urchin/installation_and_use.html"
+repository = "https://github.com/VirtualBrainLab/Urchin"

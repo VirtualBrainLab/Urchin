@@ -10,15 +10,12 @@ namespace Urchin.Cameras
         [SerializeField] Vector3 eulerAngles;
         private float lastClick = 0f;
 
-        private void OnMouseOver()
+        public void Click()
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                if ((Time.realtimeSinceStartup - lastClick) < BrainCameraController.doubleClickTime)
-                    cameraController.SetBrainAxisAngles(eulerAngles);
-                else
-                    lastClick = Time.realtimeSinceStartup;
-            }
+            if ((Time.realtimeSinceStartup - lastClick) < BrainCameraController.doubleClickTime)
+                cameraController.SetBrainAxisAngles(eulerAngles);
+            else
+                lastClick = Time.realtimeSinceStartup;
         }
     }
 }

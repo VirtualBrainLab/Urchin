@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using Urchin.Utils;
 
 public class VolumeRenderer : MonoBehaviour
 {
@@ -99,7 +100,7 @@ public class VolumeRenderer : MonoBehaviour
             GetComponent<Renderer>().enabled = false;
     }
 
-    public async void DisplayAllenVolume(bool visible)
+    public async void DisplayAnnotationVolume(bool visible)
     {
         if (visible)
         {
@@ -122,13 +123,19 @@ public class VolumeRenderer : MonoBehaviour
         Debug.Log("(UM_VolRend) Volume: allen is now visible: " + visible);
     }
 
+    public async void DisplayReferenceVolume(bool visible)
+    {
+        throw new NotImplementedException();
+    }
+
     private string nextVol;
     private int nextSlice;
     private bool nextApply;
 
     public void AddVolumeMeta(string name, int slice, bool immediateApply)
     {
-        volumeLoadingUIGO.SetActive(true);
+        if (volumeLoadingUIGO != null)
+            volumeLoadingUIGO.SetActive(true);
         nextVol = name;
         nextSlice = slice;
         nextApply = immediateApply;
@@ -142,13 +149,15 @@ public class VolumeRenderer : MonoBehaviour
             volumeData[nextVol][i + slicePos] = colormaps[nextVol][newData[i]];
 
         // slices count down, so invert that
-        volumeLoadingUIText.text = (456-nextSlice+1) + "/456";
+        if (volumeLoadingUIGO != null)
+            volumeLoadingUIText.text = (456-nextSlice+1) + "/456";
 
         if (nextApply)
         {
             volumeTexture.SetPixels32(volumeData[nextVol]);
             volumeTexture.Apply();
-            volumeLoadingUIGO.SetActive(false);
+            if (volumeLoadingUIGO != null)
+                volumeLoadingUIGO.SetActive(false);
         }
     }
 
