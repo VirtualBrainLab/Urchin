@@ -1,3 +1,4 @@
+using BrainAtlas;
 using System.Collections.Generic;
 using UnityEngine;
 using Urchin.API;
@@ -17,8 +18,7 @@ namespace Urchin.Managers
         private GameObject _defaultPrefab;
 
         // Actual objects
-        private Dictionary<string, GameObject> _probes;
-        private Dictionary<string, Vector3[]> _probeCoordinates;
+        private Dictionary<string, ProbeBehavior> _probes;
         #endregion
 
         #region Unity
@@ -27,8 +27,7 @@ namespace Urchin.Managers
         {
             // Initialize variables
             _probeOpts = new Dictionary<string, GameObject>();
-            _probes = new Dictionary<string, GameObject>();
-            _probeCoordinates = new Dictionary<string, Vector3[]>();
+            _probes = new();
 
             _defaultPrefab = _probePrefabOptions[_probePrefabNames.IndexOf(_defaultProbeStyle)];
 
@@ -49,7 +48,7 @@ namespace Urchin.Managers
             Client_SocketIO.SetProbeColors += SetColors;
             Client_SocketIO.SetProbePos += SetPositions;
             Client_SocketIO.SetProbeAngles += SetAngles;
-            Client_SocketIO.SetProbeStyle += SetStyles;
+            //Client_SocketIO.SetProbeStyle += SetStyles;
             Client_SocketIO.SetProbeSize += SetSizes;
         }
 
@@ -65,13 +64,16 @@ namespace Urchin.Managers
                 {
                     GameObject newProbe = Instantiate(_defaultPrefab, _probeParentT);
                     newProbe.name = $"probe_{probeName}";
-                    _probes.Add(probeName, newProbe);
-                    _probeCoordinates.Add(probeName, new Vector3[2]);
-                    SetProbePositionAndAngles(probeName);
+                    ProbeBehavior probeBehavior = newProbe.GetComponent<ProbeBehavior>();
+
+                    probeBehavior.SetPosition(BrainAtlasManager.ActiveReferenceAtlas.Atlas2World(Vector3.zero));
+                    probeBehavior.SetAngles(Vector3.zero);
+
+                    _probes.Add(probeName, probeBehavior);
                 }
                 else
                 {
-                    //Client_SocketIO.LogError(string.Format("Probe {0} already exists in the scene", probeName));
+                    Client_SocketIO.LogError(string.Format("Probe {0} already exists in the scene", probeName));
                 }
             }
         }
@@ -93,28 +95,29 @@ namespace Urchin.Managers
                 {
                     Color newColor;
                     if (ColorUtility.TryParseHtmlString(kvp.Value, out newColor))
-                    {
-                        Debug.Log("Setting " + kvp.Key + " to " + kvp.Value);
-                        _probes[kvp.Key].GetComponentInChildren<Renderer>().material.color = newColor;
-                    }
+                        _probes[kvp.Key].SetColor(newColor);
                 }
-                //else
-                    //Debug.Log("Probe " + kvp.Key + " not found");
+                else
+                    Client_SocketIO.LogError($"Probe {kvp.Key} not found");
             }
         }
 
+        /// <summary>
+        /// Set position, positions should be in mm
+        /// </summary>
+        /// <param name="probePositions"></param>
         public void SetPositions(Dictionary<string, List<float>> probePositions)
         {
             foreach (KeyValuePair<string, List<float>> kvp in probePositions)
             {
                 if (_probes.ContainsKey(kvp.Key))
                 {
-                    // store coordinates in mlapdv       
-                    _probeCoordinates[kvp.Key][0] = new Vector3(kvp.Value[0], kvp.Value[1], kvp.Value[2]);
-                    SetProbePositionAndAngles(kvp.Key);
+                    Vector3 coordU = new Vector3(kvp.Value[0], kvp.Value[1], kvp.Value[2]);
+                    Vector3 worldU = BrainAtlasManager.ActiveReferenceAtlas.Atlas2World(coordU);
+                    _probes[kvp.Key].SetPosition(worldU);
                 }
-                //else
-                    //Debug.Log("Probe " + kvp.Key + " not found");
+                else
+                    Client_SocketIO.LogError($"Probe {kvp.Key} not found");
             }
         }
 
@@ -124,29 +127,27 @@ namespace Urchin.Managers
             {
                 if (_probes.ContainsKey(kvp.Key))
                 {
-                    // store coordinates in mlapdv       
-                    _probeCoordinates[kvp.Key][1] = new Vector3(kvp.Value[0], kvp.Value[1], kvp.Value[2]);
-                    SetProbePositionAndAngles(kvp.Key);
+                    _probes[kvp.Key].SetAngles(new Vector3(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
                 }
-                //else
-                //    Debug.Log("Probe " + kvp.Key + " not found");
+                else
+                    Client_SocketIO.LogError($"Probe {kvp.Key} not found");
             }
         }
 
-        public void SetStyles(Dictionary<string, string> probeStyles)
-        {
-            foreach (KeyValuePair<string, string> kvp in probeStyles)
-            {
-                if (_probes.ContainsKey(kvp.Key))
-                {
-                    Destroy(_probes[kvp.Key]);
-                    _probes[kvp.Key] = Instantiate(_probePrefabOptions[_probePrefabNames.IndexOf(kvp.Value)], _probeParentT);
-                    _probes[kvp.Key].name = $"probe_{kvp.Key}";
+        //public void SetStyles(Dictionary<string, string> probeStyles)
+        //{
+        //    foreach (KeyValuePair<string, string> kvp in probeStyles)
+        //    {
+        //        if (_probes.ContainsKey(kvp.Key))
+        //        {
+        //            Destroy(_probes[kvp.Key]);
+        //            _probes[kvp.Key] = Instantiate(_probePrefabOptions[_probePrefabNames.IndexOf(kvp.Value)], _probeParentT);
+        //            _probes[kvp.Key].name = $"probe_{kvp.Key}";
 
-                    SetProbePositionAndAngles(kvp.Key);
-                }
-            }
-        }
+        //            SetProbePositionAndAngles(kvp.Key);
+        //        }
+        //    }
+        //}
 
         public void SetSizes(Dictionary<string, List<float>> probeScales)
         {
@@ -154,9 +155,7 @@ namespace Urchin.Managers
             {
                 if (_probes.ContainsKey(kvp.Key))
                 {
-                    // store coordinates in mlapdv       
-                    _probes[kvp.Key].transform.GetChild(0).localScale = new Vector3(kvp.Value[0], kvp.Value[1], kvp.Value[2]);
-                    _probes[kvp.Key].transform.GetChild(0).localPosition = new Vector3(0f, kvp.Value[1] / 2, 0f);
+                    _probes[kvp.Key].SetSize(new Vector3(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
                 }
                 //else
                 //    Debug.Log("Probe " + kvp.Key + " not found");
@@ -166,36 +165,11 @@ namespace Urchin.Managers
         public void ClearProbes()
         {
             Debug.Log("(Client) Clearing probes");
-            foreach (GameObject probe in _probes.Values)
-                Destroy(probe);
-            _probes = new Dictionary<string, GameObject>();
-            _probeCoordinates = new Dictionary<string, Vector3[]>();
+            foreach (var probe in _probes.Values)
+                Destroy(probe.gameObject);
+            _probes.Clear();
         }
 
-        #endregion
-
-        #region Private helpers
-
-        private void SetProbePositionAndAngles(string probeName)
-        {
-            Vector3 pos = _probeCoordinates[probeName][0];
-            Vector3 angles = _probeCoordinates[probeName][1];
-            Transform probeT = _probes[probeName].transform;
-
-            // reset position and angles
-            probeT.transform.localPosition = Vector3.zero;
-            probeT.localRotation = Quaternion.identity;
-
-            // then translate
-            probeT.Translate(new Vector3(-pos.x / 1000f, -pos.z / 1000f, pos.y / 1000f));
-            // rotate around azimuth first
-            probeT.RotateAround(probeT.position, Vector3.up, -angles.x - 90f);
-            // then elevation
-            probeT.RotateAround(probeT.position, probeT.right, angles.y);
-            // then spin
-            probeT.RotateAround(probeT.position, probeT.up, angles.z);
-
-        }
         #endregion
     }
 }

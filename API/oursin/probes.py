@@ -81,12 +81,12 @@ class Probe:
 		client.sio.emit('SetProbeColors', {self.id:color})
 
 	def set_position(self, probe_positions):
-		"""Set probe tip position in ml/ap/dv coordinates in um relative to the CCF (0,0,0) point
+		"""Set probe tip position in AP/ML/DV coordinates in um relative to the zero coordinate (front, top, left)
 
 		Parameters
 		----------
-		probe_positions : float list
-			value is list of floats in ml/ap/dv in um
+		probe_positions : vector3
+			value is list of floats in AP/ML/DV in um
 
 		Examples
 		--------
@@ -95,9 +95,8 @@ class Probe:
 		if self.in_unity == False:
 			raise Exception("Object does not exist in Unity, call create method first.")
 		
-		probe_positions = utils.sanitize_vector3(probe_positions)
-		self.position = probe_positions
-		client.sio.emit('SetProbePos', {self.id:probe_positions})
+		self.position = utils.sanitize_vector3(probe_positions)
+		client.sio.emit('SetProbePos', {self.id:[self.position[0]/1000, self.position[1]/1000, self.position[2]/1000]})
 
 	def set_angle(self, probe_angles):
 		"""Set probe azimuth/elevation/spin angles in degrees
@@ -218,17 +217,17 @@ def set_colors(probes_list, colors_list):
 	client.sio.emit('SetProbeColors', probe_colors)
 
 def set_positions(probes_list, positions_list):
-	"""Set probe tip position in ml/ap/dv coordinates in um relative to the CCF (0,0,0) point
+	"""Set probe tip positions in AP/ML/DV coordinates in um relative to the zero point (front, left, top)
+
 	Parameters
 	----------
-	probes_list : list of probe objects
-	    list of probes being set
-	positions_list : list of list of three floats
-		vertex positions of each probe in ml/ap/dv in um
+	probes_list : list of Probe
+	positions_list : list of vector3
+		tip coordinate in AP/ML/DV in um
       
 	Examples
 	--------
-	>>> urchin.probes.set_positions(probes,[[3,3,3],[2,2,2]])
+	>>> urchin.probes.set_positions(probes,[[1000,2000,1000],[2000,2000,2000]])
 	"""
 	probes_list = utils.sanitize_list(probes_list)
 	positions_list = utils.sanitize_list(positions_list)
@@ -237,7 +236,8 @@ def set_positions(probes_list, positions_list):
 	for i in range(len(probes_list)):
 		probe = probes_list[i]
 		if probe.in_unity:
-			probe_pos[probe.id] = utils.sanitize_vector3(positions_list[i])
+			pos = utils.sanitize_vector3(positions_list[i])
+			probe_pos[probe.id] = [pos[0]/1000, pos[1]/1000, pos[2]/1000]
 		else:
 			warnings.warn(f"Object with id {probe.id} does not exist. Please create object {probe.id}.")
 
