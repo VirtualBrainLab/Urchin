@@ -120,15 +120,12 @@ def sanitize_drive_url(url):
         file_id = parts[index + 1] #extracting the file id
         download_link = f"https://drive.google.com/uc?id={file_id}"
         return download_link
+    elif "/edit#gid=" in url:
+        return url.replace("/edit#gid=", "/export?format=csv&gid=")
     else:
         raise Exception("The url is not a valid google drive url. Please make sure the url is a valid google drive url.")
     
-def sanitize_extension(file_name): #NOT VERIFIED
-    file_name = sanitize_string(file_name)
-    if file_name.endswith(".parquet") or file_name[-4]== ".":
-        return(file_name)
-    else:
-        raise Exception("The file name is not valid. Please make sure the file name is valid.")
+
 def sanitize_side(acronym, sided):
     if sided == "full":
         return acronym
