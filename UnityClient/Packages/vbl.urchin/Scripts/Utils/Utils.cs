@@ -19,12 +19,14 @@ namespace Urchin.Utils
         {
             {"allen_mouse_25um", CCF_BREGMA},
             {"whs_sd_rat_39um", WXH_BREGMA},
+            {"whs_sd_rat_78um", WXH_BREGMA},
         };
 
         public static Dictionary<string, Vector3> LambdaDefaults = new Dictionary<string, Vector3>
         {
             {"allen_mouse_25um", CCF_LAMBDA},
             {"whs_sd_rat_39um", WXH_LAMBDA},
+            {"whs_sd_rat_78um", WXH_LAMBDA},
         };
 
 
