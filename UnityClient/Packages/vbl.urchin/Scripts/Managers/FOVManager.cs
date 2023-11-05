@@ -35,12 +35,11 @@ namespace Urchin.Managers
             Client_SocketIO.CreateFOV += Create;
             Client_SocketIO.DeleteFOV += Delete;
             Client_SocketIO.SetFOVPos += SetPosition;
-            // TODO
-            //Client_SocketIO.SetFOVOffset += SetOffset;
-            //Client_SocketIO.SetFOVTextureDataMetaInit += SetFOVTextureDataMetaInit;
-            //Client_SocketIO.SetFOVTextureDataMeta += SetFOVTextureDataMeta;
-            //Client_SocketIO.SetFOVTextureData += SetFOVTextureData;
-            //Client_SocketIO.SetFOVVisibility += SetFOVVisibility;
+            Client_SocketIO.SetFOVOffset += SetOffset;
+            Client_SocketIO.SetFOVTextureDataMetaInit += SetTextureInit;
+            Client_SocketIO.SetFOVTextureDataMeta += SetTextureMeta;
+            Client_SocketIO.SetFOVTextureData += SetTextureData;
+            Client_SocketIO.SetFOVVisibility += SetVisibility;
         }
         #endregion
 
@@ -108,30 +107,61 @@ namespace Urchin.Managers
             }
         }
 
-        //public void SetOffset(Dictionary<string, float> data)
-        //{
-        //    foreach (KeyValuePair<string, float> kvp in data)
-        //    {
-        //        string name = kvp.Key;
-        //        float offsets = kvp.Value;
-        //        fovRenderer.SetOffset(name, offsets);
-        //    }
-        //}
+        /// <summary>
+        /// Set the offset of a FOV object along DV axis; positive is up.
+        /// </summary>
+        /// <param name="data"></param>
+        public void SetOffset(Dictionary<string, float> data)
+        {
+            foreach (KeyValuePair<string, float> kvp in data)
+            {
+                string name = kvp.Key;
+                float offset = kvp.Value;
+                _fovs[name].SetOffset(offset);
+            }
+        }
 
-        //public void SetTextureDataMetaInit(List<object> data)
-        //{
-        //    fovRenderer.SetTextureDataMetaInit((string)data[0], (int)data[1]);
-        //}
+        /// <summary>
+        /// Set the total number of texture chunks to receive for a FOV
+        /// </summary>
+        /// <param name="data"></param>
+        public void SetTextureInit(List<object> data)
+        {
+            string name = (string)data[0];
+            int totalChunks = (int)data[1];
+            int width = (int)data[2];
+            int height = (int)data[3];
+            string type = (string)data[4];
+            _fovs[name].SetTextureInit(totalChunks, width, height, type);
+        }
 
-        //public void SetTextureDataMeta(List<object> data)
-        //{
-        //    fovRenderer.SetTextureDataMeta((string)data[0], (int)data[1], (bool)data[2]);
-        //}
-        //public void SetTextureData(byte[] bytes)
-        //{
-        //    fovRenderer.SetTextureData(bytes);
-        //}
+
+        string nextFOV;
+
+        /// <summary>
+        /// Set the metadata of next incoming texture chunk for a FOV
+        /// </summary>
+        /// <param name="data"></param>
+        public void SetTextureMeta(List<object> data)
+        {
+            nextFOV = (string)data[0];
+            int nextChunk = (int)data[1];
+            bool nextApply = (bool)data[2];
+            _fovs[nextFOV].SetTextureMeta(nextChunk, nextApply);
+        }
+
+        /// <summary>
+        /// Set a texture chunk for a FOV
+        /// </summary>
+        /// <param name="bytes"></param>
+        public void SetTextureData(byte[] bytes)
+        {
+            _fovs[nextFOV].SetTextureData(bytes);
+        }
+
 
         #endregion
     }
+
+
 }
