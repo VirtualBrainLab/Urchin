@@ -23,7 +23,7 @@ from . import particles
 from . import probes
 from . import text
 from . import volumes
-from . import fov
+from . import texture
 
 # load the colors
 from . import colors

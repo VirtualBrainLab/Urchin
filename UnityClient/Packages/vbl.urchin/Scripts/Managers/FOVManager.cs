@@ -1,3 +1,4 @@
+using BrainAtlas;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -31,7 +32,6 @@ namespace Urchin.Managers
 
         private void Start()
         {
-
             Client_SocketIO.CreateFOV += Create;
             Client_SocketIO.DeleteFOV += Delete;
             Client_SocketIO.SetFOVPos += SetPosition;
@@ -40,10 +40,43 @@ namespace Urchin.Managers
             Client_SocketIO.SetFOVTextureDataMeta += SetTextureMeta;
             Client_SocketIO.SetFOVTextureData += SetTextureData;
             Client_SocketIO.SetFOVVisibility += SetVisibility;
+            Client_SocketIO.ClearFOV += Clear;
+
+            //Test();
+        }
+
+        private async void Test()
+        {
+            await BrainAtlasManager.LoadAtlas("allen_mouse_25um");
+
+            Create(new List<string> { "fov1" });
+
+
+            var temp = new Dictionary<string, List<List<float>>>();
+            var data = new List<List<float>>();
+            var p1 = new List<float>() { 5f, 5f, 0f };
+            var p2 = new List<float>() { 5f, 6f, 0f };
+            var p3 = new List<float>() { 6f, 6f, 0f };
+            var p4 = new List<float>() { 6f, 5f, 0f };
+            data.Add(p1);
+            data.Add(p2);
+            data.Add(p3);
+            data.Add(p4);
+            temp.Add("fov1", data);
+
+            SetPosition(temp);
         }
         #endregion
 
         #region Public
+
+        public void Clear()
+        {
+            foreach (var kvp in _fovs)
+                Destroy(kvp.Value.gameObject);
+
+            _fovs.Clear();
+        }
 
         /// <summary>
         /// Create new FOV objects
@@ -99,9 +132,12 @@ namespace Urchin.Managers
                 string name = kvp.Key;
                 var verticesList = kvp.Value;
 
-                List<Vector3> vertices = new();
-                for (int i = 0; i < data.Count; i++)
-                    vertices.Add(new Vector3(verticesList[i][0], verticesList[i][1], verticesList[i][2]));
+                Vector3[] vertices = new Vector3[4];
+                for (int i = 0; i < 4; i++)
+                {
+                    Vector3 vertexCoordU = new Vector3(verticesList[i][0], verticesList[i][1], verticesList[i][2]);
+                    vertices[i] = BrainAtlasManager.ActiveReferenceAtlas.Atlas2World(vertexCoordU);
+                }
 
                 _fovs[name].SetPosition(vertices);
             }

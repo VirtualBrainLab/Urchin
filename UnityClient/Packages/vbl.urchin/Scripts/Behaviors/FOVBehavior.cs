@@ -9,11 +9,11 @@ public class FOVBehavior : MonoBehaviour
 {
 
     #region Variables
-    private int[] _order = { 3, 1, 2, 0 }; // for reordering vertices to match the mesh
-                                           // vertex order given by user: start from top left, go clockwise
+    private int[] _order = { 3, 2, 0, 1 }; // the vertex order of a quad is bl, br, tl, tr, the input order is clockwise from tl
     private MeshFilter _meshFilter;
     private Renderer _renderer;
     private List<byte[]> _imageDataChunks;
+
     #endregion
 
     #region Internal
@@ -22,6 +22,11 @@ public class FOVBehavior : MonoBehaviour
     private int texture_width;
     private int texture_height;
     private string texture_type;
+
+    private Texture2D _activeTexture;
+    private Vector3[] _verticesWorldU;
+    private Vector3 _center;
+    private Vector3 _offset;
     #endregion
 
     #region Unity
@@ -32,74 +37,55 @@ public class FOVBehavior : MonoBehaviour
     }
     #endregion
 
-    #region Properties
-    /// <summary>
-    /// Convert CCF coordinates to Unity world coordinates
-    /// </summary>
-    /// <param name="vec"></param>
-    /// <returns></returns>
-    static Vector3 CCFtoWorld(Vector3 vec)
-    {
-        Vector3 outVec = Vector3.zero;
-        outVec.x = -vec.x + 5.7f; //ML=-x
-        outVec.y = -vec.z + 4f; //DV=-y
-        outVec.z = vec.y - 6.6f; //AP=z
-        return outVec;
-    }
+    #region Public Setters
 
     /// <summary>
     /// Set the position of the four vertex corners of the Quad
     /// </summary>
-    /// <param name="vertices"></param>
-    public void SetPosition(List<Vector3> vertices)
+    /// <param name="verticesWorldU"></param>
+    public void SetPosition(Vector3[] verticesWorldU)
     {
-
-        for (int i = 0; i < 4; i++)
-        {
-            vertices[i] = CCFtoWorld(vertices[i]);
-        }
-        // Compute the center of the quad
-        Vector3 center = new Vector3(0f, 0f, 0f);
-        for (int i = 0; i < 4; i++)
-            center += vertices[i];
-        center = center / 4f;
-        Debug.Log("SetPosition: Setting center of quad " + name + " at: " + center);
-
-        // Re-order vertices for MeshFilter
-        for (int i = 0; i < 4; i++)
-            vertices[i] = vertices[i] - center;
-        Vector3[] verticesReordered = new Vector3[4];
-        for (int i = 0; i < 4; i++)
-            verticesReordered[i] = vertices[_order[i]];
-
-        // Apply vertex positions
-        _meshFilter.mesh.vertices = verticesReordered;
-        transform.position = center;
+        _verticesWorldU = verticesWorldU;
+        RecalculateCenter();
+        SetPosition();
     }
 
     /// <summary>
     /// Set an offset to move the Quad up/down; positive is up.
     /// </summary>
     /// <param name="offset"></param>
-    // Apply an offset to the DV axis. Positive is upwards.
     public void SetOffset(float offset)
     {
-        transform.position += new Vector3(0f, offset, 0f);
-        Debug.Log("SetOffset: Setting center of quad " + name + " at: " + transform.position);
-    }
-
-    /// <summary>
-    /// Set an image texture for the Quad
-    /// </summary>
-    /// <param name="texture"></param>
-    public void SetTexture(Texture2D texture)
-    {
-        _renderer.material.SetTexture("_MeanImageTexture", texture);
+        _offset = Vector3.up * offset;
+        SetPosition();
     }
 
     #endregion
 
     #region Helpers
+
+    private void RecalculateCenter()
+    {
+        // Compute the center of the quad
+        Vector3 center = new Vector3(0f, 0f, 0f);
+        for (int i = 0; i < 4; i++)
+            center += _verticesWorldU[i];
+        center = center / 4f;
+        _center = center;
+    }
+
+    private void SetPosition()
+    {
+        // Re-order vertices for Quad
+        Vector3[] verticesReordered = new Vector3[4];
+        for (int i = 0; i < 4; i++)
+            verticesReordered[i] = _verticesWorldU[_order[i]] - _center;
+
+        // Apply vertex positions
+        _meshFilter.mesh.vertices = verticesReordered;
+
+        transform.position = _center + _offset;
+    }
 
     /// <summary>
     /// Initiatze data buffer for an incoming new texture
@@ -108,7 +94,11 @@ public class FOVBehavior : MonoBehaviour
     public void SetTextureInit(int totalChunks, int width, int height, string type)
     {
         Debug.Log("SetTextureInit");
-        Debug.Log(totalChunks);
+        _activeTexture = new Texture2D(width, height, TextureFormat.RGB24, false);
+        _activeTexture.wrapMode = TextureWrapMode.Clamp;
+        _activeTexture.filterMode = FilterMode.Point;
+        _renderer.material.SetTexture("_Texture2D", _activeTexture);
+
         texture_width = width;
         texture_height = height;
         texture_type = type;
@@ -126,7 +116,7 @@ public class FOVBehavior : MonoBehaviour
     /// <param name="immediateApply"></param>
     public void SetTextureMeta(int chunkid, bool immediateApply)
     {
-        //Debug.Log($"SetTextureMeta,{chunkid} {immediateApply}");
+        Debug.Log($"SetTextureMeta,{chunkid} {immediateApply}");
         nextChunk = chunkid;
         nextApply = immediateApply;
     }
@@ -139,7 +129,7 @@ public class FOVBehavior : MonoBehaviour
     /// <param name="imageBytes"></param>
     public void SetTextureData(byte[] imageBytes)
     {
-        //Debug.Log($"SetTextureData,{nextChunk}");
+        Debug.Log($"SetTextureData,{nextChunk}");
         // Put chunk in temporary array
         _imageDataChunks[nextChunk] = imageBytes;
 
@@ -160,9 +150,6 @@ public class FOVBehavior : MonoBehaviour
             }
             // Load the image bytes into a new Texture2D
             //              if doesn't work: .SetPixel(). Was .LoadImage() before.
-            Texture2D fovTexture = new Texture2D(texture_width, texture_height);
-            // Apply the texture to the material
-            SetTexture(fovTexture);
             offset = 0;
             // Load an array: each byte is a pixel
             if (texture_type == "array")
@@ -173,23 +160,22 @@ public class FOVBehavior : MonoBehaviour
                     {
                         float value = _imageData[offset++] / 255f;
                         Color c = new Color(value, value, value);
-                        fovTexture.SetPixel(x, y, c);
+                        _activeTexture.SetPixel(x, y, c);
                     }
                 }
             }
             // Load an image: every 3 bytes are a pixel in (R,G,B)
             else if (texture_type == "image")
             {
-                fovTexture.LoadImage(_imageData);
+                _activeTexture.LoadImage(_imageData);
             }
             else
             {
                 Debug.LogError($"Texture type must be 'image' or 'array', got {texture_type}");
             }
-            Debug.Log(fovTexture);
 
             // Refresh texture to GPU
-            fovTexture.Apply();
+            _activeTexture.Apply();
 
             // Release buffer pool and texture to free up memory
             _imageDataChunks.Clear();

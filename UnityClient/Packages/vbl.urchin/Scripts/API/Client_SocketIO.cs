@@ -273,9 +273,9 @@ namespace Urchin.API
         public static Action ClearText;
         public static Action ClearParticles;
         public static Action ClearMeshes;
-        public static List<Action> ClearAll = new List<Action> { ClearProbes, ClearAreas, ClearVolumes, 
-            ClearText, ClearParticles, ClearMeshes };
-
+        public static Action ClearFOV;
+        public static List<Action> ClearAll = new List<Action> { ClearProbes, ClearAreas, ClearVolumes,
+            ClearText, ClearParticles, ClearMeshes, ClearFOV};
         private void Clear(string val)
         {
             switch (val)
@@ -301,6 +301,9 @@ namespace Urchin.API
                     break;
                 case "mesh":
                     ClearMeshes.Invoke();
+                    break;
+                case "texture":
+                    ClearFOV.Invoke();
                     break;
             }
         }
