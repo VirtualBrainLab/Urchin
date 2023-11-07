@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "oursin"
-version = "0.5.0"
+version = "0.5.1"
 description = "Urchin - Universal Renderer Creating Helpful Images for Neuroscience Python API"
 readme = "README.md"
 authors = [
