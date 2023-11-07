@@ -21,6 +21,8 @@ namespace Urchin.Managers
             Client_SocketIO.CreateVolume += Create;
             Client_SocketIO.DeleteVolume += Delete;
             Client_SocketIO.SetVolumeColormap += SetColormap;
+
+            Client_SocketIO.ClearVolumes += Clear;
         }
 
         #region Public functions

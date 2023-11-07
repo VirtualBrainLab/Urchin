@@ -39,6 +39,8 @@ namespace Urchin.Managers
             Client_SocketIO.SetScale += SetScale;
             Client_SocketIO.SetColor += SetColor;
             Client_SocketIO.SetMaterial += SetMaterial;
+
+            Client_SocketIO.ClearMeshes += Clear;
         }
 
         public void CreateMesh(List<string> meshes) //instantiates cube as default

@@ -32,6 +32,8 @@ namespace Urchin.Managers
             Client_SocketIO.SetTextColors += SetColor;
             Client_SocketIO.SetTextSizes += SetSize;
             Client_SocketIO.SetTextPositions += SetPosition;
+
+            Client_SocketIO.ClearText += Clear;
         }
         #endregion
 

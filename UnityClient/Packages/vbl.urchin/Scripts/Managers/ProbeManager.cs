@@ -50,6 +50,8 @@ namespace Urchin.Managers
             Client_SocketIO.SetProbeAngles += SetAngles;
             //Client_SocketIO.SetProbeStyle += SetStyles;
             Client_SocketIO.SetProbeSize += SetSizes;
+
+            Client_SocketIO.ClearProbes += ClearProbes;
         }
 
         #endregion
