@@ -18,17 +18,17 @@ class Particle:
 		Parameters
 		---------- 
 		position : list of three floats
+			(ap, ml, dv) coordinates in um
 
 		Examples
 		--------
-		>>>p1.set_position([5.2,5.7,0.33]) # set a particle to Bregma, in CCF space
+		>>>p1.set_position([5200,5700,330]) # set a particle to Bregma, in CCF space
 		"""
 		if self.in_unity == False:
 			raise Exception("Particle does not exist in Unity, call create method first.")
 		
-		position = utils.sanitize_vector3(position)
-		self.position = position
-		client.sio.emit('SetParticlePos', {self.id: position})
+		self.position = utils.sanitize_vector3(position)
+		client.sio.emit('SetParticlePos', {self.id: [self.position[0]/1000, self.position[1]/1000, self.position[2]/1000]})
 
 	def set_size(self, size):
 		"""Set the size of a particle
@@ -150,11 +150,11 @@ def set_positions(particles_list, positions_list):
 	----------
 	particles_list : list of Particle
 	positions_list : list of list of three floats
-		list of positions of neurons
+		list of positions of neurons (ap, ml, dv) in um
 
 	Examples
 	--------
-	>>> urchin.particles.set_positions([p1,p2,p3], [[1,1,1],[2,2,2],[3,3,3]])
+	>>> urchin.particles.set_positions([p1,p2,p3], [[1000,1000,1000],...,...])
 	"""
 	particles_list = utils.sanitize_list(particles_list)
 	positions_list = utils.sanitize_list(positions_list)
@@ -163,7 +163,8 @@ def set_positions(particles_list, positions_list):
 	for i in range(len(particles_list)):
 		neuron = particles_list[i]
 		if neuron.in_unity:
-			neuron_positions[neuron.id] = utils.sanitize_vector3(positions_list[i])
+			pos = utils.sanitize_vector3(positions_list[i])
+			neuron_positions[neuron.id] = [pos[0]/1000, pos[1]/1000, pos[2]/1000]
 		else:
 			warnings.warn(f"Particle with id {neuron.id} does not exist in Unity, call create method first.")
 	client.sio.emit('SetParticlePos', neuron_positions)
@@ -216,36 +217,6 @@ def set_colors(particles_list, colors_list):
 		else:
 			warnings.warn(f"Particle with id {neuron.id} does not exist in Unity, call create method first.")
 	client.sio.emit('SetParticleColor', neurons_colors)
-
-# def set_shapes(neurons_list, shapes_list):
-# 	"""Set neuron shapes
-
-# 	Options are
-# 	 - 'sphere' (default)
-# 	 - 'cube' better performance when rendering tens of thousands of neurons
-
-# 	Parameters
-# 	----------
-# 	neurons_list : list of neuron objects
-# 		list of neurons being reshaped
-# 	shapes : list of string
-# 		list of shapes of neurons
-
-# 	Examples
-# 	--------
-# 	>>> urchin.neurons.set_shapes([p1,n2,n3], ['sphere','cube','sphere'])
-# 	"""
-# 	neurons_list = utils.sanitize_list(neurons_list)
-# 	shapes_list = utils.sanitize_list(shapes_list)
-
-# 	neurons_shapes = {}
-# 	for i in range(len(neurons_list)):
-# 		neuron = neurons_list[i]
-# 		if neuron.in_unity:
-# 			neurons_shapes[neuron.id] = shapes_list[i]
-# 		else:
-# 			warnings.warn(f"Neuron with id {neuron.id} does not exist in Unity, call create method first.")
-# 	client.sio.emit('SetParticleShape', neurons_shapes)
 
 def set_material(material_name):
 	"""Change the material used to render neurons
