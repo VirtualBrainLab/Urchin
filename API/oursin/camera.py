@@ -5,6 +5,10 @@ from . import utils
 
 import PIL
 from PIL import Image
+
+import cv2
+import numpy as np
+
 import io
 import json
 import asyncio
@@ -316,6 +320,51 @@ class Camera:
 			img.save(filename)
 		else:
 			return img
+		
+	async def capture_video(self, file_name, start_rotation, end_rotation, frame_rate = 30,
+				   duration = 5, size = (1024,768)):
+		"""Capture a video and save it to a file
+
+		Warning: start and stop rotations are currently implemented in Euler angles
+		any rotation that uses multiple axes will *not* look correct! This will be
+		updated in a future release.
+
+		Parameters
+		----------
+		file_name : _type_
+			_description_
+		start_rotation : _type_
+			_description_
+		end_rotation : _type_
+			_description_
+		frame_rate : int, optional
+			_description_, by default 30
+		size : list, optional
+			_description_, by default [1024,768]
+		"""
+		fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+		out = cv2.VideoWriter(file_name, fourcc, frame_rate, size)
+
+		n_frames = frame_rate * duration
+
+		rotation_change = [end_rotation[0]-start_rotation[0],
+					 end_rotation[1]-start_rotation[1],
+					 end_rotation[2]-start_rotation[2]]
+
+		for frame in range(n_frames):
+			perc = frame / n_frames
+
+			self.set_rotation([start_rotation[0] + perc * rotation_change[0],
+					 start_rotation[1] + perc * rotation_change[1],
+					 start_rotation[2] + perc * rotation_change[2]])
+			
+			img = await self.screenshot([size[0], size[1]])
+			image_array = np.array(img)
+			image_array = cv2.cvtColor(image_array, cv2.COLOR_RGB2BGR)
+			out.write(image_array)
+		
+		out.release()
+		print(f'Video captured on {self.id} saved to {file_name}')
 
 
 def set_light_rotation(angles):
