@@ -5499,6 +5499,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _particleSystem: {fileID: 163920639137477556}
+  _materialNames:
+  - gaussian
+  - circle
+  - circle-lit
+  - square
+  - square-lit
+  - diamond
+  - diamond-lit
+  _materials:
+  - {fileID: 2100000, guid: e823cd5b5d27c0f4b8256e7c12ee3e6d, type: 2}
+  - {fileID: 2100000, guid: 05c835edcbf859141af0aa7bfb140148, type: 2}
+  - {fileID: 2100000, guid: c43697217ac7c2144a2a6a781782716a, type: 2}
+  - {fileID: 2100000, guid: 01d0ac57f4b254548af78e99707626b7, type: 2}
+  - {fileID: 2100000, guid: 1b5463b1e2e640845ab8f1005a84aafe, type: 2}
+  - {fileID: 2100000, guid: 7864e8cafb9a00a4d9f06e4295d0df69, type: 2}
+  - {fileID: 2100000, guid: a3621f25cab63014eb488d47d569cf72, type: 2}
 --- !u!1001 &648514006979445990
 PrefabInstance:
   m_ObjectHideFlags: 0

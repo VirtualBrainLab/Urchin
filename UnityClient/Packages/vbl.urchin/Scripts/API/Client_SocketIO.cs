@@ -123,16 +123,16 @@ namespace Urchin.API
         public static Action<Dictionary<string, float>> SetParticleSize;
         //public static Action<Dictionary<string, string>> SetParticleShape;
         public static Action<Dictionary<string, string>> SetParticleColor;
-        //public static Action<Dictionary<string, string>> SetParticleMaterial;
+        public static Action<string> SetParticleMaterial;
 
         private void Start_Particles()
         {
             manager.Socket.On<List<string>>("CreateParticles", x => CreateParticles.Invoke(x));
             manager.Socket.On<Dictionary<string, float[]>>("SetParticlePos", x => SetParticlePosition.Invoke(x));
             manager.Socket.On<Dictionary<string, float>>("SetParticleSize", x => SetParticleSize.Invoke(x));
-            //manager.Socket.On<Dictionary<string, string>>("SetNeuronShape", x => SetParticleShape.Invoke(x));
+            //manager.Socket.On<Dictionary<string, string>>("SetParticleShape", x => SetParticleShape.Invoke(x));
             manager.Socket.On<Dictionary<string, string>>("SetParticleColor", x => SetParticleColor.Invoke(x));
-            //manager.Socket.On<Dictionary<string, string>>("SetNeuronMaterial", x => SetParticleMaterial.Invoke(x));
+            manager.Socket.On<string>("SetParticleMaterial", x => SetParticleMaterial.Invoke(x));
         }
 
         public static Action<List<string>> CreateProbes;

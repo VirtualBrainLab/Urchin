@@ -1815,6 +1815,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 163920639137477556, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
+      propertyPath: ShapeModule.type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 163920639137477556, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
+      propertyPath: ShapeModule.radiusThickness
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 756099984625368948, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
       propertyPath: _cameraUIGOs.Array.size
       value: 4
@@ -1990,6 +1998,10 @@ PrefabInstance:
     - target: {fileID: 5428924515040814815, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6074828215876335387, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
+      propertyPath: _materials.Array.size
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -7,23 +7,35 @@ using Urchin.API;
 public class ParticleManager : MonoBehaviour
 {
     [SerializeField] ParticleSystem _particleSystem;
-    Dictionary<string, int> _particleMapping;
+    [SerializeField] List<string> _materialNames;
+    [SerializeField] List<Material> _materials;
+
+    private Dictionary<string, int> _particleMapping;
+    private Dictionary<string, Material> _particleMaterials;
 
     #region Unity
     private void Awake()
     {
         _particleMapping = new();
+        _particleMaterials = new();
+
+        if (_materialNames.Count != _materials.Count)
+            throw new System.Exception("(ParticleManager) Material names list and material list must have the same length");
+
+        for (int i = 0; i < _materialNames.Count; i++)
+            _particleMaterials.Add(_materialNames[i], _materials[i]);
     }
 
     private void Start()
     {
         Client_SocketIO.CreateParticles += CreateParticles;
-        Client_SocketIO.ClearParticles += Clear;
         Client_SocketIO.SetParticlePosition += SetPosition;
         Client_SocketIO.SetParticleSize += SetSize;
         //Client_SocketIO.SetParticleShape += SetShape;
         Client_SocketIO.SetParticleColor += SetColor;
-        //Client_SocketIO.SetParticleMaterial += SetMaterial;
+        Client_SocketIO.SetParticleMaterial += SetMaterial;
+
+        Client_SocketIO.ClearParticles += Clear;
     }
     #endregion
 
@@ -96,5 +108,16 @@ public class ParticleManager : MonoBehaviour
         }
 
         _particleSystem.SetParticles(particles);
+    }
+
+    public void SetMaterial(string materialName)
+    {
+        if (_particleMaterials.ContainsKey(materialName))
+        {
+            var renderer = _particleSystem.GetComponent<ParticleSystemRenderer>();
+            renderer.material = _particleMaterials[materialName];
+        }
+        else
+            Debug.LogError("(ParticleManager) Material {materialName} does not exist");
     }
 }

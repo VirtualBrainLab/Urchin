@@ -245,36 +245,29 @@ def set_colors(particles_list, colors_list):
 # 			neurons_shapes[neuron.id] = shapes_list[i]
 # 		else:
 # 			warnings.warn(f"Neuron with id {neuron.id} does not exist in Unity, call create method first.")
-# 	client.sio.emit('SetNeuronShape', neurons_shapes)
+# 	client.sio.emit('SetParticleShape', neurons_shapes)
 
-# def set_materials(neurons_list, materials_list):
-# 	"""Change the material used to render neurons
+def set_material(material_name):
+	"""Change the material used to render neurons
 
-#  	Options are
-#  	- 'lit-transparent' (default)
-#  	- 'lit'
-#  	- 'unlit'
+ 	Options are
+ 	- 'gaussian' (default)
+ 	- 'circle'
+ 	- 'circle-lit'
+ 	- 'square'
+ 	- 'square-lit'
+ 	- 'diamond'
+ 	- 'diamond-lit'
 
-# 	Parameters
-# 	----------
-# 	neurons_list : list of neuron objects
-# 		list of neurons being rematerialized
-# 	materials : list of string
-# 		list of materials of neurons
+	Parameters
+	----------
+	material_name: string
 
-# 	Examples
-# 	--------
-# 	>>> urchin.neurons.set_materials([p1,n2,n3], ['lit','unlit','lit'])
-# 	"""
-# 	neurons_list = utils.sanitize_list(neurons_list)
-# 	materials_list = utils.sanitize_list(materials_list)
+	Examples
+	--------
+	>>> urchin.neurons.set_material('circle')
+	"""
+	material_name = utils.sanitize_string(material_name)
 
-# 	neurons_materials = {}
-# 	for i in range(len(neurons_list)):
-# 		neuron = neurons_list[i]
-# 		if neuron.in_unity:
-# 			neurons_materials[neuron.id] = utils.sanitize_material(materials_list[i])
-# 		else:
-# 			warnings.warn(f"Neuron with id {neuron.id} does not exist in Unity, call create method first.")
-# 	client.sio.emit('SetNeuronMaterial', neurons_materials)
+	client.sio.emit('SetParticleMaterial', material_name)
 
