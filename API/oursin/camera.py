@@ -285,7 +285,7 @@ class Camera:
 		client.sio.emit('SetCameraControl', self.id)
 		
 	async def screenshot(self, size=[1024,768], filename = 'return'):
-		"""Capture a screenshot
+		"""Capture a screenshot, must be awaited
 
 		Parameters
 		----------
@@ -293,6 +293,10 @@ class Camera:
 			Size of the screenshot, by default [1024,768]
 		filename: string, optional
 			Filename to save to, relative to local path
+			
+		Examples
+		--------
+		>>> await urchin.camera.main.screenshot()
 		"""
 		global receive_totalBytes, receive_bytes, receive_camera
 		self.image_received_event.clear()
@@ -323,7 +327,7 @@ class Camera:
 		
 	async def capture_video(self, file_name, start_rotation, end_rotation, frame_rate = 30,
 				   duration = 5, size = (1024,768)):
-		"""Capture a video and save it to a file
+		"""Capture a video and save it to a file, must be awaited
 
 		Warning: start and stop rotations are currently implemented in Euler angles
 		any rotation that uses multiple axes will *not* look correct! This will be
@@ -331,16 +335,20 @@ class Camera:
 
 		Parameters
 		----------
-		file_name : _type_
-			_description_
-		start_rotation : _type_
-			_description_
-		end_rotation : _type_
-			_description_
+		file_name : string
+			File to save to, relative to local path
+		start_rotation : vector3
+			(yaw, pitch, roll) of camera at the start
+		end_rotation : vector3
+			(yaw, pitch, roll) of camera at the start
 		frame_rate : int, optional
-			_description_, by default 30
+			by default 30
 		size : list, optional
-			_description_, by default [1024,768]
+			width/height, by default [1024,768]
+			
+		Examples
+		--------
+		>>> await urchin.camera.main.capture_video('output.mp4', start_rotation=[22.5, 22.5, 225], end_rotation=[22.5, 22.5, 0])
 		"""
 		fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 		out = cv2.VideoWriter(file_name, fourcc, frame_rate, size)
