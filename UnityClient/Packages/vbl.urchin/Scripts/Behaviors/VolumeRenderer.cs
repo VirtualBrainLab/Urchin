@@ -11,23 +11,23 @@ public class VolumeRenderer : MonoBehaviour
     [SerializeField] GameObject volumeLoadingUIGO;
     [SerializeField] TMP_Text volumeLoadingUIText;
 
-    private Texture3D volumeTexture;
+    public Texture3D volumeTexture;
     private Dictionary<string, Color32[]> volumeData;
-    private Dictionary<string, Color32[]> colormaps;
+    private Dictionary<string, Color[]> colormaps;
 
-    private Color32[] defaultColormap;
-    private Color32 black;
-    private Color32 transparentBlack;
+    private Color[] defaultColormap;
+    private Color black;
+    private Color transparentBlack;
 
     private void Awake()
     {
         volumeData = new Dictionary<string, Color32[]>();
-        colormaps = new Dictionary<string, Color32[]>();
+        colormaps = new Dictionary<string, Color[]>();
 
-        black = new Color32(0, 0, 0, 1);
-        transparentBlack = new Color32(0, 0, 0, 0);
+        black = new Color(0, 0, 0, 1);
+        transparentBlack = new Color(0, 0, 0, 0);
 
-        defaultColormap = new Color32[256];
+        defaultColormap = new Color[256];
         for (int i = 0; i < 255; i++)
             defaultColormap[i] = black;
         defaultColormap[255] = transparentBlack;
@@ -67,7 +67,7 @@ public class VolumeRenderer : MonoBehaviour
     public void SetVolumeColormap(string name, List<string> hexColors)
     {
         Debug.Log("(UM_VolRend) Creating new colormap for: " + name);
-        Color32[] newMap = new Color32[256];
+        Color[] newMap = new Color[256];
         for (int i = 0; i < 255; i++)
         {
             if (i < hexColors.Count)
