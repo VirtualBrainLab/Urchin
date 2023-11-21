@@ -1,168 +1,96 @@
+using BrainAtlas;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using TMPro;
 using UnityEngine;
 using Urchin.Utils;
+using System.IO;
+using BestHTTP.Decompression.Zlib;
 
 public class VolumeRenderer : MonoBehaviour
 {
-    [SerializeField] GameObject volumeLoadingUIGO;
-    [SerializeField] TMP_Text volumeLoadingUIText;
+    public Texture3D _volumeTexture;
+    private byte[] _compressedData;
+    private Color[] _colormap;
 
-    public Texture3D volumeTexture;
-    private Dictionary<string, Color32[]> volumeData;
-    private Dictionary<string, Color[]> colormaps;
-
-    private Color[] defaultColormap;
-    private Color black;
-    private Color transparentBlack;
+    private int width;
+    private int height;
+    private int depth;
 
     private void Awake()
     {
-        volumeData = new Dictionary<string, Color32[]>();
-        colormaps = new Dictionary<string, Color[]>();
-
-        black = new Color(0, 0, 0, 1);
-        transparentBlack = new Color(0, 0, 0, 0);
-
-        defaultColormap = new Color[256];
+        _colormap = new Color[256];
         for (int i = 0; i < 255; i++)
-            defaultColormap[i] = black;
-        defaultColormap[255] = transparentBlack;
+            _colormap[i] = Color.black;
+        _colormap[255] = new Color(0f, 0f, 0f, 0f);
+
+        transform.localScale = BrainAtlasManager.ActiveReferenceAtlas.Dimensions;
+
+        (width, height, depth) = BrainAtlasManager.ActiveReferenceAtlas.DimensionsIdx;
+
+        _volumeTexture = new Texture3D(width, height, depth, TextureFormat.RGBA32, false);
+        _volumeTexture.filterMode = FilterMode.Point;
+        _volumeTexture.wrapMode = TextureWrapMode.Clamp;
+
+        GetComponent<Renderer>().material.mainTexture = _volumeTexture;
+        _volumeTexture.Apply();
     }
 
-    public void CreateVolume(string name)
+    public void Apply()
     {
-        if (volumeTexture == null)
+        using (MemoryStream compressedStream = new MemoryStream(_compressedData))
+        using (MemoryStream decompressedStream = new MemoryStream())
+        using (DeflateStream decompressor = new DeflateStream(compressedStream, CompressionMode.Decompress, BestHTTP.Decompression.Zlib.CompressionLevel.BestCompression))
         {
-            volumeTexture = new Texture3D(528, 320, 456, TextureFormat.RGBA32, false);
-            GetComponent<Renderer>().material.mainTexture = volumeTexture;
+            // Drop the zlib header, which is not read by .NET
+            compressedStream.Seek(2, SeekOrigin.Begin);
+            decompressor.CopyTo(decompressedStream);
+
+            decompressedStream.Position = 0;
+
+            using (BinaryReader reader = new BinaryReader(decompressedStream))
+            for (int x = 0; x < width; x++)
+                for (int z = 0; z < depth; z++)
+                    for (int y = 0; y < height; y++)
+                            _volumeTexture.SetPixel(x, y, z, _colormap[reader.ReadByte()]);
         }
 
-        Debug.Log("(UM_VolRend) Creating new volume: " + name);
+        _volumeTexture.Apply();
+        }
 
-        // Size is currently hard-coded
-        if (volumeData.ContainsKey(name))
-            volumeData[name] = new Color32[528 * 320 * 456];
-        else
-            volumeData.Add(name, new Color32[528*320*456]);
-        // Initialize everything with transparent black
-        for (int i = 0; i < volumeData.Count; i++)
-            volumeData[name][i] = transparentBlack;
-
-        // Reset the colormap
-        if (colormaps.ContainsKey(name))
-            colormaps[name] = defaultColormap;
-        else
-            colormaps.Add(name, defaultColormap);
-    }
-
-    public void DeleteVolume(string name)
-    {
-        volumeData.Remove(name);
-    }
-
-    public void SetVolumeColormap(string name, List<string> hexColors)
+    public void SetColormap(string[] hexColors)
     {
         Debug.Log("(UM_VolRend) Creating new colormap for: " + name);
-        Color[] newMap = new Color[256];
         for (int i = 0; i < 255; i++)
         {
-            if (i < hexColors.Count)
-                newMap[i] = Utils.ParseHexColor(hexColors[i]);
+            if (i < hexColors.Length)
+                _colormap[i] = Utils.ParseHexColor(hexColors[i]);
             else
-                newMap[i] = black;
+                _colormap[i] = Color.black;
         }
-        newMap[255] = transparentBlack;
-        if (colormaps.ContainsKey(name))
-            colormaps[name] = newMap;
-        else
-            colormaps.Add(name,newMap);
     }
 
-    public void SetVolumeVisibility(string name, bool visible)
+    public void SetVisibility(bool visible)
     {
-
         Debug.Log("(UM_VolRend) Volume: " + name + " is now visible: " + visible);
-        if (volumeData.ContainsKey(name) && visible)
-        {
-            volumeTexture.SetPixels32(volumeData[name]);
-            volumeTexture.Apply();
-            GetComponent<Renderer>().enabled = true;
-
-            // Force the camera to perspective
-            throw new NotImplementedException();
-            //cameraControl.SwitchCameraMode(false);
-        }
-        else if (!visible)
-            GetComponent<Renderer>().enabled = false;
+        GetComponent<Renderer>().enabled = visible;
     }
 
-    public async void DisplayAnnotationVolume(bool visible)
+    private int _nextOffset;
+
+    public void SetMetadata(int nCompressedBytes)
     {
-        if (visible)
-        {
-            throw new NotImplementedException();
-            //Task<Texture3D> volumeTexTask = AddressablesRemoteLoader.LoadAnnotationTexture();
-            //await volumeTexTask;
+        _compressedData = new byte[nCompressedBytes];
+        _nextOffset = 0;
 
-            //volumeTexture = volumeTexTask.Result;
-            //GetComponent<Renderer>().material.mainTexture = volumeTexture;
-            //volumeTexture.Apply();
-
-            //GetComponent<Renderer>().enabled = true;
-
-            //// Force the camera to perspective
-            //cameraControl.SwitchCameraMode(false);
-        }
-        else
-            GetComponent<Renderer>().enabled = false;
-
-        Debug.Log("(UM_VolRend) Volume: allen is now visible: " + visible);
+        Debug.Log($"Waiting to receive {_compressedData.Length} bytes");
     }
 
-    public async void DisplayReferenceVolume(bool visible)
+    public void SetData(byte[] newData)
     {
-        throw new NotImplementedException();
-    }
+        Debug.Log($"Received {newData.Length} bytes putting in offset {_nextOffset}");
+        Buffer.BlockCopy(newData, 0, _compressedData, _nextOffset, newData.Length);
+        _nextOffset += newData.Length;
 
-    private string nextVol;
-    private int nextSlice;
-    private bool nextApply;
-
-    public void AddVolumeMeta(string name, int slice, bool immediateApply)
-    {
-        if (volumeLoadingUIGO != null)
-            volumeLoadingUIGO.SetActive(true);
-        nextVol = name;
-        nextSlice = slice;
-        nextApply = immediateApply;
-    }
-
-    public void AddVolumeData(byte[] newData)
-    {
-        Debug.Log("Adding slice data for " + nextSlice);
-        int slicePos = nextSlice * 528 * 320;
-        for (int i = 0; i < newData.Length; i++)
-            volumeData[nextVol][i + slicePos] = colormaps[nextVol][newData[i]];
-
-        // slices count down, so invert that
-        if (volumeLoadingUIGO != null)
-            volumeLoadingUIText.text = (456-nextSlice+1) + "/456";
-
-        if (nextApply)
-        {
-            volumeTexture.SetPixels32(volumeData[nextVol]);
-            volumeTexture.Apply();
-            if (volumeLoadingUIGO != null)
-                volumeLoadingUIGO.SetActive(false);
-        }
-    }
-
-    public void Clear()
-    {
-        GetComponent<Renderer>().enabled = false;
+        if (_nextOffset == _compressedData.Length)
+            Apply();
     }
 }

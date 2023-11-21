@@ -4,6 +4,8 @@ using BestHTTP.SocketIO3;
 using System;
 using UnityEngine.Events;
 using System.Collections.Specialized;
+using System.IO;
+using System.IO.Compression;
 
 namespace Urchin.API
 {/// <summary>
@@ -101,21 +103,16 @@ namespace Urchin.API
             manager.Socket.On<string>("LoadDefaultAreas", x => LoadDefaultAreas.Invoke());
         }
 
-        public static Action<List<object>> SetVolumeVisibility;
-        public static Action<List<object>> SetVolumeDataMeta;
-        public static Action<byte[]> SetVolumeData;
-        public static Action<string> CreateVolume;
+        public static Action<VolumeDataChunk> SetVolumeData;
+        public static Action<VolumeMeta> UpdateVolume;
+        public static Action<string[]> SetVolumeColormap;
         public static Action<string> DeleteVolume;
-        public static Action<List<string>> SetVolumeColormap;
 
         private void Start_Volume()
         {
-            manager.Socket.On<List<object>>("SetVolumeVisibility", x => SetVolumeVisibility.Invoke(x));
-            manager.Socket.On<List<object>>("SetVolumeDataMeta", x => SetVolumeDataMeta.Invoke(x));
-            manager.Socket.On<byte[]>("SetVolumeData", x => SetVolumeData.Invoke(x));
-            manager.Socket.On<string>("CreateVolume", x => CreateVolume.Invoke(x));
+            manager.Socket.On<string>("UpdateVolume", x => UpdateVolume.Invoke(JsonUtility.FromJson<VolumeMeta>(x)));
+            manager.Socket.On<string>("SetVolumeData", x => SetVolumeData.Invoke(JsonUtility.FromJson<VolumeDataChunk>(x)));
             manager.Socket.On<string>("DeleteVolume", x => DeleteVolume.Invoke(x));
-            manager.Socket.On<List<string>>("SetVolumeColormap", x => SetVolumeColormap.Invoke(x));
         }
 
         public static Action<List<string>> CreateParticles;

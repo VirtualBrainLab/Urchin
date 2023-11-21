@@ -5110,7 +5110,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ff5920b3c3ec3a47ab6d0b7db7e5ca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  volRenderer: {fileID: 4373804438314061606}
+  _volumeParentT: {fileID: 4238721956624320183}
+  _volumePrefab: {fileID: 4113667031467724672, guid: ec190cb5d1fca74429dd4f0965926e35, type: 3}
 --- !u!1 &4390413428189988366
 GameObject:
   m_ObjectHideFlags: 0
@@ -5190,7 +5191,6 @@ Transform:
   m_Children:
   - {fileID: 2757818260648243688}
   - {fileID: 1585022055348087818}
-  - {fileID: 2408366950687850817}
   - {fileID: 6315221786318199943}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5269,52 +5269,6 @@ MonoBehaviour:
   NodeVisibleEvent:
     m_PersistentCalls:
       m_Calls: []
---- !u!1 &5013054077014008018
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2408366950687850817}
-  - component: {fileID: 4373804438314061606}
-  m_Layer: 0
-  m_Name: Volumes
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2408366950687850817
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5013054077014008018}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 5428924515040814815}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4373804438314061606
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5013054077014008018}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0192bf06e49195744bb027cd12d05376, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  volumeLoadingUIGO: {fileID: 0}
-  volumeLoadingUIText: {fileID: 0}
 --- !u!1 &5566263359961949564
 GameObject:
   m_ObjectHideFlags: 0

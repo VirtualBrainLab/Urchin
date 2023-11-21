@@ -9,55 +9,70 @@ namespace Urchin.Managers
     public class VolumeManager : MonoBehaviour
     {
         #region Serialized
-        [SerializeField] private VolumeRenderer volRenderer;
+        [SerializeField] private Transform _volumeParentT;
+        [SerializeField] private GameObject _volumePrefab;
         #endregion
+
+        #region Variables
+        private Dictionary<string, VolumeRenderer> _volumes;
+        #endregion
+
+        #region Unity
+        private void Awake()
+        {
+            _volumes = new();
+        }
+
 
         private void Start()
         {
-
-            Client_SocketIO.SetVolumeVisibility += SetVisibility;
-            Client_SocketIO.SetVolumeDataMeta += SetMetadata;
             Client_SocketIO.SetVolumeData += SetData;
-            Client_SocketIO.CreateVolume += Create;
+            Client_SocketIO.UpdateVolume += UpdateOrCreate;
             Client_SocketIO.DeleteVolume += Delete;
-            Client_SocketIO.SetVolumeColormap += SetColormap;
 
             Client_SocketIO.ClearVolumes += Clear;
         }
 
+        #endregion
+
         #region Public functions
+
+        public void UpdateOrCreate(VolumeMeta volumeMeta)
+        {
+            VolumeRenderer volRenderer;
+            if (!_volumes.ContainsKey(volumeMeta.name))
+            {
+                GameObject newVolume = Instantiate(_volumePrefab, _volumeParentT);
+
+                volRenderer = newVolume.GetComponent<VolumeRenderer>();
+                _volumes.Add(volumeMeta.name, volRenderer);
+            }
+            else
+                volRenderer = _volumes[volumeMeta.name];
+
+            volRenderer.SetMetadata(volumeMeta.nCompressedBytes);
+            volRenderer.SetColormap(volumeMeta.colormap);
+            volRenderer.SetVisibility(volumeMeta.visible);
+        }
+
         public void SetVisibility(List<object> data)
         {
-            if (((string)data[0]).Equals("allen"))
-                volRenderer.DisplayAnnotationVolume((bool)data[1]);
-            else
-                volRenderer.SetVolumeVisibility((string)data[0], (bool)data[1]);
-        }
+            string volumeName = (string)data[0];
+            bool visibility = (bool)data[1];
 
-        public void SetColormap(List<string> obj)
-        {
-            string name = obj[0];
-            obj.RemoveAt(0);
-            volRenderer.SetVolumeColormap(name, obj);
-        }
-
-        public void Create(string name)
-        {
-            volRenderer.CreateVolume(name);
+            _volumes[volumeName].SetVisibility(visibility);
         }
 
         public void Delete(string name)
         {
-            volRenderer.DeleteVolume(name);
+            GameObject volumeGO = _volumes[name].gameObject;
+            Destroy(volumeGO);
+            _volumes.Remove(name);
         }
 
-        public void SetMetadata(List<object> data)
+        public void SetData(VolumeDataChunk chunk)
         {
-            volRenderer.AddVolumeMeta((string)data[0], (int)data[1], (bool)data[2]);
-        }
-        public void SetData(byte[] bytes)
-        {
-            volRenderer.AddVolumeData(bytes);
+            _volumes[chunk.name].SetData(chunk.compressedByteChunk);
         }
         public void SetAnnotationColor(Dictionary<string, string> data)
         {
@@ -73,7 +88,10 @@ namespace Urchin.Managers
         public void Clear()
         {
             Debug.Log("(Client) Clearing volumes");
-            volRenderer.Clear();
+            foreach (var kvp in _volumes)
+                Destroy(kvp.Value.gameObject);
+
+            _volumes.Clear();
         }
         #endregion
     }
