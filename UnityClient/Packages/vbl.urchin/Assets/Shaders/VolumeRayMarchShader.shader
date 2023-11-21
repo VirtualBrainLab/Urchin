@@ -5,6 +5,8 @@ Shader "Unlit/VolumeRayMarchShader"
         _MainTex ("Texture", 3D) = "white" {}
         _Alpha ("Alpha", Range(0.0,1.0)) = 0.02
         _StepSize ("Step Size", float) = 0.01
+        _MLClip("MLClip", Vector) = (-1, 1, 0, 0)
+        _APClip("APClip", Vector) = (-1, 1, 0, 0)
     }
     SubShader
     {
@@ -39,9 +41,11 @@ Shader "Unlit/VolumeRayMarchShader"
             };
 
             sampler3D _MainTex;
-            float4 _MainTex_ST;
+            //float4 _MainTex_ST;
             float _Alpha;
             float _StepSize;
+            float4 _MLClip;
+            float4 _APClip;
 
             v2f vert (appdata v)
             {
@@ -68,17 +72,25 @@ Shader "Unlit/VolumeRayMarchShader"
             fixed4 frag(v2f i) : SV_Target
             {
                 // Start raymarching at the front surface of the object
-                float3 rayOrigin = i.objectVertex;
+                //float3 rayOrigin = i.objectVertex;
+
+                // Check if the ray origin or any subsequent sample position is outside the clipping boundaries
+                if (i.objectVertex.x < _MLClip.x || i.objectVertex.x > _MLClip.y ||
+                    i.objectVertex.z < _APClip.x || i.objectVertex.z > _APClip.y)
+                {
+                    // Set color to transparent and exit the loop
+                    return float4(0, 0, 0, 0);
+                }
 
                 // Use vector from camera to object surface to get ray direction
                 float3 rayDirection = mul(unity_WorldToObject, float4(normalize(i.vectorToSurface), 1));
 
                 float4 color = float4(0, 0, 0, 0);
-                float3 samplePosition = rayOrigin;
+                float3 samplePosition = i.objectVertex;
 
                 int sampleCount = 0;
                 // Raymarch through object space
-                for (int i = 0; i < MAX_STEP_COUNT; i++)
+                for (int j = 0; j < MAX_STEP_COUNT; j++)
                 {
                     // Accumulate color only within unit cube bounds
                     if(max(abs(samplePosition.x), max(abs(samplePosition.y), abs(samplePosition.z))) < 0.5f + EPSILON)

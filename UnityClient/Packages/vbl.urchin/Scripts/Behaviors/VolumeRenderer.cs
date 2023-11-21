@@ -38,7 +38,7 @@ public class VolumeRenderer : MonoBehaviour
     {
         using (MemoryStream compressedStream = new MemoryStream(_compressedData))
         using (MemoryStream decompressedStream = new MemoryStream())
-        using (DeflateStream decompressor = new DeflateStream(compressedStream, CompressionMode.Decompress, BestHTTP.Decompression.Zlib.CompressionLevel.BestCompression))
+        using (DeflateStream decompressor = new DeflateStream(compressedStream, CompressionMode.Decompress))
         {
             // Drop the zlib header, which is not read by .NET
             compressedStream.Seek(2, SeekOrigin.Begin);

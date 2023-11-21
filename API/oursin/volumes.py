@@ -21,7 +21,7 @@ class Volume:
 		volume_data[np.isnan(volume_data)] = 255
 
 		flattened_data = volume_data.flatten().astype(np.uint8).tobytes()
-		compressed_data = zlib.compress(flattened_data, level=zlib.Z_BEST_COMPRESSION)
+		compressed_data = zlib.compress(flattened_data)
 
 		self.n_compressed_bytes = len(compressed_data)
 		self.visible = True
