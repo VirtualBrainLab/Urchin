@@ -75,8 +75,8 @@ Shader "Unlit/VolumeRayMarchShader"
                 //float3 rayOrigin = i.objectVertex;
 
                 // Check if the ray origin or any subsequent sample position is outside the clipping boundaries
-                if (i.objectVertex.y < _MLClip.x || i.objectVertex.y > _MLClip.y ||
-                    i.objectVertex.x < _APClip.x || i.objectVertex.x > _APClip.y)
+                if ((i.objectVertex.y < _MLClip.x || i.objectVertex.y > _MLClip.y) &&
+                    (i.objectVertex.x < _APClip.x || i.objectVertex.x > _APClip.y))
                 {
                     // Set color to transparent and exit the loop
                     return float4(0, 0, 0, 0);

@@ -9,6 +9,8 @@ public class VolumeRenderer : MonoBehaviour
 {
     public Texture3D _volumeTexture;
 
+    [SerializeField] GameObject _cubeGO;
+    [SerializeField] Transform _sliceParentT;
     [SerializeField] GameObject _coronalSliceGO;
     [SerializeField] GameObject _sagittalSliceGO;
 
@@ -16,7 +18,9 @@ public class VolumeRenderer : MonoBehaviour
     private Material _sagittalMaterial;
     private Vector3[] _coronalOrigWorldU;
     private Vector3[] _sagittalOrigWorldU;
+    private bool _slicesActive;
 
+    private Vector3 _prevSlicePosition;
     public Vector3 _slicePosition;
 
     private byte[] _compressedData;
@@ -34,9 +38,12 @@ public class VolumeRenderer : MonoBehaviour
         _colormap[255] = new Color(0f, 0f, 0f, 0f);
 
         _coronalMaterial = _coronalSliceGO.GetComponent<Renderer>().material;
-        _sagittalMaterial = _coronalSliceGO.GetComponent<Renderer>().material;
+        _sagittalMaterial = _sagittalSliceGO.GetComponent<Renderer>().material;
 
-        transform.localScale = BrainAtlasManager.ActiveReferenceAtlas.Dimensions;
+        Vector3 dims = BrainAtlasManager.ActiveReferenceAtlas.Dimensions;
+        Vector3 dimsWorld = BrainAtlasManager.ActiveReferenceAtlas.Atlas2World_Vector(dims);
+        _sliceParentT.localScale = new Vector3(Mathf.Abs(dimsWorld.x), Mathf.Abs(dimsWorld.y), Mathf.Abs(dimsWorld.z));
+        _cubeGO.transform.localScale = dims;
 
         (width, height, depth) = BrainAtlasManager.ActiveReferenceAtlas.DimensionsIdx;
 
@@ -44,7 +51,7 @@ public class VolumeRenderer : MonoBehaviour
         _volumeTexture.filterMode = FilterMode.Point;
         _volumeTexture.wrapMode = TextureWrapMode.Clamp;
 
-        GetComponent<Renderer>().material.mainTexture = _volumeTexture;
+        _cubeGO.GetComponent<Renderer>().material.mainTexture = _volumeTexture;
         _coronalMaterial.SetTexture("_Volume", _volumeTexture);
         _sagittalMaterial.SetTexture("_Volume", _volumeTexture);
         _volumeTexture.Apply();
@@ -57,28 +64,35 @@ public class VolumeRenderer : MonoBehaviour
 
         // vertex order -x-y, +x-y, -x+y, +x+y
 
-        Vector3 dims = BrainAtlasManager.ActiveReferenceAtlas.Dimensions / 2f;
-
         // -x+y, +x+y, +x-y, -x-y
-        _coronalOrigWorldU = new Vector3[] {
-                new Vector3(-dims.y, -dims.z, 0f),
-                new Vector3(dims.y, -dims.z, 0f),
-                new Vector3(-dims.y, dims.z, 0f),
-                new Vector3(dims.y, dims.z, 0f)
+        _sagittalOrigWorldU = new Vector3[] {
+                new Vector3(0f, -0.5f, -0.5f),
+                new Vector3(0f, -0.5f, 0.5f),
+                new Vector3(0f, 0.5f, -0.5f),
+                new Vector3(0f, 0.5f, 0.5f)
             };
 
         // -z+y, +z+y, +z-y, -z-y
-        _sagittalOrigWorldU = new Vector3[] {
-                new Vector3(0f, -dims.z, -dims.x),
-                new Vector3(0f, -dims.z, dims.x),
-                new Vector3(0f, dims.z, -dims.x),
-                new Vector3(0f, dims.z, dims.x)
+        _coronalOrigWorldU = new Vector3[] {
+                new Vector3(-0.5f, -0.5f, 0f),
+                new Vector3(0.5f, -0.5f, 0f),
+                new Vector3(-0.5f, 0.5f, 0f),
+                new Vector3(0.5f, 0.5f, 0f)
             };
+    }
+
+    private void Start()
+    {
+        SetSliceVisibility(true);
     }
 
     private void Update()
     {
-        UpdateSlicePosition();
+        if (_slicePosition != _prevSlicePosition)
+        {
+            _prevSlicePosition = _slicePosition;
+            UpdateSlicePosition();
+        }
     }
 
     public void Apply()
@@ -115,10 +129,10 @@ public class VolumeRenderer : MonoBehaviour
         }
     }
 
-    public void SetVisibility(bool visible)
+    public void SetVolumeVisibility(bool visible)
     {
         Debug.Log("(UM_VolRend) Volume: " + name + " is now visible: " + visible);
-        GetComponent<Renderer>().enabled = visible;
+        _cubeGO.GetComponent<Renderer>().enabled = visible;
     }
 
     private int _nextOffset;
@@ -141,6 +155,16 @@ public class VolumeRenderer : MonoBehaviour
             Apply();
     }
 
+    public void SetSliceVisibility(bool visible)
+    {
+        _slicesActive = visible;
+
+        _coronalSliceGO.SetActive(_slicesActive);
+        _sagittalSliceGO.SetActive(_slicesActive);
+
+        UpdateVolumeSlicing();
+    }
+
     /// <summary>
     /// Shift the position of the sagittal and coronal slices to match the tip of the active probe
     /// </summary>
@@ -154,43 +178,47 @@ public class VolumeRenderer : MonoBehaviour
         Vector3[] newSagittalVerts = new Vector3[4];
         for (int i = 0; i < _coronalOrigWorldU.Length; i++)
         {
-            newCoronalVerts[i] = BrainAtlasManager.WorldU2WorldT(new Vector3(_coronalOrigWorldU[i].x, _coronalOrigWorldU[i].y, _slicePosition.z), false);
-            newSagittalVerts[i] = BrainAtlasManager.WorldU2WorldT(new Vector3(_slicePosition.x, _sagittalOrigWorldU[i].y, _sagittalOrigWorldU[i].z), false);
+            newCoronalVerts[i] = new Vector3(_coronalOrigWorldU[i].x, _coronalOrigWorldU[i].y, -_slicePosition.x);
+            newSagittalVerts[i] = new Vector3(_slicePosition.z, _sagittalOrigWorldU[i].y, _sagittalOrigWorldU[i].z);
         }
 
         _coronalSliceGO.GetComponent<MeshFilter>().mesh.vertices = newCoronalVerts;
         _sagittalSliceGO.GetComponent<MeshFilter>().mesh.vertices = newSagittalVerts;
 
-        // Use that coordinate to render the actual slice position
-        Vector3 dims = BrainAtlasManager.ActiveReferenceAtlas.Dimensions;
-
-        float apWorldmm = dims.x / 2f - _slicePosition.z;
-        float mlWorldmm = dims.y / 2f + _slicePosition.x;
-
-        _coronalMaterial.SetFloat("_SlicePosition", apWorldmm / dims.x);
-        _sagittalMaterial.SetFloat("_SlicePosition", mlWorldmm / dims.y);
+        _coronalMaterial.SetFloat("_SlicePercentage", 0.5f - _slicePosition.x);
+        _sagittalMaterial.SetFloat("_SlicePercentage", _slicePosition.z + 0.5f);
 
         UpdateVolumeSlicing();
     }
 
     private void UpdateVolumeSlicing()
     {
-        Vector3 dims = BrainAtlasManager.ActiveReferenceAtlas.Dimensions;
+        float min = -0.5f;
+        float max = 0.5f;
+        if (_slicesActive)
+        {
 
-        // camYBack means the camera is looking from the back
+            // camYBack means the camera is looking from the back
 
-        // the clipping goes from -0.5 to 0.5 on each dimension
-        if (camYBack)
-            // if we're looking from the back, we want to show the brain in the front
-            GetComponent<Renderer>().material.SetVector("APClip", new Vector2(-dims.x / 2f, _slicePosition.z));
+            // the clipping goes from -0.5 to 0.5 on each dimension
+            // _slicePosition goes from -0.5 to 0.5 on each dimension
+            if (camYBack)
+                // if we're looking from the back, we want to show the brain in the front
+                _cubeGO.GetComponent<Renderer>().material.SetVector("_APClip", new Vector2(min, _slicePosition.x));
+            else
+                _cubeGO.GetComponent<Renderer>().material.SetVector("_APClip", new Vector2(_slicePosition.x, max));
+
+            if (camXLeft)
+                // clip from mlPosition forward
+                _cubeGO.GetComponent<Renderer>().material.SetVector("_MLClip", new Vector2(_slicePosition.z, max));
+            else
+                _cubeGO.GetComponent<Renderer>().material.SetVector("_MLClip", new Vector2(min, _slicePosition.z));
+        }
         else
-            GetComponent<Renderer>().material.SetVector("APClip", new Vector2(_slicePosition.z, dims.x / 2f));
-
-        if (!camXLeft)
-            // clip from mlPosition forward
-            GetComponent<Renderer>().material.SetVector("MLClip", new Vector2(_slicePosition.x, dims.y / 2f));
-        else
-            GetComponent<Renderer>().material.SetVector("MLClip", new Vector2(-dims.y / 2f, _slicePosition.x));
+        {
+            _cubeGO.GetComponent<Renderer>().material.SetVector("_APClip", new Vector2(min, max));
+            _cubeGO.GetComponent<Renderer>().material.SetVector("_MLClip", new Vector2(min, max));
+        }
     }
 
     private bool camXLeft;

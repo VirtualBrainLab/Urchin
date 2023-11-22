@@ -51,7 +51,7 @@ namespace Urchin.Managers
 
             volRenderer.SetMetadata(volumeMeta.nCompressedBytes);
             volRenderer.SetColormap(volumeMeta.colormap);
-            volRenderer.SetVisibility(volumeMeta.visible);
+            volRenderer.SetVolumeVisibility(volumeMeta.visible);
         }
 
         public void SetVisibility(List<object> data)
@@ -59,7 +59,7 @@ namespace Urchin.Managers
             string volumeName = (string)data[0];
             bool visibility = (bool)data[1];
 
-            _volumes[volumeName].SetVisibility(visibility);
+            _volumes[volumeName].SetVolumeVisibility(visibility);
         }
 
         public void Delete(string name)
@@ -99,6 +99,30 @@ namespace Urchin.Managers
             foreach (VolumeRenderer vr in _volumes.Values)
             {
                 vr.UpdateCameraPosition();
+            }
+        }
+
+        public void UpdateCoronalSlicePos(float percentage)
+        {
+            foreach (VolumeRenderer vr in _volumes.Values)
+            {
+                vr._slicePosition.x = percentage - 0.5f;
+            }
+        }
+
+        public void UpdateSagittalSlicePos(float percentage)
+        {
+            foreach (VolumeRenderer vr in _volumes.Values)
+            {
+                vr._slicePosition.z = percentage - 0.5f;
+            }
+        }
+
+        public void Toggle2DSlices(bool visible)
+        {
+            foreach (VolumeRenderer vr in _volumes.Values)
+            {
+                vr.SetSliceVisibility(visible);
             }
         }
     }

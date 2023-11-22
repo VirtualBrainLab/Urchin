@@ -1449,7 +1449,7 @@
     "m_Hidden": false,
     "m_ShaderOutputName": "X",
     "m_StageCapability": 3,
-    "m_Value": 520.0,
+    "m_Value": 528.0,
     "m_DefaultValue": 0.0,
     "m_Labels": []
 }
@@ -4956,7 +4956,7 @@
     "m_Hidden": false,
     "m_ShaderOutputName": "Z",
     "m_StageCapability": 3,
-    "m_Value": 456.0,
+    "m_Value": 320.0,
     "m_DefaultValue": 0.0,
     "m_Labels": [
         "Z"
@@ -5520,7 +5520,7 @@
     "m_Hidden": false,
     "m_ShaderOutputName": "Y",
     "m_StageCapability": 3,
-    "m_Value": 320.0,
+    "m_Value": 456.0,
     "m_DefaultValue": 0.0,
     "m_Labels": [
         "Y"
