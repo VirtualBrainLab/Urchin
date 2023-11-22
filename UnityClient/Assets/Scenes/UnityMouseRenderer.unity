@@ -1819,6 +1819,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3393775226113162775, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
+      propertyPath: RotationChangedEvent.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3393775226113162775, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
+      propertyPath: RotationChangedEvent.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3393775226113162775, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
+      propertyPath: RotationChangedEvent.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: Urchin.Managers.VolumeManager, urchin.managers
+      objectReference: {fileID: 0}
+    - target: {fileID: 3393775226113162775, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
+      propertyPath: RotationChangedEvent.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 3393775226405738686, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
       propertyPath: near clip plane
       value: -50

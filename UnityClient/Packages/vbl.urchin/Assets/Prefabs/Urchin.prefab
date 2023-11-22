@@ -5566,8 +5566,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1585022055348087818}
     m_Modifications:
+    - target: {fileID: 5697262124586181149, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
+      propertyPath: m_TagString
+      value: MainCamera
+      objectReference: {fileID: 0}
     - target: {fileID: 5697262125096797361, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
       propertyPath: RotationChangedEvent.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697262125096797361, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
+      propertyPath: RotationChangedEvent.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5697262125096797361, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
@@ -5575,7 +5583,15 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1424787918614360421}
     - target: {fileID: 5697262125096797361, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
+      propertyPath: RotationChangedEvent.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 2555904598708727173}
+    - target: {fileID: 5697262125096797361, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
       propertyPath: RotationChangedEvent.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697262125096797361, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
+      propertyPath: RotationChangedEvent.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5697262125096797361, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
@@ -5583,11 +5599,23 @@ PrefabInstance:
       value: UpdateRotation
       objectReference: {fileID: 0}
     - target: {fileID: 5697262125096797361, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
+      propertyPath: RotationChangedEvent.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: UpdateCameraRotation
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697262125096797361, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
       propertyPath: RotationChangedEvent.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: Urchin.Cameras.CameraMiniController, urchin.cameras
       objectReference: {fileID: 0}
     - target: {fileID: 5697262125096797361, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
+      propertyPath: RotationChangedEvent.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: Urchin.Managers.VolumeManager, urchin.managers
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697262125096797361, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
       propertyPath: RotationChangedEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697262125096797361, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
+      propertyPath: RotationChangedEvent.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 5697262125096797362, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
@@ -5613,6 +5641,10 @@ PrefabInstance:
     - target: {fileID: 5697262126407426464, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
       propertyPath: near clip plane
       value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697262126407426468, guid: df654a8b58b5be543a801b0bcda6f0de, type: 3}
+      propertyPath: m_TagString
+      value: MainCamera
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

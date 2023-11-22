@@ -23,7 +23,6 @@ namespace Urchin.Managers
             _volumes = new();
         }
 
-
         private void Start()
         {
             Client_SocketIO.SetVolumeData += SetData;
@@ -94,5 +93,13 @@ namespace Urchin.Managers
             _volumes.Clear();
         }
         #endregion
+
+        public void UpdateCameraRotation()
+        {
+            foreach (VolumeRenderer vr in _volumes.Values)
+            {
+                vr.UpdateCameraPosition();
+            }
+        }
     }
 }
