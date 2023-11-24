@@ -81,6 +81,9 @@ io.on("connection", function (socket) {
   socket.on('CameraImg', function(data) {
     emitToSender(socket.id, 'CameraImg', data);
   });
+  socket.on('VolumeClick', function(data) {
+    emitToSender(socket.id, 'VolumeClick', data);
+  });
   
   // Receiver events
   socket.on('log', function(data) {

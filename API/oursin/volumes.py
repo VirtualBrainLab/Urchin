@@ -10,11 +10,25 @@ counter = 0
 
 CHUNK_LIMIT = 1000000
 
+def volume_click(data):
+	print(data)
+
 class Volume:
 	"""Volumetric dataset represented in a compressed format by using a colormap to translate
 	uint8 x/y/z data into full RGB color.
+
+	Volumes should be created in (AP, ML, DV)
 	"""
 	def __init__(self, volume_data, colormap = None):
+		"""_summary_
+
+		Parameters
+		----------
+		volume_data : _type_
+			_description_
+		colormap : _type_, optional
+			_description_, by default None
+		"""
 		global counter
 		self.id = f'volume{counter}'
 		counter += 1

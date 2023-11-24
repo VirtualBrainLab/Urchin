@@ -4,6 +4,7 @@ import uuid
 import asyncio
 
 from . import camera
+from . import volumes
 
 class bcolors:
     WARNING = '\033[93m'
@@ -42,6 +43,10 @@ def receive_camera_img_meta(data):
 @sio.on('CameraImg')
 def receive_camera_img(data):
 	camera.on_camera_img(data)
+
+@sio.on('VolumeClick')
+def receive_volume_click(data):
+	volumes.volume_click(data)
 	
 # Helper functions
 def connected():
