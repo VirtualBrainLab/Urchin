@@ -18,6 +18,7 @@ namespace BrainAtlas.Cameras
 
         void Update()
         {
+            // Warning: this code requires the camera to be in screen space - camera mode, not overlay!!
             if (Input.GetMouseButtonDown(0))
             {
                 Vector2 localMousePosition;

@@ -121,3 +121,9 @@ def sanitize_side(acronym, sided):
         return f'{acronym}-rh'
     else:
         raise Exception(f'Sided enum {sided} not properly defined, should be full/left/right')
+    
+def rgb_to_hex(rgb):
+    return '#%02x%02x%02x' % rgb
+    
+def rgba_to_hex(rgba):
+    return '#%02x%02x%02x%02x' % rgba

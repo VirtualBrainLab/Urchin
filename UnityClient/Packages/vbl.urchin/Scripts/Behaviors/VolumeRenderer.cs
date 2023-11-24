@@ -83,7 +83,7 @@ public class VolumeRenderer : MonoBehaviour
 
     private void Start()
     {
-        SetSliceVisibility(true);
+        SetSliceVisibility(false);
     }
 
     private void Update()
@@ -109,9 +109,9 @@ public class VolumeRenderer : MonoBehaviour
 
             using (BinaryReader reader = new BinaryReader(decompressedStream))
             for (int x = 0; x < width; x++)
-                for (int z = 0; z < depth; z++)
-                    for (int y = 0; y < height; y++)
-                            _volumeTexture.SetPixel(x, y, z, _colormap[reader.ReadByte()]);
+                for (int y = 0; y < height; y++)
+                    for (int z = 0; z < depth; z++)
+                        _volumeTexture.SetPixel(x, y, z, _colormap[reader.ReadByte()]);
         }
 
         _volumeTexture.Apply();
@@ -185,7 +185,7 @@ public class VolumeRenderer : MonoBehaviour
         _coronalSliceGO.GetComponent<MeshFilter>().mesh.vertices = newCoronalVerts;
         _sagittalSliceGO.GetComponent<MeshFilter>().mesh.vertices = newSagittalVerts;
 
-        _coronalMaterial.SetFloat("_SlicePercentage", 0.5f - _slicePosition.x);
+        _coronalMaterial.SetFloat("_SlicePercentage", _slicePosition.x + 0.5f);
         _sagittalMaterial.SetFloat("_SlicePercentage", _slicePosition.z + 0.5f);
 
         UpdateVolumeSlicing();
