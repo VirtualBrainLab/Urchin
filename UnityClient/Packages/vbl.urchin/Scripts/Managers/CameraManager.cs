@@ -140,7 +140,7 @@ namespace Urchin.Managers
                     _cameras[kvp.Key].SetCameraMode(kvp.Value);
                 }
 
-                if (kvp.Key == "main")
+                if (kvp.Key == "CameraMain")
                 {
                     _uiCanvas.worldCamera = _cameras[kvp.Key].ActiveCamera;
                 }

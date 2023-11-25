@@ -5,13 +5,54 @@ from . import utils
 import numpy as np
 import zlib
 import json
+import csv
+import ast
 
 counter = 0
 
 CHUNK_LIMIT = 1000000
 
-def volume_click(data):
-	print(data)
+click_list = []
+verbose = False
+
+def _volume_click(data):
+	"""Internal callback function
+	"""
+	click_pos = json.loads(data)
+	if verbose:
+		print(click_pos)
+	
+	click_list.append(click_pos)
+
+def clear_clicks():
+	"""Clear the volumes click list
+	"""
+	global click_list
+	click_list = []
+
+def save_clicks(fpath):
+	"""Save the current click list to a CSV file.
+
+	Use `urchin.volumes.clear_clicks()` before starting your click sequence.
+
+	Parameters
+	----------
+	fpath : string
+		Relative filepath
+	"""
+	global click_list
+	# Extract headers and data
+	headers = ['ap', 'ml', 'dv']
+	data = [[entry[header] for header in headers] for entry in click_list]
+	
+	with open(fpath, mode='w', newline='') as file:
+		writer = csv.writer(file)
+		
+		# Write headers
+		writer.writerow(headers)
+		
+		# Write data
+		writer.writerows(data)
 
 class Volume:
 	"""Volumetric dataset represented in a compressed format by using a colormap to translate

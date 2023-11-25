@@ -52,6 +52,7 @@ namespace Urchin.Managers
             volRenderer.SetMetadata(volumeMeta.nCompressedBytes);
             volRenderer.SetColormap(volumeMeta.colormap);
             volRenderer.SetVolumeVisibility(volumeMeta.visible);
+            volRenderer.UpdateSlicePosition();
         }
 
         public void SetVisibility(List<object> data)

@@ -46,7 +46,7 @@ def receive_camera_img(data):
 
 @sio.on('VolumeClick')
 def receive_volume_click(data):
-	volumes.volume_click(data)
+	volumes._volume_click(data)
 	
 # Helper functions
 def connected():

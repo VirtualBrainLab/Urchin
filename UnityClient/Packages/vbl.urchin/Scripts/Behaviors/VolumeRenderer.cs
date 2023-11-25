@@ -11,14 +11,19 @@ public class VolumeRenderer : MonoBehaviour
 
     [SerializeField] GameObject _cubeGO;
     [SerializeField] Transform _sliceParentT;
-    [SerializeField] GameObject _coronalSliceGO;
-    [SerializeField] GameObject _sagittalSliceGO;
+    [SerializeField] GameObject _coronalSliceFGO;
+    [SerializeField] GameObject _coronalSliceBGO;
+    [SerializeField] GameObject _sagittalSliceFGO;
+    [SerializeField] GameObject _sagittalSliceBGO;
 
-    private Material _coronalMaterial;
-    private Material _sagittalMaterial;
+    private Material _coronalMaterialF;
+    private Material _sagittalMaterialF;
+    private Material _coronalMaterialB;
+    private Material _sagittalMaterialB;
     private Vector3[] _coronalOrigWorldU;
     private Vector3[] _sagittalOrigWorldU;
     private bool _slicesActive;
+    private int[] _backOrder = { 1, 0, 3, 2 };
 
     private Vector3 _prevSlicePosition;
     public Vector3 _slicePosition;
@@ -37,8 +42,10 @@ public class VolumeRenderer : MonoBehaviour
             _colormap[i] = Color.black;
         _colormap[255] = new Color(0f, 0f, 0f, 0f);
 
-        _coronalMaterial = _coronalSliceGO.GetComponent<Renderer>().material;
-        _sagittalMaterial = _sagittalSliceGO.GetComponent<Renderer>().material;
+        _coronalMaterialF = _coronalSliceFGO.GetComponent<Renderer>().material;
+        _sagittalMaterialF = _sagittalSliceFGO.GetComponent<Renderer>().material;
+        _coronalMaterialB = _coronalSliceBGO.GetComponent<Renderer>().material;
+        _sagittalMaterialB = _sagittalSliceBGO.GetComponent<Renderer>().material;
 
         Vector3 dims = BrainAtlasManager.ActiveReferenceAtlas.Dimensions;
         Vector3 dimsWorld = BrainAtlasManager.ActiveReferenceAtlas.Atlas2World_Vector(dims);
@@ -52,8 +59,10 @@ public class VolumeRenderer : MonoBehaviour
         _volumeTexture.wrapMode = TextureWrapMode.Clamp;
 
         _cubeGO.GetComponent<Renderer>().material.mainTexture = _volumeTexture;
-        _coronalMaterial.SetTexture("_Volume", _volumeTexture);
-        _sagittalMaterial.SetTexture("_Volume", _volumeTexture);
+        _coronalMaterialF.SetTexture("_Volume", _volumeTexture);
+        _sagittalMaterialF.SetTexture("_Volume", _volumeTexture);
+        _coronalMaterialB.SetTexture("_Volume", _volumeTexture);
+        _sagittalMaterialB.SetTexture("_Volume", _volumeTexture);
         _volumeTexture.Apply();
 
         // x = ml
@@ -159,8 +168,10 @@ public class VolumeRenderer : MonoBehaviour
     {
         _slicesActive = visible;
 
-        _coronalSliceGO.SetActive(_slicesActive);
-        _sagittalSliceGO.SetActive(_slicesActive);
+        _coronalSliceFGO.SetActive(_slicesActive);
+        _sagittalSliceFGO.SetActive(_slicesActive);
+        _coronalSliceBGO.SetActive(_slicesActive);
+        _sagittalSliceBGO.SetActive(_slicesActive);
 
         UpdateVolumeSlicing();
     }
@@ -179,14 +190,30 @@ public class VolumeRenderer : MonoBehaviour
         for (int i = 0; i < _coronalOrigWorldU.Length; i++)
         {
             newCoronalVerts[i] = new Vector3(_coronalOrigWorldU[i].x, _coronalOrigWorldU[i].y, -_slicePosition.x);
-            newSagittalVerts[i] = new Vector3(_slicePosition.z, _sagittalOrigWorldU[i].y, _sagittalOrigWorldU[i].z);
+            newSagittalVerts[i] = new Vector3(_slicePosition.y, _sagittalOrigWorldU[i].y, _sagittalOrigWorldU[i].z);
+        }
+        Vector3[] newCoronalBack = new Vector3[4];
+        Vector3[] newSagittalBack = new Vector3[4];
+        for (int i = 0; i < 4; i++)
+        {
+            newCoronalBack[i] = newCoronalVerts[_backOrder[i]];
+            newSagittalBack[i] = newSagittalVerts[_backOrder[i]];
         }
 
-        _coronalSliceGO.GetComponent<MeshFilter>().mesh.vertices = newCoronalVerts;
-        _sagittalSliceGO.GetComponent<MeshFilter>().mesh.vertices = newSagittalVerts;
+        _coronalSliceFGO.GetComponent<MeshFilter>().mesh.vertices = newCoronalVerts;
+        _coronalSliceFGO.GetComponent<MeshCollider>().sharedMesh = _coronalSliceFGO.GetComponent<MeshFilter>().mesh;
+        _coronalSliceBGO.GetComponent<MeshFilter>().mesh.vertices = newCoronalBack;
+        _coronalSliceBGO.GetComponent<MeshCollider>().sharedMesh = _coronalSliceBGO.GetComponent<MeshFilter>().mesh;
 
-        _coronalMaterial.SetFloat("_SlicePercentage", _slicePosition.x + 0.5f);
-        _sagittalMaterial.SetFloat("_SlicePercentage", _slicePosition.z + 0.5f);
+        _sagittalSliceFGO.GetComponent<MeshFilter>().mesh.vertices = newSagittalVerts;
+        _sagittalSliceFGO.GetComponent<MeshCollider>().sharedMesh = _sagittalSliceFGO.GetComponent<MeshFilter>().mesh;
+        _sagittalSliceBGO.GetComponent<MeshFilter>().mesh.vertices = newSagittalBack;
+        _sagittalSliceBGO.GetComponent<MeshCollider>().sharedMesh = _sagittalSliceBGO.GetComponent<MeshFilter>().mesh;
+
+        _coronalMaterialF.SetFloat("_SlicePercentage", _slicePosition.x + 0.5f);
+        _sagittalMaterialF.SetFloat("_SlicePercentage", _slicePosition.y + 0.5f);
+        _coronalMaterialB.SetFloat("_SlicePercentage", _slicePosition.x + 0.5f);
+        _sagittalMaterialB.SetFloat("_SlicePercentage", _slicePosition.y + 0.5f);
 
         UpdateVolumeSlicing();
     }
@@ -210,9 +237,9 @@ public class VolumeRenderer : MonoBehaviour
 
             if (camXLeft)
                 // clip from mlPosition forward
-                _cubeGO.GetComponent<Renderer>().material.SetVector("_MLClip", new Vector2(_slicePosition.z, max));
+                _cubeGO.GetComponent<Renderer>().material.SetVector("_MLClip", new Vector2(_slicePosition.y, max));
             else
-                _cubeGO.GetComponent<Renderer>().material.SetVector("_MLClip", new Vector2(min, _slicePosition.z));
+                _cubeGO.GetComponent<Renderer>().material.SetVector("_MLClip", new Vector2(min, _slicePosition.y));
         }
         else
         {

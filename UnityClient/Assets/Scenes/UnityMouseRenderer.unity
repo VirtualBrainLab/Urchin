@@ -1704,6 +1704,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 756099984625368948, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
+      propertyPath: _uiCanvas
+      value: 
+      objectReference: {fileID: 858013925}
+    - target: {fileID: 756099984625368948, guid: a0c57925ee59dae4ebf1f78ba70837a6, type: 3}
       propertyPath: _cameraUIGOs.Array.size
       value: 4
       objectReference: {fileID: 0}
@@ -10622,6 +10626,10 @@ PrefabInstance:
       value: -256
       objectReference: {fileID: 0}
     - target: {fileID: 1179077492766071444, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_Value
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1179077492766071444, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1512015821}
@@ -11076,6 +11084,10 @@ PrefabInstance:
     - target: {fileID: 8148791433510269611, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8745640924072365970, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
+      propertyPath: m_Value
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8745640924072365970, guid: 797f30df999d646458e9984856b9b1f7, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
