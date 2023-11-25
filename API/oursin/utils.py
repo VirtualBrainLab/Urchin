@@ -11,35 +11,33 @@ class Side(Enum):
 ### SANITIZING FUNCTIONS
 
 def sanitize_vector3(vector):
-  """Guarantee that a vector is a vector 3, or raise an exception
+    """Guarantee that a vector is a vector 3, or raise an exception
 
-  Parameters
-  ----------
-  input : any
-      arbitrary input parameter
+    Parameters
+    ----------
+    input : any
+        arbitrary input parameter
 
-  Returns
-  -------
-  list
-      vector3 as a list [x,y,z]
+    Returns
+    -------
+    list
+        vector3 as a list [x,y,z]
 
-  Raises
-  ------
-  Exception
-      Failed to coerce input to a length 3 list
-  """
-    #if statement to check type and then convert to vector3
-  if(len(vector)!=3):
-    raise Exception(f'Expected a vector3 but received length {len(vector)}.')
-  
-  if isinstance(vector, list):
-      return vector
-  
-  if isinstance(vector, tuple) or isinstance(vector, np.ndarray):
-      return list(vector)
-  else:
-      raise Exception('Vector3 failed to be coerced properly')
+    Raises
+    ------
+    Exception
+        Failed to coerce input to a length 3 list
+    """
+    try:
+        vector_list = list(map(float, vector))
+    except (TypeError, ValueError):
+        raise ValueError("Input vector must be convertible to a list of three floats.")
 
+    # Check if the length is exactly three
+    if len(vector_list) != 3:
+        raise ValueError("Input vector must have exactly three elements.")
+
+    return vector_list
 
 
 def sanitize_color(color):
