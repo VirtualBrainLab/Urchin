@@ -280,7 +280,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "477c9638d4ed88d96b39bc9a373a9731de7dc154"
+      "hash": "15889407093a40d95c1e746f20e06c7d4f78957d"
     },
     "vbl.urchin": {
       "version": "file:vbl.urchin",

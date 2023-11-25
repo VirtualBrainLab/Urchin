@@ -4,6 +4,19 @@ from pathlib import Path
 
 import json
 
+class CustomAtlas:
+    def __init__(self, atlas_name, atlas_dimensions, atlas_resolution):
+        self.atlas_name = atlas_name
+
+        data = {}
+        data['name'] = atlas_name
+        data['dimensions'] = utils.sanitize_vector3(atlas_dimensions)
+        data['resolution'] = utils.sanitize_vector3(atlas_resolution)
+
+        print(data)
+
+        client.sio.emit('CustomAtlas', json.dumps(data))
+
 class Atlas:
     def __init__(self, atlas_name):
         # load the ontology structure file

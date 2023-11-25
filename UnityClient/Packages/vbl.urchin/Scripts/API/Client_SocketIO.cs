@@ -78,6 +78,7 @@ namespace Urchin.API
 
         #region Socket setup by action group
         public static Action<string> LoadAtlas;
+        public static Action<CustomAtlasData> CustomAtlas; 
         public static Action<AreaData> SetAreaVisibility;
         public static Action<Dictionary<string, string>> SetAreaColors;
         public static Action<Dictionary<string, float>> SetAreaIntensity;
@@ -92,6 +93,7 @@ namespace Urchin.API
         {
             // CCF Areas
             manager.Socket.On<string>("LoadAtlas", x => LoadAtlas.Invoke(x));
+            manager.Socket.On<string>("CustomAtlas", x => CustomAtlas.Invoke(JsonUtility.FromJson<CustomAtlasData>(x)));
             manager.Socket.On<string>("SetAreaVisibility", x => SetAreaVisibility.Invoke(JsonUtility.FromJson<AreaData>(x)));
             manager.Socket.On<Dictionary<string, string>>("SetAreaColors", x => SetAreaColors.Invoke(x));
             manager.Socket.On<Dictionary<string, float>>("SetAreaIntensity", x => SetAreaIntensity.Invoke(x));

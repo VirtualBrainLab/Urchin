@@ -4,6 +4,7 @@ using UnityEngine;
 using Urchin.Utils;
 using System.IO;
 using BestHTTP.Decompression.Zlib;
+using System.Collections.Generic;
 
 public class VolumeRenderer : MonoBehaviour
 {
@@ -34,6 +35,10 @@ public class VolumeRenderer : MonoBehaviour
     private int width;
     private int height;
     private int depth;
+
+    #region Clicks
+    private List<Vector3> _clicks;
+    #endregion
 
     private void Awake()
     {

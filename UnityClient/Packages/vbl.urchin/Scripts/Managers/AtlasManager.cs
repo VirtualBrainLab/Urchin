@@ -54,6 +54,8 @@ namespace Urchin.Managers
             Client_SocketIO.ClearAreas += ClearAreas;
 
             Client_SocketIO.LoadAtlas += LoadAtlas;
+            Client_SocketIO.CustomAtlas += CustomAtlas;
+
             Client_SocketIO.SetAreaVisibility += SetAreaVisibility;
             Client_SocketIO.SetAreaColors += SetAreaColors;
             Client_SocketIO.SetAreaIntensity += SetAreaIntensity;
@@ -87,6 +89,13 @@ namespace Urchin.Managers
                     Client_SocketIO.LogError($"Atlas {atlasName} does not exist, or is not available on this platform.");
                     break;
             }
+        }
+
+        public void CustomAtlas(CustomAtlasData data)
+        {
+            Vector3 dims = new Vector3(data.dimensions[0], data.dimensions[1], data.dimensions[2]);
+            Vector3 res = new Vector3(data.resolution[0], data.resolution[1], data.resolution[2]);
+            BrainAtlasManager.CustomAtlas(data.name, dims, res);
         }
 
         public void SetAreaVisibility(AreaData data)

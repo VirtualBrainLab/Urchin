@@ -11,6 +11,7 @@ public class BrainCameraController : MonoBehaviour
     [SerializeField] private Camera _mainCamera;
     [SerializeField] private GameObject _mainCameraRotator;
     [SerializeField] private Transform _mainCameraTargetT;
+    [SerializeField] private Transform _zoomT;
     #endregion
 
     #region Properties
@@ -101,13 +102,14 @@ public class BrainCameraController : MonoBehaviour
         // Check the scroll wheel and deal with the field of view
         if (!EventSystem.current.IsPointerOverGameObject() && !thisFrameDown)
         {
-            float fov = GetZoom();
+            float scroll = Input.GetAxis("Mouse ScrollWheel");
+            if (scroll != 0)
+            {
+                Vector3 localZoom = _zoomT.localPosition;
+                localZoom.z *= 1 - scroll/10f;
+                _zoomT.localPosition = localZoom;
+            }
 
-            float scroll = -Input.GetAxis("Mouse ScrollWheel");
-            fov += (_mainCamera.orthographic ? orthoDelta : fovDelta) * scroll;
-            fov = Mathf.Clamp(fov, minFoV, maxFoV);
-
-            SetZoom(fov);
         }
 
         if (autoRotate)
