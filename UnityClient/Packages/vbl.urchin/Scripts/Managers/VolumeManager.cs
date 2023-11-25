@@ -115,7 +115,7 @@ namespace Urchin.Managers
         {
             foreach (VolumeRenderer vr in _volumes.Values)
             {
-                vr._slicePosition.z = percentage - 0.5f;
+                vr._slicePosition.y = percentage - 0.5f;
             }
         }
 
