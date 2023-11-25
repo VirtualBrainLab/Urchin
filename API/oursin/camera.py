@@ -6,7 +6,6 @@ from . import utils
 import PIL
 from PIL import Image
 
-import cv2
 import numpy as np
 
 import io
@@ -350,6 +349,11 @@ class Camera:
 		--------
 		>>> await urchin.camera.main.capture_video('output.mp4', start_rotation=[22.5, 22.5, 225], end_rotation=[22.5, 22.5, 0])
 		"""
+		try:
+			import cv2
+		except:
+			raise Exception('Please install cv2 by running `pip install opencv-python` in your terminal to use the Video features')
+		
 		fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 		out = cv2.VideoWriter(file_name, fourcc, frame_rate, size)
 
