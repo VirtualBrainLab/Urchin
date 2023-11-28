@@ -6,7 +6,6 @@ import numpy as np
 import zlib
 import json
 import csv
-import ast
 
 counter = 0
 
