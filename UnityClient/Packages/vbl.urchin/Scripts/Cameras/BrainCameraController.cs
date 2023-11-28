@@ -51,6 +51,7 @@ public class BrainCameraController : MonoBehaviour
     private Quaternion _initialRotation;
     public float rotSpeed = 200.0f;
 
+    private float zoom;
     private Vector3 _pitchYawRoll;
 
     public Vector3 PitchYawRoll { get { return _pitchYawRoll; } }
@@ -106,7 +107,12 @@ public class BrainCameraController : MonoBehaviour
             if (scroll != 0)
             {
                 Vector3 localZoom = _zoomT.localPosition;
-                localZoom.z *= 1 - scroll/10f;
+                zoom = localZoom.z * (1 - scroll / 10f);
+
+                if (_mainCamera.orthographic)
+                    _mainCamera.orthographicSize = -zoom/2f;
+
+                localZoom.z = zoom;
                 _zoomT.localPosition = localZoom;
             }
 
