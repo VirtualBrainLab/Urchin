@@ -1,3 +1,4 @@
+using BrainAtlas;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -43,16 +44,17 @@ namespace Urchin.Managers
             Client_SocketIO.ClearMeshes += Clear;
         }
 
-        public void CreateMesh(List<string> meshes) //instantiates cube as default
+        public void CreateMesh(List<string> meshIDs) //instantiates cube as default
         {
-            foreach (string mesh in meshes)
+            foreach (string meshID in meshIDs)
             {
-                if (_primMeshRenderers.ContainsKey(mesh))
-                    Debug.LogWarning($"Mesh with id = {mesh} already exists.");
+                if (_primMeshRenderers.ContainsKey(meshID))
+                    Debug.LogWarning($"Mesh with id = {meshID} already exists.");
 
                 GameObject tempObject = Instantiate(_primitivePrefabGO, _primitiveMeshParentT);
-                tempObject.name = $"primMesh_{mesh}";
-                _primMeshRenderers.Add(mesh, tempObject.GetComponent<MeshRenderer>());
+                tempObject.GetComponent<MeshBehavior>().SetID(meshID);
+                tempObject.name = $"primMesh_{meshID}";
+                _primMeshRenderers.Add(meshID, tempObject.GetComponent<MeshRenderer>());
                 tempObject.GetComponent<MeshRenderer>().material = _materialDictionary["default"];
             }
         }
@@ -85,7 +87,7 @@ namespace Urchin.Managers
 
                 MeshRenderer tempMesh = _primMeshRenderers[meshName];
 
-                tempMesh.transform.localPosition = new Vector3(-position[0] / 1000f, -position[2] / 1000f, position[1] / 1000f);
+                tempMesh.transform.localPosition = BrainAtlasManager.ActiveReferenceAtlas.Atlas2World(position);
             }
         }
 

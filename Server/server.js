@@ -29,7 +29,7 @@ Socket2Type = {};
 
 reserved_messages = ['connection','disconnect','ID','CameraImgMeta','CameraImg',
                       'log','log-warning','log-error',
-                    'VolumeClick']
+                    'VolumeClick', 'NeuronCallback']
 
 io.on("connection", function (socket) {
   console.log("Client connected with ID: " + socket.id);
@@ -85,6 +85,9 @@ io.on("connection", function (socket) {
   });
   socket.on('VolumeClick', function(data) {
     emitToSender(socket.id, 'VolumeClick', data);
+  });
+  socket.on('NeuronCallback', function(data) {
+    emitToSender(socket.id, 'NeuronCallback', data);
   });
   
   // Receiver events

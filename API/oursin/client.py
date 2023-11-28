@@ -5,6 +5,7 @@ import asyncio
 
 from . import camera
 from . import volumes
+from . import meshes
 
 class bcolors:
     WARNING = '\033[93m'
@@ -47,6 +48,10 @@ def receive_camera_img(data):
 @sio.on('VolumeClick')
 def receive_volume_click(data):
 	volumes._volume_click(data)
+
+@sio.on('NeuronCallback')
+def receive_neuron_callback(data):
+	meshes._neuron_callback(data)
 	
 # Helper functions
 def connected():

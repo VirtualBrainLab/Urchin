@@ -4,12 +4,34 @@ from . import client
 import warnings
 from . import utils
 
+callback = None
+
+def _neuron_callback(callback_data):
+  if callback is not None:
+    callback(callback_data)
+
   ## Primitive Mesh Renderer
 counter = 0
 class Mesh:
-  #Run everytime an object is created, sets the fields to defaults if one is not given, and sends the info to Unity
-  #id = int index counter
+  """Mesh Object in Unity
+  """
+
   def __init__(self,position= [0.0,0.0,0.0], scale= [1,1,1], color= '#FFFFFF', material = 'default'):
+    """Create a mesh object
+
+    Note: this function should be avoided, use `urchin.meshes.create()`
+
+    Parameters
+    ----------
+    position : list, optional
+        position in ap/ml/dv Atlas coordinates, by default [0.0,0.0,0.0]
+    scale : list, optional
+        neuron scale, by default [1,1,1]
+    color : str, optional
+        by default '#FFFFFF'
+    material : str, optional
+        by default 'default'
+    """
     self.create()
 
     
@@ -44,8 +66,8 @@ class Mesh:
 	  >>> cube_obj = urchin.primitives.Primitive()
     """
     global counter
+    self.id = str(counter)
     counter +=1
-    self.id = 'prim' + str(counter)
     client.sio.emit('CreateMesh', [self.id])
     self.in_unity = True
   
@@ -80,9 +102,8 @@ class Mesh:
     if self.in_unity == False:
       raise Exception("Object does not exist in Unity, call create method first.")
     
-    position = utils.sanitize_vector3(position)
-    self.position = position
-    client.sio.emit('SetPosition', {self.id: position})
+    self.position = utils.sanitize_vector3([position[0]/1000, position[1]/1000, position[2]/1000])
+    client.sio.emit('SetPosition', {self.id: self.position})
   
   def set_scale(self, scale):
     """Set the scale of mesh renderer
@@ -201,7 +222,8 @@ def set_positions(meshes_list, positions_list):
   for i in range(len(meshes_list)):
     mesh = meshes_list[i]
     if mesh.in_unity:
-      mesh_pos[mesh.id] = utils.sanitize_vector3(positions_list[i])
+      pos = [positions_list[i][0]/1000, positions_list[i][1]/1000, positions_list[i][2]/1000]
+      mesh_pos[mesh.id] = utils.sanitize_vector3(pos)
     else:
       warnings.warn(f"Object with id {mesh.id} does not exist. Please create object {mesh.id}.")
 
