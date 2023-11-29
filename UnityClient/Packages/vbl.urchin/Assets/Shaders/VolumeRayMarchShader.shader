@@ -23,7 +23,7 @@ Shader "Unlit/VolumeRayMarchShader"
             #include "UnityCG.cginc"
 
             // Maximum amount of raymarching samples
-            #define MAX_STEP_COUNT 256
+            #define MAX_STEP_COUNT 128
 
             // Allowed floating point inaccuracy
             #define EPSILON 0.00001f
@@ -95,7 +95,11 @@ Shader "Unlit/VolumeRayMarchShader"
                     // Accumulate color only within unit cube bounds
                     if(max(abs(samplePosition.x), max(abs(samplePosition.y), abs(samplePosition.z))) < 0.5f + EPSILON)
                     {
-                        float4 sampledColor = tex3D(_MainTex, samplePosition + float3(0.5f, 0.5f, 0.5f));
+                        // Calculate gradients for texture sampling
+                        float3 dx = ddx(samplePosition + float3(0.5f, 0.5f, 0.5f));
+                        float3 dy = ddy(samplePosition + float3(0.5f, 0.5f, 0.5f));
+
+                        float4 sampledColor = tex3Dgrad(_MainTex, samplePosition + float3(0.5f, 0.5f, 0.5f), dx, dy);
                         sampledColor.a *= _Alpha;
                         color = BlendUnder(color, sampledColor);
                         samplePosition += rayDirection * _StepSize;
