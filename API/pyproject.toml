@@ -22,7 +22,7 @@ include = ["atlas/data/*.json"]
 python = ">=3.8, <4.0"
 python-socketio = { version = ">=5.8, <5.11", extras = ["client"] }
 numpy = ">=1.23.3, <1.27.0"
-Pillow = ">=9.5, <10.2"
+Pillow = ">=9.5,<10.3"
 
 [tool.poetry.scripts]
 
