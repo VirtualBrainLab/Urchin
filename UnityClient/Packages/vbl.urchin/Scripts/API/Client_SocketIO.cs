@@ -71,6 +71,7 @@ namespace Urchin.API
             Start_LineRenderer();
             Start_PrimitiveMeshRenderer();
             Start_FOV();
+            Start_CustomMesh();
 
             // Misc
             manager.Socket.On<string>("Clear", Clear);
@@ -261,6 +262,16 @@ namespace Urchin.API
             manager.Socket.On<Dictionary<string, bool>>("SetFOVVisibility", x => SetFOVVisibility.Invoke(x));
         }
 
+        public static Action<CustomMeshData> CustomMeshCreate;
+        public static Action<CustomMeshDestroy> CustomMeshDestroy;
+        public static Action<CustomMeshPosition> CustomMeshPosition;
+
+        private void Start_CustomMesh()
+        {
+            manager.Socket.On<string>("CustomMeshCreate", x => CustomMeshCreate.Invoke(JsonUtility.FromJson<CustomMeshData>(x)));
+            manager.Socket.On<string>("CustomMeshDestroy", x => CustomMeshDestroy.Invoke(JsonUtility.FromJson<CustomMeshDestroy>(x)));
+            manager.Socket.On<string>("CustomMeshPosition", x => CustomMeshPosition.Invoke(JsonUtility.FromJson<CustomMeshPosition>(x)));
+        }
 
         #endregion
 
@@ -273,8 +284,9 @@ namespace Urchin.API
         public static Action ClearParticles;
         public static Action ClearMeshes;
         public static Action ClearFOV;
+        public static Action ClearCustomMeshes;
         public static List<Action> ClearAll = new List<Action> { ClearProbes, ClearAreas, ClearVolumes,
-            ClearText, ClearParticles, ClearMeshes, ClearFOV};
+            ClearText, ClearParticles, ClearMeshes, ClearFOV, ClearCustomMeshes};
         private void Clear(string val)
         {
             switch (val)
@@ -303,6 +315,9 @@ namespace Urchin.API
                     break;
                 case "texture":
                     ClearFOV.Invoke();
+                    break;
+                case "custommesh":
+                    ClearCustomMeshes.Invoke();
                     break;
             }
         }

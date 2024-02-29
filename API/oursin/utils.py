@@ -125,3 +125,13 @@ def rgb_to_hex(rgb):
     
 def rgba_to_hex(rgba):
     return '#%02x%02x%02x%02x' % rgba
+
+def list_of_list2vector3(list_of_list):
+    """Convert a list of lists to a list of vector3 {"x","y","z"} objects
+
+    Parameters
+    ----------
+    list_of_list : list of length 3 lists
+        _description_
+    """
+    return [{"x":str(data[0]), "y":str(data[1]), "z":str(data[2])} for data in list_of_list]
