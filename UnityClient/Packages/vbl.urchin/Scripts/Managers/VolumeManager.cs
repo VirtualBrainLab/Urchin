@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using Urchin.API;
 
 namespace Urchin.Managers
@@ -11,6 +12,44 @@ namespace Urchin.Managers
         #region Serialized
         [SerializeField] private Transform _volumeParentT;
         [SerializeField] private GameObject _volumePrefab;
+        [SerializeField] private GameObject _volumeUIGO;
+        #endregion
+
+        #region Properties
+
+        private float _alpha;
+        public UnityEvent<float> AlphaChangedEvent;
+        public float Alpha
+        {
+            get
+            {
+                return _alpha;
+            }
+            set
+            {
+                _alpha = value;
+                AlphaChangedEvent.Invoke(_alpha);
+                foreach (VolumeRenderer vr in _volumes.Values)
+                    vr.SetRayMarchAlpha(_alpha);
+            }
+        }
+
+        private float _stepSize;
+        public UnityEvent<float> StepSizeChangedEvent;
+        public float StepSize
+        {
+            get
+            {
+                return _stepSize;
+            }
+            set
+            {
+                _stepSize = value;
+                StepSizeChangedEvent.Invoke(_stepSize);
+                foreach (VolumeRenderer vr in _volumes.Values)
+                    vr.SetRayMarchStepSize(_stepSize);
+            }
+        }
         #endregion
 
         #region Variables
@@ -41,6 +80,7 @@ namespace Urchin.Managers
             VolumeRenderer volRenderer;
             if (!_volumes.ContainsKey(volumeMeta.name))
             {
+                _volumeUIGO.SetActive(true);
                 GameObject newVolume = Instantiate(_volumePrefab, _volumeParentT);
 
                 volRenderer = newVolume.GetComponent<VolumeRenderer>();
@@ -68,6 +108,9 @@ namespace Urchin.Managers
             GameObject volumeGO = _volumes[name].gameObject;
             Destroy(volumeGO);
             _volumes.Remove(name);
+
+            if (_volumes.Count == 0)
+                _volumeUIGO.SetActive(false);
         }
 
         public void SetData(VolumeDataChunk chunk)

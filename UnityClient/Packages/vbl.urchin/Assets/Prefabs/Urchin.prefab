@@ -5014,16 +5014,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5c98e43f8f735543a2aa9aa6c5fdd2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _materials:
-  - {fileID: 2100000, guid: 81bfceea20b892d44b814a1db0c2e7de, type: 2}
-  - {fileID: 2100000, guid: 5b22cd6073dc87b42898caa14b0363e3, type: 2}
-  - {fileID: 2100000, guid: b9f1759fe5f86bf43934752f9440b7fd, type: 2}
-  - {fileID: 2100000, guid: 81bfceea20b892d44b814a1db0c2e7de, type: 2}
-  _materialNames:
-  - default
-  - opaque-lit
-  - transparent-lit
-  - unlit
   _primitiveMeshParentT: {fileID: 1366211727439126398}
   _primitivePrefabGO: {fileID: 3780062229249569090, guid: 70ca9229f59b9d34cae96f29e23a3c1b, type: 3}
 --- !u!1 &1398703444632528419
@@ -5035,6 +5025,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2757818260648243688}
+  - component: {fileID: 8798507606854459230}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -5064,8 +5055,67 @@ Transform:
   - {fileID: 600956720756306325}
   - {fileID: 4238721956624320183}
   - {fileID: 5107351892853129139}
+  - {fileID: 6696528805876934292}
   m_Father: {fileID: 5428924515040814815}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8798507606854459230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1398703444632528419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b9c8ad1b27cf8e45b376eec1d16982c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _customMeshParentT: {fileID: 0}
+--- !u!1 &3393280478679826902
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6696528805876934292}
+  - component: {fileID: 838043867918078182}
+  m_Layer: 0
+  m_Name: CustomMeshManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6696528805876934292
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3393280478679826902}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2757818260648243688}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &838043867918078182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3393280478679826902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b9c8ad1b27cf8e45b376eec1d16982c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _customMeshParentT: {fileID: 6696528805876934292}
 --- !u!1 &4238721956624320176
 GameObject:
   m_ObjectHideFlags: 0
@@ -5112,6 +5162,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _volumeParentT: {fileID: 4238721956624320183}
   _volumePrefab: {fileID: 4113667031467724672, guid: ec190cb5d1fca74429dd4f0965926e35, type: 3}
+  _volumeUIGO: {fileID: 0}
+  AlphaChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  StepSizeChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &4390413428189988366
 GameObject:
   m_ObjectHideFlags: 0
@@ -5169,6 +5226,7 @@ GameObject:
   - component: {fileID: 5428924515040814815}
   - component: {fileID: 5499955737624851356}
   - component: {fileID: 2699667523703933131}
+  - component: {fileID: 2125811993335669634}
   m_Layer: 0
   m_Name: Urchin
   m_TagString: Untagged
@@ -5222,6 +5280,28 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   localhost: 0
+--- !u!114 &2125811993335669634
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4417393973230421729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28c1e24c412fe1e4fbd97e2e9fcaae6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _meshMaterials:
+  - {fileID: 2100000, guid: 81bfceea20b892d44b814a1db0c2e7de, type: 2}
+  - {fileID: 2100000, guid: 5b22cd6073dc87b42898caa14b0363e3, type: 2}
+  - {fileID: 2100000, guid: b9f1759fe5f86bf43934752f9440b7fd, type: 2}
+  - {fileID: 2100000, guid: 81bfceea20b892d44b814a1db0c2e7de, type: 2}
+  _materialNames:
+  - default
+  - opaque-lit
+  - transparent-lit
+  - unlit
 --- !u!1 &5012633055188078402
 GameObject:
   m_ObjectHideFlags: 0

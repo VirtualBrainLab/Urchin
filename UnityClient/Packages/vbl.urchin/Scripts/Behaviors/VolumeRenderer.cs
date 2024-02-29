@@ -17,6 +17,7 @@ public class VolumeRenderer : MonoBehaviour
     [SerializeField] GameObject _sagittalSliceFGO;
     [SerializeField] GameObject _sagittalSliceBGO;
 
+    private Material _volumeRayMarchMaterial;
     private Material _coronalMaterialF;
     private Material _sagittalMaterialF;
     private Material _coronalMaterialB;
@@ -63,7 +64,8 @@ public class VolumeRenderer : MonoBehaviour
         _volumeTexture.filterMode = FilterMode.Point;
         _volumeTexture.wrapMode = TextureWrapMode.Clamp;
 
-        _cubeGO.GetComponent<Renderer>().material.mainTexture = _volumeTexture;
+        _volumeRayMarchMaterial = _cubeGO.GetComponent<Renderer>().material;
+        _volumeRayMarchMaterial.mainTexture = _volumeTexture;
         _coronalMaterialF.SetTexture("_Volume", _volumeTexture);
         _sagittalMaterialF.SetTexture("_Volume", _volumeTexture);
         _coronalMaterialB.SetTexture("_Volume", _volumeTexture);
@@ -251,6 +253,16 @@ public class VolumeRenderer : MonoBehaviour
             _cubeGO.GetComponent<Renderer>().material.SetVector("_APClip", new Vector2(min, max));
             _cubeGO.GetComponent<Renderer>().material.SetVector("_MLClip", new Vector2(min, max));
         }
+    }
+
+    public void SetRayMarchAlpha(float alpha)
+    {
+        _volumeRayMarchMaterial.SetFloat("_Alpha", alpha);
+    }
+
+    public void SetRayMarchStepSize(float stepSize)
+    {
+        _volumeRayMarchMaterial.SetFloat("_StepSize", stepSize);
     }
 
     private bool camXLeft;
