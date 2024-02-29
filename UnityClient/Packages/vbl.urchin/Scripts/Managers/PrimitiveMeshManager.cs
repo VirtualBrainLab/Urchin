@@ -9,26 +9,15 @@ namespace Urchin.Managers
    
     public class PrimitiveMeshManager : MonoBehaviour
     {
-        [SerializeField] private List<Material> _materials;
-        [SerializeField] private List<string> _materialNames;
         [SerializeField] private Transform _primitiveMeshParentT;
         [SerializeField] private GameObject _primitivePrefabGO;
 
         //Keeping a dictionary mapping names of objects to the game object in schene
         private Dictionary<string, MeshRenderer> _primMeshRenderers;
-        private Dictionary<string, Material> _materialDictionary;
 
         private void Awake()
         {
             _primMeshRenderers = new Dictionary<string, MeshRenderer>();
-            _materialDictionary = new Dictionary<string, Material>();
-            if (_materials.Count != _materialNames.Count)
-                throw new System.Exception("List of materials and material names must be the same length");
-            for (int i = 0; i < _materials.Count; i++)
-            {
-                _materialDictionary.Add(_materialNames[i], _materials[i]);
-            }
-
         }
 
         private void Start()
@@ -55,7 +44,7 @@ namespace Urchin.Managers
                 tempObject.GetComponent<MeshBehavior>().SetID(meshID);
                 tempObject.name = $"primMesh_{meshID}";
                 _primMeshRenderers.Add(meshID, tempObject.GetComponent<MeshRenderer>());
-                tempObject.GetComponent<MeshRenderer>().material = _materialDictionary["default"];
+                tempObject.GetComponent<MeshRenderer>().material = MaterialManager.MeshMaterials["default"];
             }
         }
 
@@ -129,7 +118,7 @@ namespace Urchin.Managers
         {
             foreach (var kvp in meshMaterials)
             {
-                Material newMaterial = _materialDictionary[kvp.Value];
+                Material newMaterial = MaterialManager.MeshMaterials[kvp.Value];
                 MeshRenderer tempMesh = _primMeshRenderers[kvp.Key];
                 Color color = tempMesh.material.color;
                 tempMesh.material = newMaterial;
