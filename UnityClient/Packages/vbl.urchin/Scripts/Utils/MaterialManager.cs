@@ -16,6 +16,7 @@ public class MaterialManager : MonoBehaviour
     {
         if (Instance != null)
             throw new Exception("Only a single instance of MaterialManager should exist in the scene.");
+        Instance = this;
 
         if (_meshMaterials.Count != _materialNames.Count)
             Debug.LogWarning("Mesh material and name count should be equal");

@@ -13,12 +13,14 @@ class CustomMesh:
     def __init__(self, vertices, triangles, normals = None):
         """Create a Custom 3D object based on a set of vertices and triangle faces
 
+        Unity can automatically calculate the normals to create a convex object, or you can pass them yourself.
+
         Parameters
         ----------
         vertices : list of vector3
-            Vertex coordinates
+            Vertex coordinates, the x/y/z directions will correspond to AP/DV/ML if your object was exported from Blender
         triangles : list of vector3
-            Triangle vertices
+            Triangle vertex indexes
         normals : list of vector3, optional
             Normal directions, by default None
         """

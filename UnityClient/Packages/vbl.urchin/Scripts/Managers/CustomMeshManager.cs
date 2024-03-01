@@ -1,6 +1,7 @@
 using BrainAtlas;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Entities.UniversalDelegates;
 using UnityEngine;
 using Urchin.API;
@@ -14,12 +15,15 @@ namespace Urchin.Managers
         #endregion
 
         #region Private
-        Dictionary<string, GameObject> _customMeshGOs;
+        private Dictionary<string, GameObject> _customMeshGOs;
+        private BlenderSpace _blenderSpace;
         #endregion
 
         private void Start()
         {
             _customMeshGOs = new();
+
+            _blenderSpace = new();
 
             Client_SocketIO.CustomMeshCreate += Create;
             Client_SocketIO.CustomMeshDestroy += Destroy;
@@ -34,22 +38,18 @@ namespace Urchin.Managers
             go.transform.SetParent(_customMeshParentT);
 
             Mesh mesh = new Mesh();
-            mesh.vertices = data.vertices;
 
-            int[] triangles = new int[data.triangles.Length * 3];
-            for (int i = 0; i < data.triangles.Length; i++)
-            {
-                triangles[i + 0] = data.triangles[i].x;
-                triangles[i + 1] = data.triangles[i].y;
-                triangles[i + 2] = data.triangles[i].z;
-            }
-            mesh.triangles = triangles;
+            // the vertices are assumed to have been passed in ap/ml/dv directions
+            mesh.vertices = data.vertices.Select(x => _blenderSpace.Space2World_Vector(x)).ToArray();
+
+            mesh.triangles = data.triangles;
 
             if (data.normals != null)
                 mesh.normals = data.normals;
 
             go.AddComponent<MeshFilter>().mesh = mesh;
-            go.AddComponent<MeshRenderer>().material = MaterialManager.MeshMaterials["default"];
+            go.AddComponent<MeshRenderer>().material = MaterialManager.MeshMaterials["opaque-lit"];
+            go.GetComponent<MeshRenderer>().material.color = Color.gray;
 
             _customMeshGOs.Add(data.ID, go);
         }
