@@ -121,7 +121,7 @@ def create(num_particles):
 	num_particles : int
 
 	Examples
-	--------
+	--------  
 	>>> neurons = urchin.particles.create(3)
 	"""
 	global counter
@@ -191,7 +191,21 @@ def set_sizes(particles_list, sizes_list):
 			neurons_sizes[neuron.id] = utils.sanitize_float(sizes_list[i])
 		else:
 			warnings.warn(f"Particle with id {neuron.id} does not exist in Unity, call create method first.")
-	client.sio.emit('SetParticleSize', neurons_sizes)
+	
+	_set_sizes(neurons_sizes)
+
+def _set_sizes(data):
+	"""Set particles sizes when already wrapped
+	
+	Parameters
+	----------
+	neurons_sizes: dictionaryy of neuron id: float of particle size
+	
+	Examples
+	--------
+	>>> urchin.particles._set_sizes({p1:0.01, p2:0.02, p3:0.03})
+	"""   
+	client.sio.emit('SetParticleSize', data)
 
 def set_colors(particles_list, colors_list):
 	"""Set neuron colors
