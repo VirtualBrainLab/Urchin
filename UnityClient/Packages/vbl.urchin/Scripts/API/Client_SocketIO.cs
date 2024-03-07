@@ -267,12 +267,14 @@ namespace Urchin.API
         public static Action<CustomMeshData> CustomMeshCreate;
         public static Action<CustomMeshDestroy> CustomMeshDestroy;
         public static Action<CustomMeshPosition> CustomMeshPosition;
+        public static Action<Vector3Data> CustomMeshScale;
 
         private void Start_CustomMesh()
         {
             manager.Socket.On<string>("CustomMeshCreate", x => CustomMeshCreate.Invoke(JsonUtility.FromJson<CustomMeshData>(x)));
             manager.Socket.On<string>("CustomMeshDestroy", x => CustomMeshDestroy.Invoke(JsonUtility.FromJson<CustomMeshDestroy>(x)));
             manager.Socket.On<string>("CustomMeshPosition", x => CustomMeshPosition.Invoke(JsonUtility.FromJson<CustomMeshPosition>(x)));
+            manager.Socket.On<string>("CustomMeshScale", x => CustomMeshScale.Invoke(JsonUtility.FromJson<Vector3Data>(x)));
         }
 
         #endregion

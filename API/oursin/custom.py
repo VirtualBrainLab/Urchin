@@ -50,6 +50,13 @@ class CustomMesh:
     def set_position(self, position = [0,0,0], use_reference = True):
         """Set the position relative to the reference coordinate
 
+        Note that the null transform is active by default in Urchin, therefore directions are the CCF defaults:
+        AP+ posterior, ML+ right, DV+ ventral
+
+        By default objects are placed with their origin at the reference (Bregma), disabling this
+        places objects relative to the Atlas origin, which is the (0,0,0) coordinate in the top, front, left
+        corner of the atlas space.
+
         Parameters
         ----------
         position : vector3

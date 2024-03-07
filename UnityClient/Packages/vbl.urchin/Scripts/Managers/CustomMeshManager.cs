@@ -26,6 +26,7 @@ namespace Urchin.Managers
             Client_SocketIO.CustomMeshCreate += Create;
             Client_SocketIO.CustomMeshDestroy += Destroy;
             Client_SocketIO.CustomMeshPosition += SetPosition;
+            Client_SocketIO.CustomMeshScale += SetScale;
 
             Client_SocketIO.ClearCustomMeshes += Clear;
         }
@@ -49,6 +50,8 @@ namespace Urchin.Managers
             go.AddComponent<MeshRenderer>().material = MaterialManager.MeshMaterials["opaque-lit"];
             go.GetComponent<MeshRenderer>().material.color = Color.gray;
 
+            _SetPosition(go, Vector3.zero);
+
             _customMeshGOs.Add(data.ID, go);
         }
 
@@ -68,12 +71,17 @@ namespace Urchin.Managers
         {
             if (_customMeshGOs.ContainsKey(data.ID))
             {
-                Transform transform = _customMeshGOs[data.ID].transform;
-
-                transform.position = BrainAtlasManager.ActiveReferenceAtlas.Atlas2World(data.Position, data.UseReference? data.UseReference : true);
+                _SetPosition(_customMeshGOs[data.ID], data.Position, data.UseReference ? data.UseReference : true);
             }
             else
                 Client_SocketIO.LogWarning($"Custom mesh {data.ID} does not exist in the scene, cannot set position");
+        }
+
+        private void _SetPosition(GameObject customMeshGO, Vector3 posCoordT, bool useReference = true)
+        {
+            Transform transform = customMeshGO.transform;
+
+            transform.position = BrainAtlasManager.ActiveReferenceAtlas.Atlas2World(posCoordT, useReference);
         }
 
         public void SetScale(Vector3Data data)
@@ -82,7 +90,8 @@ namespace Urchin.Managers
             {
                 Transform transform = _customMeshGOs[data.ID].transform;
 
-                transform.localScale = data.Value;
+                // Set scale, rotating to match the atlas format
+                transform.localScale = BrainAtlasManager.ActiveReferenceAtlas.Atlas2World_Vector(data.Value);
             }
             else
                 Client_SocketIO.LogWarning($"Custom mesh {data.ID} does not exist in the scene, cannot set scale");

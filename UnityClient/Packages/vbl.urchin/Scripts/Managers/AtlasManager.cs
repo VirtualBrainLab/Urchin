@@ -70,25 +70,29 @@ namespace Urchin.Managers
 
         #region Public
 
-        public void LoadAtlas(string atlasName)
+        public async void LoadAtlas(string atlasName)
         {
+            Task atlasTask;
+
             switch (atlasName)
             {
                 case "ccf25":
-                    BrainAtlasManager.LoadAtlas("allen_mouse_25um");
+                    atlasTask = BrainAtlasManager.LoadAtlas("allen_mouse_25um");
                     break;
 #if !UNITY_WEBGL
                 case "waxholm39":
-                    BrainAtlasManager.LoadAtlas("whs_sd_rat_39um");
+                    atlasTask = BrainAtlasManager.LoadAtlas("whs_sd_rat_39um");
                     break;
 #endif
                 case "waxholm78":
-                    BrainAtlasManager.LoadAtlas("whs_sd_rat_78um");
+                    atlasTask = BrainAtlasManager.LoadAtlas("whs_sd_rat_78um");
                     break;
                 default:
                     Client_SocketIO.LogError($"Atlas {atlasName} does not exist, or is not available on this platform.");
                     return;
             }
+
+            await atlasTask;
 
             BrainAtlasManager.SetReferenceCoord(Utils.Utils.BregmaDefaults[BrainAtlasManager.ActiveReferenceAtlas.Name]);
         }
