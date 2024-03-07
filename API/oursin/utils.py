@@ -135,3 +135,12 @@ def list_of_list2vector3(list_of_list):
         _description_
     """
     return [{"x":str(data[0]), "y":str(data[1]), "z":str(data[2])} for data in list_of_list]
+
+def formatted_vector3(list_of_float):
+    """Convert a list of floats to a formatted vector3 dict
+
+    Parameters
+    ----------
+    list_of_float : list
+    """
+    return {"x":str(list_of_float[0]), "y":str(list_of_float[1]), "z":str(list_of_float[2])}

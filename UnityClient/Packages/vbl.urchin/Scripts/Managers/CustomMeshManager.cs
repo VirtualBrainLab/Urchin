@@ -1,8 +1,6 @@
 using BrainAtlas;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Entities.UniversalDelegates;
 using UnityEngine;
 using Urchin.API;
 
@@ -76,6 +74,18 @@ namespace Urchin.Managers
             }
             else
                 Client_SocketIO.LogWarning($"Custom mesh {data.ID} does not exist in the scene, cannot set position");
+        }
+
+        public void SetScale(Vector3Data data)
+        {
+            if (_customMeshGOs.ContainsKey(data.ID))
+            {
+                Transform transform = _customMeshGOs[data.ID].transform;
+
+                transform.localScale = data.Value;
+            }
+            else
+                Client_SocketIO.LogWarning($"Custom mesh {data.ID} does not exist in the scene, cannot set scale");
         }
 
         public void Clear()

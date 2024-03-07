@@ -54,6 +54,20 @@ class Atlas:
         """
         client.sio.emit('LoadDefaultAreas', "")
 
+    def set_reference_coord(self, reference_coord):
+        """Set the reference coordinate for the atlas (Bregma by default)
+
+        Parameters
+        ----------
+        reference_coord : list of float
+        """
+        
+        data = {}
+        data['ID'] = self.atlas_name
+        data['Value'] = utils.formatted_vector3(utils.sanitize_vector3(reference_coord))
+
+        client.sio.emit('AtlasSetReferenceCoord', json.dumps(data))
+
     def get_areas(self, area_list):
         """Get the area objects given a list of area acronyms
 
