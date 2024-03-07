@@ -53,18 +53,18 @@ namespace Urchin.Managers
 
             Client_SocketIO.ClearAreas += ClearAreas;
 
-            Client_SocketIO.LoadAtlas += LoadAtlas;
-            Client_SocketIO.CustomAtlas += CustomAtlas;
+            Client_SocketIO.AtlasLoad += LoadAtlas;
+            Client_SocketIO.AtlasCreateCustom += CustomAtlas;
 
-            Client_SocketIO.SetAreaVisibility += SetAreaVisibility;
-            Client_SocketIO.SetAreaColors += SetAreaColors;
-            Client_SocketIO.SetAreaIntensity += SetAreaIntensity;
-            Client_SocketIO.SetAreaColormap += SetAreaColormap;
-            Client_SocketIO.SetAreaMaterial += SetAreaMaterial;
-            Client_SocketIO.SetAreaAlpha += SetAreaAlpha;
-            Client_SocketIO.SetAreaData += SetAreaData;
-            Client_SocketIO.SetAreaIndex += SetAreaIndex;
-            Client_SocketIO.LoadDefaultAreas += LoadDefaultAreasVoid;
+            Client_SocketIO.AtlasSetAreaVisibility += SetAreaVisibility;
+            Client_SocketIO.AtlasSetAreaColors += SetAreaColors;
+            Client_SocketIO.AtlasSetAreaIntensities += SetAreaIntensity;
+            Client_SocketIO.AtlasSetColormap += SetAreaColormap;
+            Client_SocketIO.AtlasSetAreaMaterials += SetAreaMaterial;
+            Client_SocketIO.AtlasSetAreaAlphas += SetAreaAlpha;
+            Client_SocketIO.AtlasSetAreaData += SetAreaData;
+            Client_SocketIO.AtlasSetAreaDataIndex += SetAreaIndex;
+            Client_SocketIO.AtlasLoadAreaDefaults += LoadDefaultAreasVoid;
         }
         #endregion
 
@@ -87,8 +87,10 @@ namespace Urchin.Managers
                     break;
                 default:
                     Client_SocketIO.LogError($"Atlas {atlasName} does not exist, or is not available on this platform.");
-                    break;
+                    return;
             }
+
+            BrainAtlasManager.SetReferenceCoord(Utils.Utils.BregmaDefaults[BrainAtlasManager.ActiveReferenceAtlas.Name]);
         }
 
         public void CustomAtlas(CustomAtlasData data)

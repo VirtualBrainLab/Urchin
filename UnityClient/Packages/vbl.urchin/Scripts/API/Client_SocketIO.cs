@@ -78,32 +78,34 @@ namespace Urchin.API
         }
 
         #region Socket setup by action group
-        public static Action<string> LoadAtlas;
-        public static Action<CustomAtlasData> CustomAtlas; 
-        public static Action<AreaData> SetAreaVisibility;
-        public static Action<Dictionary<string, string>> SetAreaColors;
-        public static Action<Dictionary<string, float>> SetAreaIntensity;
-        public static Action<string> SetAreaColormap;
-        public static Action<Dictionary<string, string>> SetAreaMaterial;
-        public static Action<Dictionary<string, float>> SetAreaAlpha;
-        public static Action<Dictionary<string, List<float>>> SetAreaData;
-        public static Action<int> SetAreaIndex;
-        public static Action LoadDefaultAreas;
+        public static Action<string> AtlasLoad;
+        public static Action<CustomAtlasData> AtlasCreateCustom;
+        public static Action<Vector3Data> AtlasSetReferenceCoord;
+        public static Action<AreaData> AtlasSetAreaVisibility;
+        public static Action<Dictionary<string, string>> AtlasSetAreaColors;
+        public static Action<Dictionary<string, float>> AtlasSetAreaIntensities;
+        public static Action<string> AtlasSetColormap;
+        public static Action<Dictionary<string, string>> AtlasSetAreaMaterials;
+        public static Action<Dictionary<string, float>> AtlasSetAreaAlphas;
+        public static Action<Dictionary<string, List<float>>> AtlasSetAreaData;
+        public static Action<int> AtlasSetAreaDataIndex;
+        public static Action AtlasLoadAreaDefaults;
 
         private void Start_Atlas()
         {
             // CCF Areas
-            manager.Socket.On<string>("LoadAtlas", x => LoadAtlas.Invoke(x));
-            manager.Socket.On<string>("CustomAtlas", x => CustomAtlas.Invoke(JsonUtility.FromJson<CustomAtlasData>(x)));
-            manager.Socket.On<string>("SetAreaVisibility", x => SetAreaVisibility.Invoke(JsonUtility.FromJson<AreaData>(x)));
-            manager.Socket.On<Dictionary<string, string>>("SetAreaColors", x => SetAreaColors.Invoke(x));
-            manager.Socket.On<Dictionary<string, float>>("SetAreaIntensity", x => SetAreaIntensity.Invoke(x));
-            manager.Socket.On<string>("SetAreaColormap", x => SetAreaColormap.Invoke(x));
-            manager.Socket.On<Dictionary<string, string>>("SetAreaMaterial", x => SetAreaMaterial.Invoke(x));
-            manager.Socket.On<Dictionary<string, float>>("SetAreaAlpha", x => SetAreaAlpha.Invoke(x));
-            manager.Socket.On<Dictionary<string, List<float>>>("SetAreaData", x => SetAreaData.Invoke(x));
-            manager.Socket.On<int>("SetAreaIndex", x => SetAreaIndex.Invoke(x));
-            manager.Socket.On<string>("LoadDefaultAreas", x => LoadDefaultAreas.Invoke());
+            manager.Socket.On<string>("LoadAtlas", x => AtlasLoad.Invoke(x));
+            manager.Socket.On<string>("CustomAtlas", x => AtlasCreateCustom.Invoke(JsonUtility.FromJson<CustomAtlasData>(x)));
+            manager.Socket.On<string>("AtlasSetReferenceCoord", x => AtlasSetReferenceCoord.Invoke(JsonUtility.FromJson<Vector3Data>(x)));
+            manager.Socket.On<string>("SetAreaVisibility", x => AtlasSetAreaVisibility.Invoke(JsonUtility.FromJson<AreaData>(x)));
+            manager.Socket.On<Dictionary<string, string>>("SetAreaColors", x => AtlasSetAreaColors.Invoke(x));
+            manager.Socket.On<Dictionary<string, float>>("SetAreaIntensity", x => AtlasSetAreaIntensities.Invoke(x));
+            manager.Socket.On<string>("SetAreaColormap", x => AtlasSetColormap.Invoke(x));
+            manager.Socket.On<Dictionary<string, string>>("SetAreaMaterial", x => AtlasSetAreaMaterials.Invoke(x));
+            manager.Socket.On<Dictionary<string, float>>("SetAreaAlpha", x => AtlasSetAreaAlphas.Invoke(x));
+            manager.Socket.On<Dictionary<string, List<float>>>("SetAreaData", x => AtlasSetAreaData.Invoke(x));
+            manager.Socket.On<int>("SetAreaIndex", x => AtlasSetAreaDataIndex.Invoke(x));
+            manager.Socket.On<string>("LoadDefaultAreas", x => AtlasLoadAreaDefaults.Invoke());
         }
 
         public static Action<VolumeDataChunk> SetVolumeData;
