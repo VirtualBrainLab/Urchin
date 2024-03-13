@@ -144,3 +144,20 @@ def formatted_vector3(list_of_float):
     list_of_float : list
     """
     return {"x":str(list_of_float[0]), "y":str(list_of_float[1]), "z":str(list_of_float[2])}
+
+def formatted_color(list_of_float):
+    """Converts a list of floats to a formatted color dict. Values should be 0->1
+
+    Parameters
+    ----------
+    list_of_float : list
+        Length 3 for RGB, 4 for RGBA
+    """
+    if len(list_of_float) == 3:
+        return {'r':str(list_of_float[0]), 'g':str(list_of_float[1]), 'b':str(list_of_float[2]),
+                        'a':'1'}
+    elif len(list_of_float) == 4:
+        return {'r':str(list_of_float[0]), 'g':str(list_of_float[1]), 'b':str(list_of_float[2]),
+                        'a':str(list_of_float[3])}
+    else:
+        raise Exception('Colors should be length 3 or 4')

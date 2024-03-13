@@ -48,4 +48,4 @@ jobs:
 
       # 3.4.4. Run tests (execute arbitrary commands in shell)
       - name: 🏃Run tests
-        run: python -m unittest discover -s API
+        run: pytest API

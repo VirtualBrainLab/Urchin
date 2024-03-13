@@ -64,8 +64,8 @@ namespace Urchin.Managers
 
         private void Start()
         {
-            Client_SocketIO.SetVolumeData += SetData;
-            Client_SocketIO.UpdateVolume += UpdateOrCreate;
+            //Client_SocketIO.SetVolumeData += SetData;
+            //Client_SocketIO.UpdateVolume += UpdateOrCreate;
             Client_SocketIO.DeleteVolume += Delete;
 
             Client_SocketIO.ClearVolumes += Clear;
@@ -75,25 +75,25 @@ namespace Urchin.Managers
 
         #region Public functions
 
-        public void UpdateOrCreate(VolumeMeta volumeMeta)
-        {
-            VolumeRenderer volRenderer;
-            if (!_volumes.ContainsKey(volumeMeta.name))
-            {
-                _volumeUIGO.SetActive(true);
-                GameObject newVolume = Instantiate(_volumePrefab, _volumeParentT);
+        //public void UpdateOrCreate(VolumeMeta volumeMeta)
+        //{
+        //    VolumeRenderer volRenderer;
+        //    if (!_volumes.ContainsKey(volumeMeta.name))
+        //    {
+        //        _volumeUIGO.SetActive(true);
+        //        GameObject newVolume = Instantiate(_volumePrefab, _volumeParentT);
 
-                volRenderer = newVolume.GetComponent<VolumeRenderer>();
-                _volumes.Add(volumeMeta.name, volRenderer);
-            }
-            else
-                volRenderer = _volumes[volumeMeta.name];
+        //        volRenderer = newVolume.GetComponent<VolumeRenderer>();
+        //        _volumes.Add(volumeMeta.name, volRenderer);
+        //    }
+        //    else
+        //        volRenderer = _volumes[volumeMeta.name];
 
-            volRenderer.SetMetadata(volumeMeta.nCompressedBytes);
-            volRenderer.SetColormap(volumeMeta.colormap);
-            volRenderer.SetVolumeVisibility(volumeMeta.visible);
-            volRenderer.UpdateSlicePosition();
-        }
+        //    volRenderer.SetMetadata(volumeMeta.nCompressedBytes);
+        //    volRenderer.SetColormap(volumeMeta.colormap);
+        //    volRenderer.SetVolumeVisibility(volumeMeta.visible);
+        //    volRenderer.UpdateSlicePosition();
+        //}
 
         public void SetVisibility(List<object> data)
         {
@@ -113,10 +113,10 @@ namespace Urchin.Managers
                 _volumeUIGO.SetActive(false);
         }
 
-        public void SetData(VolumeDataChunk chunk)
-        {
-            _volumes[chunk.name].SetData(chunk.compressedByteChunk);
-        }
+        //public void SetData(VolumeDataChunk chunk)
+        //{
+        //    _volumes[chunk.name].SetData(chunk.compressedByteChunk);
+        //}
         public void SetAnnotationColor(Dictionary<string, string> data)
         {
             throw new NotImplementedException();

@@ -1,49 +1,100 @@
-using System.Collections;
-using System.Collections.Generic;
+using BrainAtlas;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Urchin.API;
 
 public class MeshBehavior : MonoBehaviour
 {
-    private string ID;
+    #region Properties
+    public MeshModel Data;
+    public MeshRenderer Renderer { get { return GetComponent<MeshRenderer>(); } }
+    #endregion
 
     #region Unity
-    private Vector3 _originalScale;
-    private Color _originalColor;
-    private Renderer _renderer;
-
-    private void Awake()
-    {
-        _renderer = GetComponent<Renderer>();
-    }
 
     private void OnMouseEnter()
     {
-        _originalScale = transform.localScale;
-        transform.localScale = _originalScale * 4f;
-
-        _originalColor = _renderer.material.color;
-        _renderer.material.color = Color.red;
+        if (Data.interactive)
+        {
+            transform.localScale = Data.scale * 4f;
+            Renderer.material.color = Color.red;
+        }
     }
 
     private void OnMouseExit()
     {
-        transform.localScale = _originalScale;
-        _renderer.material.color = _originalColor;
+        if (Data.interactive)
+        {
+            transform.localScale = Data.scale;
+            Renderer.material.color = Data.color;
+        }
     }
 
     private void OnMouseDown()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Data.interactive)
         {
-            // left mouse click
-            Client_SocketIO.Emit("NeuronCallback", ID);
+            if (Input.GetMouseButtonDown(0))
+            {
+                // left mouse click
+                Client_SocketIO.Emit("NeuronCallback", Data.id);
+            }
         }
     }
     #endregion
 
-    public void SetID(string ID)
+    #region Settings
+    public void UpdateAll()
     {
-        this.ID = ID;
+        // Update all settings
+        _SetPosition();
+        _SetScale();
+        _SetColor();
+        _SetMaterial();
     }
+
+    public void SetPosition(Vector3 coordAtlasU)
+    {
+        Data.position = coordAtlasU;
+        _SetPosition();
+    }
+
+    private void _SetPosition()
+    {
+        transform.localPosition = BrainAtlasManager.ActiveReferenceAtlas.Atlas2World(Data.position);
+    }
+
+    public void SetScale(Vector3 scale)
+    {
+        Data.scale = scale;
+        _SetScale();
+    }
+
+    private void _SetScale()
+    {
+        transform.localScale = Data.scale;
+    }
+
+    public void SetColor(Color color)
+    {
+        Data.color = color;
+        _SetColor();
+    }
+
+    private void _SetColor()
+    {
+        Renderer.material.color = Data.color;
+    }
+
+    public void SetMaterial(string materialName)
+    {
+        Data.material = materialName;
+        _SetMaterial();
+    }
+
+    private void _SetMaterial()
+    {
+        Renderer.material = MaterialManager.GetMaterial(Data.material);
+    }
+    #endregion
 }

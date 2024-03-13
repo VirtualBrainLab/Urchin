@@ -6,11 +6,17 @@ import requests
 
 from unittest.mock import patch
 
-vector3data_url = "https://raw.githubusercontent.com/VirtualBrainLab/vbl-json-schema/pydantic/src/vbl_json_schema/schemas/vector3.json"
-response = requests.get(vector3data_url)
-vector3data_schema = json.loads(response.text)
+classes = ['AreaGroupData','CameraModel','CustomAtlasModel',
+           'CustomMeshData','CustomMeshModel','MeshModel','ParticleGroupModel']
+raw_url = 'https://github.com/VirtualBrainLab/vbl-json-schema/raw/main/src/vbl_json_schema/schemas/urchin/'
+
+def load_schema(idx):
+    url = f'{raw_url}{classes[idx]}.json'
+    response = requests.get(url)
+    return json.loads(response.text)
 
 def test_mesh():
+    schema = load_schema(5)
     with patch.object(urchin.client.sio, 'emit') as mock_emit:
         mesh = urchin.meshes.Mesh()
 
@@ -23,6 +29,6 @@ def test_mesh():
         print(data)
 
         try:
-            jsonschema.validate(data, vector3data_schema)
+            jsonschema.validate(data, schema)
         except jsonschema.exceptions.ValidationError as e:
             pytest.fail()
