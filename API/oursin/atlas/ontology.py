@@ -3,6 +3,7 @@ from .. import utils
 from pathlib import Path
 
 import json
+import vbl_aquarium
 
 class CustomAtlas:
     def __init__(self, atlas_name, atlas_dimensions, atlas_resolution):
@@ -113,16 +114,14 @@ class Atlas:
 
         # output dictionary should match JSON schema AreaData:
         #{"acronym": ["a", "b", "c"], "side": [-1, 0, 1], "visible": [true, true, false]}
-        data_dict = {}
-        data_dict['acronym'] = []
-        data_dict['side'] = []
-        data_dict['visible'] = []
-        for i, area in enumerate(area_list):
-            data_dict['acronym'].append(area.acronym)
-            data_dict['visible'].append(area_visibility[i])
-            data_dict['side'].append(side.value)
 
-        client.sio.emit('SetAreaVisibility', json.dumps(data_dict))
+        data = vbl_aquarium.urchin.AreaGroupData(
+            acronyms = [area.acronym for area in area_list],
+            visible = area_visibility,
+            side = [side.value] * len(area_list),
+        )
+
+        client.sio.emit('SetAreaVisibility', data.model_dump_json())
 
     def set_colors(self, area_list, area_colors, sided="full"):
         """Set color of multiple areas at once.

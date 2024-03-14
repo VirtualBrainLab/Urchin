@@ -56,7 +56,7 @@ namespace Urchin.Managers
             Client_SocketIO.AtlasLoad += LoadAtlas;
             //Client_SocketIO.AtlasCreateCustom += CustomAtlas;
 
-            //Client_SocketIO.AtlasSetAreaVisibility += SetAreaVisibility;
+            Client_SocketIO.AtlasSetAreaVisibility += SetAreaVisibility;
             Client_SocketIO.AtlasSetAreaColors += SetAreaColors;
             Client_SocketIO.AtlasSetAreaIntensities += SetAreaIntensity;
             Client_SocketIO.AtlasSetColormap += SetAreaColormap;
@@ -104,58 +104,58 @@ namespace Urchin.Managers
         //    BrainAtlasManager.CustomAtlas(data.name, dims, res);
         //}
 
-//        public void SetAreaVisibility(AreaData data)
-//        {
-//            for (int i = 0; i < data.acronym.Length; i++)
-//            {
-//                int areaID = BrainAtlasManager.ActiveReferenceAtlas.Ontology.Acronym2ID(data.acronym[i]);
+        public void SetAreaVisibility(AreaGroupData data)
+        {
+            for (int i = 0; i < data.acronyms.Length; i++)
+            {
+                int areaID = BrainAtlasManager.ActiveReferenceAtlas.Ontology.Acronym2ID(data.acronyms[i]);
 
-//                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(areaID);
-//                OntologyNode.OntologyNodeSide side = (OntologyNode.OntologyNodeSide)data.side[i];
+                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(areaID);
+                OntologyNode.OntologyNodeSide side = (OntologyNode.OntologyNodeSide)data.side[i];
 
-//                if (node == null)
-//                    return;
+                if (node == null)
+                    return;
 
-//                bool set = false;
+                bool set = false;
 
-//                bool full = side == OntologyNode.OntologyNodeSide.Full;
-//                bool leftSide = side == OntologyNode.OntologyNodeSide.Left;
-//                bool rightSide = side == OntologyNode.OntologyNodeSide.Right;
+                bool full = side == OntologyNode.OntologyNodeSide.Full;
+                bool leftSide = side == OntologyNode.OntologyNodeSide.Left;
+                bool rightSide = side == OntologyNode.OntologyNodeSide.Right;
 
-//                if (full && node.FullLoaded.IsCompleted)
-//                {
-//                    node.SetVisibility(data.visible[i], OntologyNode.OntologyNodeSide.Full);
-//                    VisibleNodes.Add(node);
-//                    set = true;
-//#if UNITY_EDITOR
-//                    Debug.Log("Setting full model visibility to true");
-//#endif
-//                }
-//                if (leftSide && node.SideLoaded.IsCompleted)
-//                {
-//                    node.SetVisibility(data.visible[i], OntologyNode.OntologyNodeSide.Left);
-//                    VisibleNodes.Add(node);
-//                    set = true;
-//#if UNITY_EDITOR
-//                    Debug.Log("Setting left model visibility to true");
-//#endif
-//                }
-//                if (rightSide && node.SideLoaded.IsCompleted)
-//                {
-//                    node.SetVisibility(data.visible[i], OntologyNode.OntologyNodeSide.Right);
-//                    VisibleNodes.Add(node);
-//                    set = true;
-//#if UNITY_EDITOR
-//                    Debug.Log("Setting right model visibility to true");
-//#endif
-//                }
+                if (full && node.FullLoaded.IsCompleted)
+                {
+                    node.SetVisibility(data.visible[i], OntologyNode.OntologyNodeSide.Full);
+                    VisibleNodes.Add(node);
+                    set = true;
+#if UNITY_EDITOR
+                    Debug.Log("Setting full model visibility to true");
+#endif
+                }
+                if (leftSide && node.SideLoaded.IsCompleted)
+                {
+                    node.SetVisibility(data.visible[i], OntologyNode.OntologyNodeSide.Left);
+                    VisibleNodes.Add(node);
+                    set = true;
+#if UNITY_EDITOR
+                    Debug.Log("Setting left model visibility to true");
+#endif
+                }
+                if (rightSide && node.SideLoaded.IsCompleted)
+                {
+                    node.SetVisibility(data.visible[i], OntologyNode.OntologyNodeSide.Right);
+                    VisibleNodes.Add(node);
+                    set = true;
+#if UNITY_EDITOR
+                    Debug.Log("Setting right model visibility to true");
+#endif
+                }
 
-//                if (set)
-//                    NodeVisibleEvent.Invoke(node);
-//                else
-//                    LoadIndividualArea(node, full, leftSide, rightSide, data.visible[i]);
-//            }
-//        }
+                if (set)
+                    NodeVisibleEvent.Invoke(node);
+                else
+                    LoadIndividualArea(node, full, leftSide, rightSide, data.visible[i]);
+            }
+        }
 
         public async void SetAreaColors(Dictionary<string, string> areaColor)
         {

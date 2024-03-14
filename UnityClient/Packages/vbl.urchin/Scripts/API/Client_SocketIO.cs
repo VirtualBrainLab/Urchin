@@ -81,7 +81,7 @@ namespace Urchin.API
         public static Action<string> AtlasLoad;
         //public static Action<CustomAtlasData> AtlasCreateCustom;
         //public static Action<Vector3Data> AtlasSetReferenceCoord;
-        //public static Action<AreaData> AtlasSetAreaVisibility;
+        public static Action<AreaGroupData> AtlasSetAreaVisibility;
         public static Action<Dictionary<string, string>> AtlasSetAreaColors;
         public static Action<Dictionary<string, float>> AtlasSetAreaIntensities;
         public static Action<string> AtlasSetColormap;
@@ -97,7 +97,7 @@ namespace Urchin.API
             manager.Socket.On<string>("LoadAtlas", x => AtlasLoad.Invoke(x));
             //manager.Socket.On<string>("CustomAtlas", x => AtlasCreateCustom.Invoke(JsonUtility.FromJson<CustomAtlasData>(x)));
             //manager.Socket.On<string>("AtlasSetReferenceCoord", x => AtlasSetReferenceCoord.Invoke(JsonUtility.FromJson<Vector3Data>(x)));
-            //manager.Socket.On<string>("SetAreaVisibility", x => AtlasSetAreaVisibility.Invoke(JsonUtility.FromJson<AreaData>(x)));
+            manager.Socket.On<string>("SetAreaVisibility", x => AtlasSetAreaVisibility.Invoke(JsonUtility.FromJson<AreaGroupData>(x)));
             manager.Socket.On<Dictionary<string, string>>("SetAreaColors", x => AtlasSetAreaColors.Invoke(x));
             manager.Socket.On<Dictionary<string, float>>("SetAreaIntensity", x => AtlasSetAreaIntensities.Invoke(x));
             manager.Socket.On<string>("SetAreaColormap", x => AtlasSetColormap.Invoke(x));
