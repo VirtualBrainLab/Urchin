@@ -61,7 +61,8 @@ public class MeshBehavior : MonoBehaviour
 
     private void _SetPosition()
     {
-        transform.localPosition = BrainAtlasManager.ActiveReferenceAtlas.Atlas2World(Data.position);
+        // Set position expects coordinates in raw AP/ML/DV coordinates, not reference
+        transform.localPosition = BrainAtlasManager.ActiveReferenceAtlas.Atlas2World(Data.position, false);
     }
 
     public void SetScale(Vector3 scale)

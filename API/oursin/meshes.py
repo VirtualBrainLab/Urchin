@@ -18,7 +18,7 @@ class Mesh:
   """Mesh Object in Unity
   """
 
-  def __init__(self,position= [0.0,0.0,0.0], scale= [1,1,1], color=[1,1,1],
+  def __init__(self, position= [0.0,0.0,0.0], scale= [1,1,1], color=[1,1,1],
                material = 'default', interactive = False):
     """Create a mesh object
 
@@ -46,6 +46,8 @@ class Mesh:
       material = material,
       interactive = interactive
     )
+
+    counter += 1
 
     self._update()
     self.in_unity = True
@@ -159,20 +161,33 @@ class Mesh:
 
 
 #actually initializes each object(s), doesn't use any parameters other than how many to initialize (uses all defaults)
-def create(num_objects):
+def create(num_objects, position= [0.0,0.0,0.0], scale= [1,1,1], color=[1,1,1],
+               material = 'default', interactive = False):
   """Create multiple meshes
 
   Parameters
   ----------
   num_objects : int
-    number of mesh objects to be created      
+      number of mesh objects to be created
+  position : list, optional
+      default position nullspace (ap, ml, dv), by default [0.0,0.0,0.0]
+  scale : list, optional
+      default scale, by default [1,1,1]
+  color : list, optional
+      default color, by default [1,1,1]
+  material : str, optional
+      default material, by default 'default'
+  interactive : bool, optional
+      default interactive state, by default False
+
 	Examples
 	--------
 	>>> meshes = urchin.meshes.create(2)
   """
   mesh_objects = []
   for i in range(num_objects):
-    mesh_objects.append(Mesh())
+    mesh_objects.append(Mesh(position=position, color=color, scale=scale,
+                             material=material, interactive=interactive))
   return(mesh_objects)
 
 def delete(meshes_list):
@@ -261,7 +276,7 @@ def set_colors(meshes_list, colors_list):
   meshes_list = utils.sanitize_list(meshes_list)
   colors_list = utils.sanitize_list(colors_list)
 
-  data = vbl_aquarium.generic.IDListVector3List(
+  data = vbl_aquarium.generic.IDListColorList(
     ids = [x.data.id for x in meshes_list],
     values = [utils.formatted_color(utils.sanitize_vector3(x)) for x in colors_list]
   )

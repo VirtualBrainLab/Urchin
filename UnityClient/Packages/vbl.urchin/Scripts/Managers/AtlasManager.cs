@@ -95,6 +95,9 @@ namespace Urchin.Managers
             await atlasTask;
 
             BrainAtlasManager.SetReferenceCoord(Utils.Utils.BregmaDefaults[BrainAtlasManager.ActiveReferenceAtlas.Name]);
+#if UNITY_EDITOR
+            Debug.Log($"Reference coordinate set to {Utils.Utils.BregmaDefaults[BrainAtlasManager.ActiveReferenceAtlas.Name]}");
+#endif
         }
 
         //public void CustomAtlas(CustomAtlasData data)
