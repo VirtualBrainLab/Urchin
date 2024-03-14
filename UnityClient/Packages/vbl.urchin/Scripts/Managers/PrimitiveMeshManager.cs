@@ -8,7 +8,7 @@ using Urchin.API;
 namespace Urchin.Managers
 {
    
-    public class PrimitiveMeshManager : MonoBehaviour
+    public class PrimitiveMeshManager : Manager
     {
         [SerializeField] private Transform _primitiveMeshParentT;
         [SerializeField] private GameObject _primitivePrefabGO;
@@ -16,6 +16,11 @@ namespace Urchin.Managers
         //Keeping a dictionary mapping names of objects to the game object in schene
         private Dictionary<string, MeshBehavior> _meshBehaviors;
 
+        #region Properties
+        public override ManagerType Type { get { return ManagerType.PrimitiveMeshManager; } }
+        #endregion
+
+        #region Unity
         private void Awake()
         {
             _meshBehaviors = new();
@@ -38,6 +43,8 @@ namespace Urchin.Managers
             // clear
             Client_SocketIO.ClearMeshes += Clear;
         }
+
+        #endregion
 
         public void UpdateData(MeshModel data)
         {
@@ -123,6 +130,36 @@ namespace Urchin.Managers
         {
             for (int i = 0; i < data.ids.Length; i++)
                 _meshBehaviors[data.ids[i]].SetMaterial(data.values[i]);
+        }
+        #endregion
+
+        #region Manager
+        public override void FromSerializedData(string serializedData)
+        {
+            Clear();
+
+            PrimitiveMeshData data = JsonUtility.FromJson<PrimitiveMeshData>(serializedData);
+
+            foreach (MeshModel modelData in data.Data)
+                Create(modelData);
+        }
+
+        public override string ToSerializedData()
+        {
+            PrimitiveMeshData data = new();
+            data.Data = new MeshModel[_meshBehaviors.Count];
+
+            MeshBehavior[] meshBehaviors = _meshBehaviors.Values.ToArray();
+
+            for (int i = 0; i < _meshBehaviors.Count; i++)
+                data.Data[i] = meshBehaviors[i].Data;
+
+            return JsonUtility.ToJson(data);
+        }
+
+        private struct PrimitiveMeshData
+        {
+            public MeshModel[] Data;
         }
         #endregion
     }
