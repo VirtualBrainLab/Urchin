@@ -35,7 +35,7 @@ def save():
     """
     client.sio.emit('urchin-save')
 
-def load(string url):
+def load(url):
     client.sio.emit('urchin-load', url)
 
 
