@@ -48,6 +48,7 @@ namespace Urchin.Managers
 
         public void UpdateData(MeshModel data)
         {
+            Debug.Log(JsonUtility.ToJson(data));
             if (_meshBehaviors.ContainsKey(data.ID))
             {
                 // Update

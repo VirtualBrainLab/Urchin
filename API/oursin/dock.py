@@ -20,7 +20,8 @@ def create_bucket(bucket_name, password, api_url = api_url):
         password = hash256(password)
     )
 
-    response = requests.post(api_url, data=data.model_dump_json(), headers=headers)
+    print(f'Attempting to create {create_url}')
+    response = requests.post(create_url, data=data.model_dump_json(), headers=headers)
 
     # Check the response
     if response.status_code == 201:
