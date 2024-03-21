@@ -1,8 +1,8 @@
 
 using UnityEngine;
-    
+
 public struct Vector3Data
 {
-    public string id;
-    public Vector3 value;
+    public string ID;
+    public Vector3 Value;
 }

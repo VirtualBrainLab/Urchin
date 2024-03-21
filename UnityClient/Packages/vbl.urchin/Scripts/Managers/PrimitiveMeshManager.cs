@@ -48,11 +48,11 @@ namespace Urchin.Managers
 
         public void UpdateData(MeshModel data)
         {
-            if (_meshBehaviors.ContainsKey(data.id))
+            if (_meshBehaviors.ContainsKey(data.ID))
             {
                 // Update
-                _meshBehaviors[data.id].Data = data;
-                _meshBehaviors[data.id].UpdateAll();
+                _meshBehaviors[data.ID].Data = data;
+                _meshBehaviors[data.ID].UpdateAll();
             }
             else
             {
@@ -64,14 +64,14 @@ namespace Urchin.Managers
         public void Create(MeshModel data) //instantiates cube as default
         {
             GameObject go = Instantiate(_primitivePrefabGO, _primitiveMeshParentT);
-            go.name = $"primMesh_{data.id}";
+            go.name = $"primMesh_{data.ID}";
 
             MeshBehavior meshBehavior = go.GetComponent<MeshBehavior>();
 
             meshBehavior.Data = data;
             meshBehavior.UpdateAll();
 
-            _meshBehaviors.Add(data.id, meshBehavior);
+            _meshBehaviors.Add(data.ID, meshBehavior);
         }
 
         public void Clear()
@@ -86,12 +86,12 @@ namespace Urchin.Managers
         #region Delete
         public void Delete(IDData data)
         {
-            _Delete(data.id);
+            _Delete(data.ID);
         }
 
         public void DeleteList(IDList data)
         {
-            foreach (string id in data.ids)
+            foreach (string id in data.IDs)
                 _Delete(id);
         }
 
@@ -110,26 +110,26 @@ namespace Urchin.Managers
         #region Plural setters
         public void SetPositions(IDListVector3List data)
         {
-            for (int i = 0; i < data.ids.Length; i++)
-                _meshBehaviors[data.ids[i]].SetPosition(data.values[i]);
+            for (int i = 0; i < data.IDs.Length; i++)
+                _meshBehaviors[data.IDs[i]].SetPosition(data.Values[i]);
         }
 
         public void SetScales(IDListVector3List data)
         {
-            for (int i = 0; i < data.ids.Length; i++)
-                _meshBehaviors[data.ids[i]].SetScale(data.values[i]);
+            for (int i = 0; i < data.IDs.Length; i++)
+                _meshBehaviors[data.IDs[i]].SetScale(data.Values[i]);
         }
 
         public void SetColors(IDListColorList data)
         {
-            for (int i = 0; i < data.ids.Length; i++)
-                _meshBehaviors[data.ids[i]].SetColor(data.values[i]);
+            for (int i = 0; i < data.IDs.Length; i++)
+                _meshBehaviors[data.IDs[i]].SetColor(data.Values[i]);
         }
 
         public void SetMaterials(IDListStringList data)
         {
-            for (int i = 0; i < data.ids.Length; i++)
-                _meshBehaviors[data.ids[i]].SetMaterial(data.values[i]);
+            for (int i = 0; i < data.IDs.Length; i++)
+                _meshBehaviors[data.IDs[i]].SetMaterial(data.Values[i]);
         }
         #endregion
 

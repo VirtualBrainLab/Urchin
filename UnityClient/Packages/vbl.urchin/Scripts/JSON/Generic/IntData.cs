@@ -1,8 +1,8 @@
 
 
-    
+
 public struct IntData
 {
-    public string id;
-    public int value;
+    public string ID;
+    public int Value;
 }

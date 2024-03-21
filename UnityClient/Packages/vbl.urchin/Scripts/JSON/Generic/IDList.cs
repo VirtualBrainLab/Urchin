@@ -1,7 +1,7 @@
 
 
-    
+
 public struct IDList
 {
-    public string[] ids;
+    public string[] IDs;
 }

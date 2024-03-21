@@ -1,8 +1,8 @@
 
 using UnityEngine;
-    
+
 public struct IDListColorList
 {
-    public string[] ids;
-    public Color[] values;
+    public string[] IDs;
+    public Color[] Values;
 }

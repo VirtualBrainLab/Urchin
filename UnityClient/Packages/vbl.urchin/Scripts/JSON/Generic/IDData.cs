@@ -1,7 +1,7 @@
 
 
-    
+
 public struct IDData
 {
-    public string id;
+    public string ID;
 }

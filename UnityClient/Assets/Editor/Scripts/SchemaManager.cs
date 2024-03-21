@@ -8,11 +8,14 @@ public class SchemaManager
     public static void UpdateSchemas()
     {
 
-        GetSchemas("C:\\proj\\VBL\\vbl-aquarium\\src\\vbl_aquarium\\csharp\\urchin",
-            "Packages/vbl.urchin/Scripts/JSON");
+        GetSchemas("C:\\proj\\VBL\\vbl-aquarium\\models\\csharp\\urchin",
+            "Packages/vbl.urchin/Scripts/JSON/Urchin");
 
-        GetSchemas("C:\\proj\\VBL\\vbl-aquarium\\src\\vbl_aquarium\\csharp\\generic",
+        GetSchemas("C:\\proj\\VBL\\vbl-aquarium\\models\\csharp\\generic",
             "Packages/vbl.urchin/Scripts/JSON/Generic");
+
+        GetSchemas("C:\\proj\\VBL\\vbl-aquarium\\models\\csharp\\dock",
+            "Packages/vbl.urchin/Scripts/JSON/Dock");
 
         Debug.Log("Schemas updated successfully!");
     }

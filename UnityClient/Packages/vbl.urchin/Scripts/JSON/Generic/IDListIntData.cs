@@ -1,8 +1,8 @@
 
 
-    
+
 public struct IDListIntData
 {
-    public string[] ids;
-    public int value;
+    public string[] IDs;
+    public int Value;
 }

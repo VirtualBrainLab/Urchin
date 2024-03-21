@@ -1,8 +1,8 @@
 
 
-    
+
 public struct IntList
 {
-    public string id;
-    public int[] values;
+    public string ID;
+    public int[] Values;
 }

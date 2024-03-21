@@ -1,8 +1,8 @@
 
 
-    
+
 public struct IDListBoolData
 {
-    public string[] ids;
-    public bool value;
+    public string[] IDs;
+    public bool Value;
 }

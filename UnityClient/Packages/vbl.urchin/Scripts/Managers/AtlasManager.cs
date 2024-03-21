@@ -109,12 +109,12 @@ namespace Urchin.Managers
 
         public void SetAreaVisibility(AreaGroupData data)
         {
-            for (int i = 0; i < data.acronyms.Length; i++)
+            for (int i = 0; i < data.Acronyms.Length; i++)
             {
-                int areaID = BrainAtlasManager.ActiveReferenceAtlas.Ontology.Acronym2ID(data.acronyms[i]);
+                int areaID = BrainAtlasManager.ActiveReferenceAtlas.Ontology.Acronym2ID(data.Acronyms[i]);
 
                 OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(areaID);
-                OntologyNode.OntologyNodeSide side = (OntologyNode.OntologyNodeSide)data.side[i];
+                OntologyNode.OntologyNodeSide side = (OntologyNode.OntologyNodeSide)data.Side[i];
 
                 if (node == null)
                     return;
@@ -127,7 +127,7 @@ namespace Urchin.Managers
 
                 if (full && node.FullLoaded.IsCompleted)
                 {
-                    node.SetVisibility(data.visible[i], OntologyNode.OntologyNodeSide.Full);
+                    node.SetVisibility(data.Visible[i], OntologyNode.OntologyNodeSide.Full);
                     VisibleNodes.Add(node);
                     set = true;
 #if UNITY_EDITOR
@@ -136,7 +136,7 @@ namespace Urchin.Managers
                 }
                 if (leftSide && node.SideLoaded.IsCompleted)
                 {
-                    node.SetVisibility(data.visible[i], OntologyNode.OntologyNodeSide.Left);
+                    node.SetVisibility(data.Visible[i], OntologyNode.OntologyNodeSide.Left);
                     VisibleNodes.Add(node);
                     set = true;
 #if UNITY_EDITOR
@@ -145,7 +145,7 @@ namespace Urchin.Managers
                 }
                 if (rightSide && node.SideLoaded.IsCompleted)
                 {
-                    node.SetVisibility(data.visible[i], OntologyNode.OntologyNodeSide.Right);
+                    node.SetVisibility(data.Visible[i], OntologyNode.OntologyNodeSide.Right);
                     VisibleNodes.Add(node);
                     set = true;
 #if UNITY_EDITOR
@@ -156,7 +156,7 @@ namespace Urchin.Managers
                 if (set)
                     NodeVisibleEvent.Invoke(node);
                 else
-                    LoadIndividualArea(node, full, leftSide, rightSide, data.visible[i]);
+                    LoadIndividualArea(node, full, leftSide, rightSide, data.Visible[i]);
             }
         }
 

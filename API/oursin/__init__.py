@@ -24,6 +24,7 @@ from . import text
 from . import volumes
 from . import texture
 from . import custom
+from . import dock
 
 # load the colors
 from . import colors
