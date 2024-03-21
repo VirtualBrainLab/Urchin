@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "oursin"
-version = "0.5.4"
+dynamic = ["version"]
 description = 'Urchin - Universal Renderer Creating Helpful Images for Neuroscience Python API'
 readme = "README.md"
 requires-python = ">=3.8, <3.13"
@@ -32,6 +32,9 @@ dependencies = [
   "numpy>=1.23.3, <1.27.0",
   "Pillow>=9.5, <10.2",
 ]
+
+[tool.hatch.version]
+path = "oursin/__about__.py"
 
 [project.urls]
 Documentation = "https://virtualbrainlab.org/urchin/installation_and_use.html"
