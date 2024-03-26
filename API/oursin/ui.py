@@ -1,5 +1,8 @@
 """Interactive components within notebooks"""
 
+global_binned_spikes = None
+global_prepped_data = None
+
 # def slider_widget(function_call, slider_parameters):
 #     """Creates a slider in the notebook, displays results of the input function
     
@@ -58,9 +61,11 @@ def spikes_bin_data(spike_times_raw_data, spike_clusters_data, bin_size=0.02):
         counts, _ = np.histogram(cluster, bins_seconds)  
         binned_spikes.append(counts)
     binned_spikes = np.array(binned_spikes) # should be [#neurons, #bins]
+    global global_binned_spikes 
+    global_binned_spikes = binned_spikes
     return binned_spikes
 
-def spikes_binned_event_average(binned_spikes, event_start, event_ids, bin_size_sec=0.02, window_start_sec = 0.1, window_end_sec = 0.5):
+def spikes_binned_event_average(event_start, event_ids, binned_spikes = global_binned_spikes, bin_size_sec=0.02, window_start_sec = 0.1, window_end_sec = 0.5):
     """Prepares intermediate data table and averages binned spikes over a given time window
     
     Parameters
@@ -85,7 +90,7 @@ def spikes_binned_event_average(binned_spikes, event_start, event_ids, bin_size_
     
     Examples
     --------
-    >>> urchin.ui.spikes_binned_event_average(binned_spikes, event_start, event_ids)
+    >>> urchin.ui.spikes_binned_event_average(event_start, event_ids, binned_spikes)
     """
     try:
         import numpy as np
@@ -121,9 +126,12 @@ def spikes_binned_event_average(binned_spikes, event_start, event_ids, bin_size_
 
             bin_average = np.mean(neuron_stim_data, axis=0)/bin_size_sec
             final_avg[neuron_id, int(stim_id) - 1, :] = bin_average
+
+    global global_prepped_data
+    global_prepped_data = final_avg
     return final_avg
 
-def slope_viz_stimuli_per_neuron(prepped_data, t=-100, neuron_id = 0):
+def slope_viz_stimuli_per_neuron(prepped_data = global_prepped_data, t=-100, neuron_id = 0):
     """Visualizes and creates interactive plot for the average of each stimulus per neuron
     
     Parameters
@@ -172,7 +180,7 @@ def slope_viz_stimuli_per_neuron(prepped_data, t=-100, neuron_id = 0):
     # plt.legend()
     plt.show()
 
-def slope_viz_neurons_per_stimuli(prepped_data, t=-100, stim_id = 0):
+def slope_viz_neurons_per_stimuli(prepped_data = global_prepped_data, t=-100, stim_id = 0):
     """Visualizes and creates interactive plot for the average of every neuron per stimulus
     
     Parameters
@@ -213,7 +221,7 @@ def slope_viz_neurons_per_stimuli(prepped_data, t=-100, stim_id = 0):
 
     plt.show()
 
-def plot_appropriate_interactie_graph(view = "stim", prepped_data, window_start_sec = 0.1, window_end_sec = 0.5):
+def plot_appropriate_interactive_graph(prepped_data = global_prepped_data, view = "stim", window_start_sec = 0.1, window_end_sec = 0.5):
     """Plots appropriate interactive graph based on view
     
     Parameters
@@ -229,7 +237,7 @@ def plot_appropriate_interactie_graph(view = "stim", prepped_data, window_start_
     
     Examples
     --------
-    >>> urchin.ui.plot_appropriate_interactie_graph(view = "stim")
+    >>> urchin.ui.plot_appropriate_interactie_graph(prepped_data, view = "stim")
     """
     try:
         import ipywidgets as widgets
@@ -266,3 +274,26 @@ def plot_appropriate_interactie_graph(view = "stim", prepped_data, window_start_
         # Display the widgets and the output
         display(widgets.VBox([neuron_dropdown,time_slider]))
         display(output)
+
+def plot_event_average_interaction(spiking_times, spiking_clusters, event_start, event_ids, view = "stim"):
+    """Wrapper function that takes in raw data, and goes through entire process to return plots
+    
+    Parameters
+    ----------
+    spike_times_raw_data: np array
+        raw data of spiking times, in samples
+    spike_clusters_data: np array
+        list of spike clusters data
+    event_start: array
+        start times of events in seconds
+    event_ids: array
+        ids of events
+    view: str
+        view type, either "stim" or "neuron"
+    Examples
+    --------
+    >>> urchin.ui.plot_event_average_interaction(spike_times,spike_clusters,event_start, event_ids, view = "neuron")
+    """
+    binned_spikes = spikes_bin_data(spiking_times, spiking_clusters)
+    prepped_data = spikes_binned_event_average(event_start, event_ids, binned_spikes)
+    plot_appropriate_interactive_graph(prepped_data, view)
