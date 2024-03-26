@@ -53,59 +53,68 @@ namespace Urchin.Managers
 
             Client_SocketIO.ClearAreas += ClearAreas;
 
-            Client_SocketIO.LoadAtlas += LoadAtlas;
-            Client_SocketIO.CustomAtlas += CustomAtlas;
+            Client_SocketIO.AtlasLoad += LoadAtlas;
+            //Client_SocketIO.AtlasCreateCustom += CustomAtlas;
 
-            Client_SocketIO.SetAreaVisibility += SetAreaVisibility;
-            Client_SocketIO.SetAreaColors += SetAreaColors;
-            Client_SocketIO.SetAreaIntensity += SetAreaIntensity;
-            Client_SocketIO.SetAreaColormap += SetAreaColormap;
-            Client_SocketIO.SetAreaMaterial += SetAreaMaterial;
-            Client_SocketIO.SetAreaAlpha += SetAreaAlpha;
-            Client_SocketIO.SetAreaData += SetAreaData;
-            Client_SocketIO.SetAreaIndex += SetAreaIndex;
-            Client_SocketIO.LoadDefaultAreas += LoadDefaultAreasVoid;
+            Client_SocketIO.AtlasSetAreaVisibility += SetAreaVisibility;
+            Client_SocketIO.AtlasSetAreaColors += SetAreaColors;
+            Client_SocketIO.AtlasSetAreaIntensities += SetAreaIntensity;
+            Client_SocketIO.AtlasSetColormap += SetAreaColormap;
+            Client_SocketIO.AtlasSetAreaMaterials += SetAreaMaterial;
+            Client_SocketIO.AtlasSetAreaAlphas += SetAreaAlpha;
+            Client_SocketIO.AtlasSetAreaData += SetAreaData;
+            Client_SocketIO.AtlasSetAreaDataIndex += SetAreaIndex;
+            Client_SocketIO.AtlasLoadAreaDefaults += LoadDefaultAreasVoid;
         }
         #endregion
 
         #region Public
 
-        public void LoadAtlas(string atlasName)
+        public async void LoadAtlas(string atlasName)
         {
+            Task atlasTask;
+
             switch (atlasName)
             {
                 case "ccf25":
-                    BrainAtlasManager.LoadAtlas("allen_mouse_25um");
+                    atlasTask = BrainAtlasManager.LoadAtlas("allen_mouse_25um");
                     break;
 #if !UNITY_WEBGL
                 case "waxholm39":
-                    BrainAtlasManager.LoadAtlas("whs_sd_rat_39um");
+                    atlasTask = BrainAtlasManager.LoadAtlas("whs_sd_rat_39um");
                     break;
 #endif
                 case "waxholm78":
-                    BrainAtlasManager.LoadAtlas("whs_sd_rat_78um");
+                    atlasTask = BrainAtlasManager.LoadAtlas("whs_sd_rat_78um");
                     break;
                 default:
                     Client_SocketIO.LogError($"Atlas {atlasName} does not exist, or is not available on this platform.");
-                    break;
+                    return;
             }
+
+            await atlasTask;
+
+            BrainAtlasManager.SetReferenceCoord(Utils.Utils.BregmaDefaults[BrainAtlasManager.ActiveReferenceAtlas.Name]);
+#if UNITY_EDITOR
+            Debug.Log($"Reference coordinate set to {Utils.Utils.BregmaDefaults[BrainAtlasManager.ActiveReferenceAtlas.Name]}");
+#endif
         }
 
-        public void CustomAtlas(CustomAtlasData data)
-        {
-            Vector3 dims = new Vector3(data.dimensions[0], data.dimensions[1], data.dimensions[2]);
-            Vector3 res = new Vector3(data.resolution[0], data.resolution[1], data.resolution[2]);
-            BrainAtlasManager.CustomAtlas(data.name, dims, res);
-        }
+        //public void CustomAtlas(CustomAtlasData data)
+        //{
+        //    Vector3 dims = new Vector3(data.dimensions[0], data.dimensions[1], data.dimensions[2]);
+        //    Vector3 res = new Vector3(data.resolution[0], data.resolution[1], data.resolution[2]);
+        //    BrainAtlasManager.CustomAtlas(data.name, dims, res);
+        //}
 
-        public void SetAreaVisibility(AreaData data)
+        public void SetAreaVisibility(AreaGroupData data)
         {
-            for (int i = 0; i < data.acronym.Length; i++)
+            for (int i = 0; i < data.Acronyms.Length; i++)
             {
-                int areaID = BrainAtlasManager.ActiveReferenceAtlas.Ontology.Acronym2ID(data.acronym[i]);
+                int areaID = BrainAtlasManager.ActiveReferenceAtlas.Ontology.Acronym2ID(data.Acronyms[i]);
 
                 OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(areaID);
-                OntologyNode.OntologyNodeSide side = (OntologyNode.OntologyNodeSide)data.side[i];
+                OntologyNode.OntologyNodeSide side = (OntologyNode.OntologyNodeSide)data.Side[i];
 
                 if (node == null)
                     return;
@@ -118,7 +127,7 @@ namespace Urchin.Managers
 
                 if (full && node.FullLoaded.IsCompleted)
                 {
-                    node.SetVisibility(data.visible[i], OntologyNode.OntologyNodeSide.Full);
+                    node.SetVisibility(data.Visible[i], OntologyNode.OntologyNodeSide.Full);
                     VisibleNodes.Add(node);
                     set = true;
 #if UNITY_EDITOR
@@ -127,7 +136,7 @@ namespace Urchin.Managers
                 }
                 if (leftSide && node.SideLoaded.IsCompleted)
                 {
-                    node.SetVisibility(data.visible[i], OntologyNode.OntologyNodeSide.Left);
+                    node.SetVisibility(data.Visible[i], OntologyNode.OntologyNodeSide.Left);
                     VisibleNodes.Add(node);
                     set = true;
 #if UNITY_EDITOR
@@ -136,7 +145,7 @@ namespace Urchin.Managers
                 }
                 if (rightSide && node.SideLoaded.IsCompleted)
                 {
-                    node.SetVisibility(data.visible[i], OntologyNode.OntologyNodeSide.Right);
+                    node.SetVisibility(data.Visible[i], OntologyNode.OntologyNodeSide.Right);
                     VisibleNodes.Add(node);
                     set = true;
 #if UNITY_EDITOR
@@ -147,7 +156,7 @@ namespace Urchin.Managers
                 if (set)
                     NodeVisibleEvent.Invoke(node);
                 else
-                    LoadIndividualArea(node, full, leftSide, rightSide, data.visible[i]);
+                    LoadIndividualArea(node, full, leftSide, rightSide, data.Visible[i]);
             }
         }
 

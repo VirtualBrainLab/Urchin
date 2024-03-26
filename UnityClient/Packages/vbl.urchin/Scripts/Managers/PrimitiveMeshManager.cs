@@ -1,5 +1,6 @@
 using BrainAtlas;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using Urchin.API;
@@ -7,125 +8,160 @@ using Urchin.API;
 namespace Urchin.Managers
 {
    
-    public class PrimitiveMeshManager : MonoBehaviour
+    public class PrimitiveMeshManager : Manager
     {
         [SerializeField] private Transform _primitiveMeshParentT;
         [SerializeField] private GameObject _primitivePrefabGO;
 
         //Keeping a dictionary mapping names of objects to the game object in schene
-        private Dictionary<string, MeshRenderer> _primMeshRenderers;
+        private Dictionary<string, MeshBehavior> _meshBehaviors;
 
+        #region Properties
+        public override ManagerType Type { get { return ManagerType.PrimitiveMeshManager; } }
+        #endregion
+
+        #region Unity
         private void Awake()
         {
-            _primMeshRenderers = new Dictionary<string, MeshRenderer>();
+            _meshBehaviors = new();
         }
 
         private void Start()
         {
+            // singular
+            Client_SocketIO.MeshUpdate += UpdateData;
 
-            Client_SocketIO.CreateMesh += CreateMesh;
-            Client_SocketIO.DeleteMesh += DeleteMesh;
-            Client_SocketIO.SetPosition += SetPosition;
-            Client_SocketIO.SetScale += SetScale;
-            Client_SocketIO.SetColor += SetColor;
-            Client_SocketIO.SetMaterial += SetMaterial;
+            // plural
+            Client_SocketIO.MeshDelete += Delete;
+            Client_SocketIO.MeshDeletes += DeleteList;
 
+            Client_SocketIO.MeshSetPositions += SetPositions;
+            Client_SocketIO.MeshSetScales += SetScales;
+            Client_SocketIO.MeshSetColors += SetColors;
+            Client_SocketIO.MeshSetMaterials += SetMaterials;
+
+            // clear
             Client_SocketIO.ClearMeshes += Clear;
         }
 
-        public void CreateMesh(List<string> meshIDs) //instantiates cube as default
-        {
-            foreach (string meshID in meshIDs)
-            {
-                if (_primMeshRenderers.ContainsKey(meshID))
-                    Debug.LogWarning($"Mesh with id = {meshID} already exists.");
+        #endregion
 
-                GameObject tempObject = Instantiate(_primitivePrefabGO, _primitiveMeshParentT);
-                tempObject.GetComponent<MeshBehavior>().SetID(meshID);
-                tempObject.name = $"primMesh_{meshID}";
-                _primMeshRenderers.Add(meshID, tempObject.GetComponent<MeshRenderer>());
-                tempObject.GetComponent<MeshRenderer>().material = MaterialManager.MeshMaterials["default"];
+        public void UpdateData(MeshModel data)
+        {
+            Debug.Log(JsonUtility.ToJson(data));
+            if (_meshBehaviors.ContainsKey(data.ID))
+            {
+                // Update
+                _meshBehaviors[data.ID].Data = data;
+                _meshBehaviors[data.ID].UpdateAll();
             }
+            else
+            {
+                // Create
+                Create(data);
+            }
+        }
+
+        public void Create(MeshModel data) //instantiates cube as default
+        {
+            GameObject go = Instantiate(_primitivePrefabGO, _primitiveMeshParentT);
+            go.name = $"primMesh_{data.ID}";
+
+            MeshBehavior meshBehavior = go.GetComponent<MeshBehavior>();
+
+            meshBehavior.Data = data;
+            meshBehavior.UpdateAll();
+
+            _meshBehaviors.Add(data.ID, meshBehavior);
         }
 
         public void Clear()
         {
-            foreach (var kvp in _primMeshRenderers)
+            foreach (var kvp in _meshBehaviors)
             {
                 Destroy(kvp.Value.gameObject);
             }
-            _primMeshRenderers.Clear();
+            _meshBehaviors.Clear();
         }
 
-        public void DeleteMesh(List<string> meshes)
+        #region Delete
+        public void Delete(IDData data)
         {
-            foreach (string mesh in meshes)
+            _Delete(data.ID);
+        }
+
+        public void DeleteList(IDList data)
+        {
+            foreach (string id in data.IDs)
+                _Delete(id);
+        }
+
+        private void _Delete(string id)
+        {
+            if (_meshBehaviors.ContainsKey(id))
             {
-                Destroy(_primMeshRenderers[mesh].gameObject);
-                _primMeshRenderers.Remove(mesh);
-
+                Destroy(_meshBehaviors[id].gameObject);
+                _meshBehaviors.Remove(id);
             }
+            else
+                Debug.LogError($"Mesh {id} does not exist, can't delete");
         }
+        #endregion
 
-        public void SetPosition(Dictionary<string, List<float>> meshPositions)
+        #region Plural setters
+        public void SetPositions(IDListVector3List data)
         {
-            foreach (string meshName in meshPositions.Keys)
-            {
-                List<float> data = meshPositions[meshName];
-                Vector3 position = new Vector3(data[0], data[1], data[2]);
-
-                MeshRenderer tempMesh = _primMeshRenderers[meshName];
-
-                tempMesh.transform.localPosition = BrainAtlasManager.ActiveReferenceAtlas.Atlas2World(position);
-            }
+            for (int i = 0; i < data.IDs.Length; i++)
+                _meshBehaviors[data.IDs[i]].SetPosition(data.Values[i]);
         }
 
-        public void SetScale(Dictionary<string, List<float>> meshScale)
+        public void SetScales(IDListVector3List data)
         {
-            foreach (string meshName in meshScale.Keys)
-            {
-                List<float> data = meshScale[meshName];
-                Vector3 scaleChange = new Vector3(data[0], data[1], data[2]);
-                MeshRenderer tempMesh = _primMeshRenderers[meshName];
-                tempMesh.transform.localScale = scaleChange;
-            }
+            for (int i = 0; i < data.IDs.Length; i++)
+                _meshBehaviors[data.IDs[i]].SetScale(data.Values[i]);
         }
 
-        public void SetColor(Dictionary<string, string> meshColors)
+        public void SetColors(IDListColorList data)
         {
-            foreach (string meshName in meshColors.Keys)
-            {
-                Color newColor;
-                if (ColorUtility.TryParseHtmlString(meshColors[meshName], out newColor))
-                {
-                    //Debug.Log($"Setting Color of {meshName} to {meshColors[meshName]}");
-                    SetColor(meshName, newColor);
-                }
-                else
-                {
-                    //Debug.Log($"Color {meshColors[meshName]} does not exist.");
-                }
-            }
+            for (int i = 0; i < data.IDs.Length; i++)
+                _meshBehaviors[data.IDs[i]].SetColor(data.Values[i]);
         }
 
-        private void SetColor(string meshName, Color color)
+        public void SetMaterials(IDListStringList data)
         {
-            MeshRenderer tempMesh = _primMeshRenderers[meshName];
-            tempMesh.material.color = color;
+            for (int i = 0; i < data.IDs.Length; i++)
+                _meshBehaviors[data.IDs[i]].SetMaterial(data.Values[i]);
         }
+        #endregion
 
-        public void SetMaterial(Dictionary<string, string> meshMaterials)
+        #region Manager
+        public override void FromSerializedData(string serializedData)
         {
-            foreach (var kvp in meshMaterials)
-            {
-                Material newMaterial = MaterialManager.MeshMaterials[kvp.Value];
-                MeshRenderer tempMesh = _primMeshRenderers[kvp.Key];
-                Color color = tempMesh.material.color;
-                tempMesh.material = newMaterial;
-                tempMesh.material.color = color;
+            Clear();
 
-            }
+            PrimitiveMeshData data = JsonUtility.FromJson<PrimitiveMeshData>(serializedData);
+
+            foreach (MeshModel modelData in data.Data)
+                Create(modelData);
         }
 
+        public override string ToSerializedData()
+        {
+            PrimitiveMeshData data = new();
+            data.Data = new MeshModel[_meshBehaviors.Count];
+
+            MeshBehavior[] meshBehaviors = _meshBehaviors.Values.ToArray();
+
+            for (int i = 0; i < _meshBehaviors.Count; i++)
+                data.Data[i] = meshBehaviors[i].Data;
+
+            return JsonUtility.ToJson(data);
+        }
+
+        private struct PrimitiveMeshData
+        {
+            public MeshModel[] Data;
+        }
+        #endregion
     }
 }

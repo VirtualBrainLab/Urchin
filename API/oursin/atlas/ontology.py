@@ -3,6 +3,7 @@ from .. import utils
 from pathlib import Path
 
 import json
+import vbl_aquarium
 
 class CustomAtlas:
     def __init__(self, atlas_name, atlas_dimensions, atlas_resolution):
@@ -54,6 +55,20 @@ class Atlas:
         """
         client.sio.emit('LoadDefaultAreas', "")
 
+    def set_reference_coord(self, reference_coord):
+        """Set the reference coordinate for the atlas (Bregma by default)
+
+        Parameters
+        ----------
+        reference_coord : list of float
+        """
+        
+        data = {}
+        data['ID'] = self.atlas_name
+        data['Value'] = utils.formatted_vector3(utils.sanitize_vector3(reference_coord))
+
+        client.sio.emit('AtlasSetReferenceCoord', json.dumps(data))
+
     def get_areas(self, area_list):
         """Get the area objects given a list of area acronyms
 
@@ -99,16 +114,14 @@ class Atlas:
 
         # output dictionary should match JSON schema AreaData:
         #{"acronym": ["a", "b", "c"], "side": [-1, 0, 1], "visible": [true, true, false]}
-        data_dict = {}
-        data_dict['acronym'] = []
-        data_dict['side'] = []
-        data_dict['visible'] = []
-        for i, area in enumerate(area_list):
-            data_dict['acronym'].append(area.acronym)
-            data_dict['visible'].append(area_visibility[i])
-            data_dict['side'].append(side.value)
 
-        client.sio.emit('SetAreaVisibility', json.dumps(data_dict))
+        data = vbl_aquarium.urchin.AreaGroupData(
+            acronyms = [area.acronym for area in area_list],
+            visible = area_visibility,
+            side = [side.value] * len(area_list),
+        )
+
+        client.sio.emit('SetAreaVisibility', data.model_dump_json())
 
     def set_colors(self, area_list, area_colors, sided="full"):
         """Set color of multiple areas at once.

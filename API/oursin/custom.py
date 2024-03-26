@@ -50,6 +50,13 @@ class CustomMesh:
     def set_position(self, position = [0,0,0], use_reference = True):
         """Set the position relative to the reference coordinate
 
+        Note that the null transform is active by default in Urchin, therefore directions are the CCF defaults:
+        AP+ posterior, ML+ right, DV+ ventral
+
+        By default objects are placed with their origin at the reference (Bregma), disabling this
+        places objects relative to the Atlas origin, which is the (0,0,0) coordinate in the top, front, left
+        corner of the atlas space.
+
         Parameters
         ----------
         position : vector3
@@ -61,10 +68,27 @@ class CustomMesh:
 
         data = {}
         data['ID'] = self.id
-        data['Position'] = position
+        data['Position'] = utils.formatted_vector3(position)
         data['UseReference'] = use_reference
 
         client.sio.emit('CustomMeshPosition', json.dumps(data))
+
+    def set_scale(self, scale = [1, 1, 1]):
+        """_summary_
+
+        Parameters
+        ----------
+        scale : list, optional
+            _description_, by default [1, 1, 1]
+        """
+
+        scale = utils.sanitize_vector3(scale)
+
+        data = {}
+        data['ID'] = self.id
+        data['Value'] = utils.formatted_vector3(scale)
+
+        client.sio.emit('CustomMeshScale', json.dumps(data))
 
 def clear():
     """Clear all custom meshes

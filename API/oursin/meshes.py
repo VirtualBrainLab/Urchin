@@ -4,19 +4,24 @@ from . import client
 import warnings
 from . import utils
 
+from vbl_aquarium.models.urchin import *
+from vbl_aquarium.models.generic import *
+
 callback = None
 
 def _neuron_callback(callback_data):
   if callback is not None:
     callback(callback_data)
 
-  ## Primitive Mesh Renderer
 counter = 0
+
+## Primitive Mesh Renderer
 class Mesh:
   """Mesh Object in Unity
   """
 
-  def __init__(self,position= [0.0,0.0,0.0], scale= [1,1,1], color= '#FFFFFF', material = 'default'):
+  def __init__(self, position= [0.0,0.0,0.0], scale= [1,1,1], color=[1,1,1],
+               material = 'default', interactive = False):
     """Create a mesh object
 
     Note: this function should be avoided, use `urchin.meshes.create()`
@@ -32,46 +37,27 @@ class Mesh:
     material : str, optional
         by default 'default'
     """
-    self.create()
-
-    
-    position = utils.sanitize_vector3(position)
-    self.position = position
-    client.sio.emit('SetPosition', {self.id: position})
-      
-    
-    scale = utils.sanitize_vector3(scale)
-    self.scale = scale
-    client.sio.emit('SetScale', {self.id: scale})
-      
-   
-    color = utils.sanitize_color(color)
-    self.color = color
-    client.sio.emit('SetColor',{self.id: color})
-
-    material = utils.sanitize_material(material)
-    self.material = material
-    
-
-    
-  def create(self):
-    """Creates primitive mesh
-
-    Parameters
-    ----------
-    none
-      
-	  Examples
-	  --------
-	  >>> cube_obj = urchin.primitives.Primitive()
-    """
     global counter
-    self.id = str(counter)
-    counter +=1
-    client.sio.emit('CreateMesh', [self.id])
-    self.in_unity = True
-  
 
+    self.data = MeshModel(
+      id = str(counter),
+      shape = 'cube',
+      position = utils.formatted_vector3(position),
+      color = utils.formatted_color(color),
+      scale = utils.formatted_vector3(scale),
+      material = material,
+      interactive = interactive
+    )
+
+    counter += 1
+
+    self._update()
+    self.in_unity = True
+
+  def _update(self):
+    """Serialize and update the data in the Urchin Renderer
+    """
+    client.sio.emit('MeshUpdate', self.data.to_string())
 
   def delete(self):
     """Deletes meshes
@@ -84,16 +70,20 @@ class Mesh:
 	  --------
 	  >>> cube_obj.delete() 
     """
-    client.sio.emit('DeleteMesh', [self.id])
+
+    data = IDData
+    data.id = self.data.id
+
+    client.sio.emit('MeshDelete', data.to_string())
     self.in_unity = False
   
   def set_position(self, position):
-    """Set the position of mesh renderer
+    """Set the position of a mesh object. Position shoul dbe in AP/ML/DV coordinates in um
 
     Parameters
     ----------
     position : list of three floats
-      vertex positions of the mesh
+      (ap, ml, dv) in um
         
     Examples
     --------
@@ -102,8 +92,10 @@ class Mesh:
     if self.in_unity == False:
       raise Exception("Object does not exist in Unity, call create method first.")
     
-    self.position = utils.sanitize_vector3([position[0]/1000, position[1]/1000, position[2]/1000])
-    client.sio.emit('SetPosition', {self.id: self.position})
+    position_sanitized = utils.sanitize_vector3([position[0]/1000, position[1]/1000, position[2]/1000])
+    self.data.position = utils.formatted_vector3(position_sanitized)
+
+    self._update()
   
   def set_scale(self, scale):
     """Set the scale of mesh renderer
@@ -120,9 +112,10 @@ class Mesh:
     if self.in_unity == False:
       raise Exception("Object does not exist in Unity, call create method first.")
     
-    scale = utils.sanitize_vector3(scale)
-    self.scale = scale
-    client.sio.emit('SetScale', {self.id: scale})
+    scale_sanitized = utils.sanitize_vector3(scale)
+    self.data.scale = utils.formatted_vector3(scale_sanitized)
+
+    self._update()
   
   def set_color(self, color):
     """Set the color of mesh renderer
@@ -140,9 +133,10 @@ class Mesh:
     if self.in_unity == False:
       raise Exception("Object does not exist in Unity, call create method first.")
     
-    color = utils.sanitize_color(color)
-    self.color = color
-    client.sio.emit('SetColor',{self.id: color})
+    # color_sanitized = utils.sanitize_color(color)
+    self.data.color = utils.formatted_color(color)
+
+    self._update()
 
   def set_material(self, material):
     """Set the material of mesh renderer
@@ -160,29 +154,43 @@ class Mesh:
     if self.in_unity == False:
       raise Exception("Object does not exist in Unity, call create method first.")
     
-    material = utils.sanitize_material(material)
-    self.material = material
-    client.sio.emit('SetMaterial',{self.id: material})
+    material_sanitized = utils.sanitize_material(material)
+    self.data.material = material_sanitized
+
+    self._update()
 
 
 
 
 #actually initializes each object(s), doesn't use any parameters other than how many to initialize (uses all defaults)
-def create(num_objects):
-  """Creates primitive meshes
+def create(num_objects, position= [0.0,0.0,0.0], scale= [1,1,1], color=[1,1,1],
+               material = 'default', interactive = False):
+  """Create multiple meshes
 
   Parameters
   ----------
   num_objects : int
-    number of primitive objects to be created      
+      number of mesh objects to be created
+  position : list, optional
+      default position nullspace (ap, ml, dv), by default [0.0,0.0,0.0]
+  scale : list, optional
+      default scale, by default [1,1,1]
+  color : list, optional
+      default color, by default [1,1,1]
+  material : str, optional
+      default material, by default 'default'
+  interactive : bool, optional
+      default interactive state, by default False
+
 	Examples
 	--------
-	>>> cubes = urchin.primitives.create(2)
+	>>> meshes = urchin.meshes.create(2)
   """
-  prim_names = []
+  mesh_objects = []
   for i in range(num_objects):
-    prim_names.append(Mesh())
-  return(prim_names)
+    mesh_objects.append(Mesh(position=position, color=color, scale=scale,
+                             material=material, interactive=interactive))
+  return(mesh_objects)
 
 def delete(meshes_list):
   """Deletes meshes
@@ -194,12 +202,15 @@ def delete(meshes_list):
       
 	Examples
 	--------
-	>>> cubes.delete()
+	>>> urchin.meshes.delete(meshes)
   """
   meshes_list = utils.sanitize_list(meshes_list)
 
-  mesh_ids = [x.id for x in meshes_list]
-  client.sio.emit('DeleteMesh', mesh_ids)
+  data = IDList(
+    ids = [x.data.id for x in meshes_list]
+  )
+
+  client.sio.emit('MeshDeletes', data.to_string())
 
 def set_positions(meshes_list, positions_list):
   """Set the positions of mesh renderers
@@ -218,16 +229,12 @@ def set_positions(meshes_list, positions_list):
   meshes_list = utils.sanitize_list(meshes_list)
   positions_list = utils.sanitize_list(positions_list)
 
-  mesh_pos = {}
-  for i in range(len(meshes_list)):
-    mesh = meshes_list[i]
-    if mesh.in_unity:
-      pos = [positions_list[i][0]/1000, positions_list[i][1]/1000, positions_list[i][2]/1000]
-      mesh_pos[mesh.id] = utils.sanitize_vector3(pos)
-    else:
-      warnings.warn(f"Object with id {mesh.id} does not exist. Please create object {mesh.id}.")
+  data = IDListVector3List(
+    ids = [x.data.id for x in meshes_list],
+    values = [utils.formatted_vector3(utils.sanitize_vector3([x[0]/1000, x[1]/1000, x[2]/1000])) for x in positions_list]
+  )
 
-  client.sio.emit('SetPosition', mesh_pos)
+  client.sio.emit('MeshPositions', data.to_string())
 
 def set_scales(meshes_list, scales_list):
   """Set scale of mesh renderers
@@ -246,15 +253,12 @@ def set_scales(meshes_list, scales_list):
   meshes_list = utils.sanitize_list(meshes_list)
   scales_list = utils.sanitize_list(scales_list)
 
-  mesh_scale = {}
-  for i in range(len(meshes_list)):
-    mesh = meshes_list[i]
-    if mesh.in_unity:
-      mesh_scale[mesh.id] = utils.sanitize_vector3(scales_list[i])
-    else:
-      warnings.warn(f"Object with id {mesh.id} does not exist. Please create object {mesh.id}.")
+  data = IDListVector3List(
+    ids = [x.data.id for x in meshes_list],
+    values = [utils.formatted_vector3(utils.sanitize_vector3(x)) for x in scales_list]
+  )
 
-  client.sio.emit('SetScale', mesh_scale)
+  client.sio.emit('MeshScales', data.to_string())
 
 def set_colors(meshes_list, colors_list):
   """Sets colors of mesh renderers
@@ -274,15 +278,12 @@ def set_colors(meshes_list, colors_list):
   meshes_list = utils.sanitize_list(meshes_list)
   colors_list = utils.sanitize_list(colors_list)
 
-  mesh_colors = {}
-  for i in range(len(meshes_list)):
-    mesh = meshes_list[i]
-    if mesh.in_unity:
-      mesh_colors[mesh.id] = utils.sanitize_color(colors_list[i])
-    else:
-      warnings.warn(f"Object with id {mesh.id} does not exist. Please create object {mesh.id}.")
+  data = IDListColorList(
+    ids = [x.data.id for x in meshes_list],
+    values = [utils.formatted_color(utils.sanitize_vector3(x)) for x in colors_list]
+  )
 
-  client.sio.emit('SetColor', mesh_colors)
+  client.sio.emit('MeshColors', data.to_string())
 
 def set_materials(meshes_list, materials_list):
   """Sets materials of mesh renderers
@@ -302,12 +303,9 @@ def set_materials(meshes_list, materials_list):
   meshes_list = utils.sanitize_list(meshes_list)
   materials_list = utils.sanitize_list(materials_list)
 
-  mesh_materials = {}
-  for i in range(len(meshes_list)):
-    mesh = meshes_list[i]
-    if mesh.in_unity:
-      mesh_materials[mesh.id] = utils.sanitize_material(materials_list[i])
-    else:
-      warnings.warn(f"Object with id {mesh.id} does not exist. Please create object {mesh.id}.")  
+  data = IDListStringList(
+    ids = [x.data.id for x in meshes_list],
+    values = [utils.sanitize_material(x) for x in materials_list]
+  )
       
-  client.sio.emit('SetMaterial', mesh_materials) 
+  client.sio.emit('MeshMaterials', data.to_string()) 

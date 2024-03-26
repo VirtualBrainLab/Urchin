@@ -1,31 +1,42 @@
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.poetry]
+[project]
 name = "oursin"
-version = "0.5.3"
-description = "Urchin - Universal Renderer Creating Helpful Images for Neuroscience Python API"
+dynamic = ["version"]
+description = 'Urchin - Universal Renderer Creating Helpful Images for Neuroscience Python API'
 readme = "README.md"
-authors = [
-  "Daniel Birman <dbirman@uw.edu>"
-]
+requires-python = ">=3.8, <3.13"
 license = "MIT"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+keywords = ["virtualbrainlab", "neuroscience", "renderer"]
+authors = [
+  { name = "Daniel Birman", email = "dbirman@uw.edu" },
 ]
-include = ["atlas/data/*.json"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "Operating System :: OS Independent",
+  "Intended Audience :: Science/Research",
+]
+dependencies = [
+  "pydantic==2.6.4",
+  "python-socketio[client]>=5.8, <5.11",
+  "numpy>=1.23.3, <1.27.0",
+  "Pillow>=9.5, <10.2",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.8, <4.0"
-python-socketio = { version = ">=5.8, <5.11", extras = ["client"] }
-numpy = ">=1.23.3, <1.27.0"
-Pillow = ">=9.5, <10.2"
+[tool.hatch.version]
+path = "oursin/__about__.py"
 
-[tool.poetry.scripts]
-
-[tool.poetry.urls]
-homepage = "https://virtualbrainlab.org/urchin/installation_and_use.html"
-repository = "https://github.com/VirtualBrainLab/Urchin"
+[project.urls]
+Documentation = "https://virtualbrainlab.org/urchin/installation_and_use.html"
+Issues = "https://github.com/VirtualBrainLab/Urchin/issues"
+Source = "https://github.com/VirtualBrainLab/Urchin"

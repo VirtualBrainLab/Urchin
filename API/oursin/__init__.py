@@ -4,7 +4,6 @@ urchin.
 Python library for connecting to and sending data to a Universal Renderer for Neuroscience renderer.
 """
 __author__ = 'Daniel Birman'
-__version__ = "0.5.0"
 
 # load the client
 from . import client
@@ -25,6 +24,7 @@ from . import text
 from . import volumes
 from . import texture
 from . import custom
+from . import dock
 
 # load the colors
 from . import colors

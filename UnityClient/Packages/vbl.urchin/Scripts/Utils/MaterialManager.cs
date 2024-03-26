@@ -26,5 +26,20 @@ public class MaterialManager : MonoBehaviour
             _materialsDict.Add(zip.name, zip.material);
     }
 
-    public static Dictionary<string, Material> MeshMaterials { get { return Instance._materialsDict; } }
+    public static Material GetMaterial(string materialName)
+    {
+        if (Instance._materialsDict.ContainsKey(materialName))
+        {
+            return Instance._materialsDict[materialName];
+        }
+        else
+        {
+            string msg = $"Material {materialName} does not exist";
+#if UNITY_EDITOR
+            throw new Exception(msg);
+#else
+            Debug.Log(msg);
+#endif
+        }
+    }
 }
