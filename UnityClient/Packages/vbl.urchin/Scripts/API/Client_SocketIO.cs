@@ -79,6 +79,9 @@ namespace Urchin.API
         }
 
         #region Socket setup by action group
+        public static Action<AtlasModel> UpdateAtlas;
+
+
         public static Action<string> AtlasLoad;
         //public static Action<CustomAtlasData> AtlasCreateCustom;
         //public static Action<Vector3Data> AtlasSetReferenceCoord;
@@ -94,19 +97,21 @@ namespace Urchin.API
 
         private void Start_Atlas()
         {
+            manager.Socket.On<string>("UpdateAtlas", x => UpdateAtlas.Invoke(JsonUtility.FromJson<AtlasModel>(x)));
+
             // CCF Areas
-            manager.Socket.On<string>("LoadAtlas", x => AtlasLoad.Invoke(x));
-            //manager.Socket.On<string>("CustomAtlas", x => AtlasCreateCustom.Invoke(JsonUtility.FromJson<CustomAtlasData>(x)));
-            //manager.Socket.On<string>("AtlasSetReferenceCoord", x => AtlasSetReferenceCoord.Invoke(JsonUtility.FromJson<Vector3Data>(x)));
-            manager.Socket.On<string>("SetAreaVisibility", x => AtlasSetAreaVisibility.Invoke(JsonUtility.FromJson<AreaGroupData>(x)));
-            manager.Socket.On<Dictionary<string, string>>("SetAreaColors", x => AtlasSetAreaColors.Invoke(x));
-            manager.Socket.On<Dictionary<string, float>>("SetAreaIntensity", x => AtlasSetAreaIntensities.Invoke(x));
-            manager.Socket.On<string>("SetAreaColormap", x => AtlasSetColormap.Invoke(x));
-            manager.Socket.On<Dictionary<string, string>>("SetAreaMaterial", x => AtlasSetAreaMaterials.Invoke(x));
-            manager.Socket.On<Dictionary<string, float>>("SetAreaAlpha", x => AtlasSetAreaAlphas.Invoke(x));
-            manager.Socket.On<Dictionary<string, List<float>>>("SetAreaData", x => AtlasSetAreaData.Invoke(x));
-            manager.Socket.On<int>("SetAreaIndex", x => AtlasSetAreaDataIndex.Invoke(x));
-            manager.Socket.On<string>("LoadDefaultAreas", x => AtlasLoadAreaDefaults.Invoke());
+            //manager.Socket.On<string>("LoadAtlas", x => AtlasLoad.Invoke(x));
+            ////manager.Socket.On<string>("CustomAtlas", x => AtlasCreateCustom.Invoke(JsonUtility.FromJson<CustomAtlasData>(x)));
+            ////manager.Socket.On<string>("AtlasSetReferenceCoord", x => AtlasSetReferenceCoord.Invoke(JsonUtility.FromJson<Vector3Data>(x)));
+            //manager.Socket.On<string>("SetAreaVisibility", x => AtlasSetAreaVisibility.Invoke(JsonUtility.FromJson<AreaGroupData>(x)));
+            //manager.Socket.On<Dictionary<string, string>>("SetAreaColors", x => AtlasSetAreaColors.Invoke(x));
+            //manager.Socket.On<Dictionary<string, float>>("SetAreaIntensity", x => AtlasSetAreaIntensities.Invoke(x));
+            //manager.Socket.On<string>("SetAreaColormap", x => AtlasSetColormap.Invoke(x));
+            //manager.Socket.On<Dictionary<string, string>>("SetAreaMaterial", x => AtlasSetAreaMaterials.Invoke(x));
+            //manager.Socket.On<Dictionary<string, float>>("SetAreaAlpha", x => AtlasSetAreaAlphas.Invoke(x));
+            //manager.Socket.On<Dictionary<string, List<float>>>("SetAreaData", x => AtlasSetAreaData.Invoke(x));
+            //manager.Socket.On<int>("SetAreaIndex", x => AtlasSetAreaDataIndex.Invoke(x));
+            //manager.Socket.On<string>("LoadDefaultAreas", x => AtlasLoadAreaDefaults.Invoke());
         }
 
         //public static Action<VolumeDataChunk> SetVolumeData;
@@ -399,7 +404,7 @@ namespace Urchin.API
 
         public static void LogError(string msg)
         {
-            manager.Socket.Emit("log-error", msg);
+            manager.Socket.Emit("log-error", $"{msg} -- errors can be reported at https://github.com/VirtualBrainLab/Urchin/issues");
         }
     }
 

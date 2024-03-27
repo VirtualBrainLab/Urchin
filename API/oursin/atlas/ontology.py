@@ -3,7 +3,8 @@ from .. import utils
 from pathlib import Path
 
 import json
-import vbl_aquarium
+from vbl_aquarium.models.urchin import AtlasModel, StructureModel
+from vbl_aquarium.models.generic import *
 
 class CustomAtlas:
     def __init__(self, atlas_name, atlas_dimensions, atlas_resolution):
@@ -21,20 +22,35 @@ class CustomAtlas:
 class Atlas:
     def __init__(self, atlas_name):
         # load the ontology structure file
-        self.atlas_name = atlas_name
         self.loaded = False
+        self.data = AtlasModel(
+            name = atlas_name,
+            areas = []
+        )
 
         current_script_directory = Path(__file__).resolve().parent
         
-        data_file_path = f'{current_script_directory}/data/{atlas_name}.structures.json'
+        data_file_path = f'{current_script_directory}/data/{self.data.name}.structures.json'
         with open(data_file_path,'r') as f:
             temp = json.load(f)
 
         self.areas = []
         for structure_data in temp:
-            self.areas.append(structure_data['acronym'])
-            structure_data['color'] = utils.sanitize_color(structure_data['rgb_triplet'])
-            setattr(self, structure_data['acronym'], Structure(structure_data))
+            # {"acronym": "root", "id": 997, "name": "root", "structure_id_path": [997], "rgb_triplet": [255, 255, 255]}
+            area = StructureModel(
+                name = structure_data['name'],
+                acronym = structure_data['acronym'],
+                atlas_id = structure_data['id'],
+                color= utils.formatted_color(structure_data['rgb_triplet'])
+            )
+            self.data.areas.append(structure_data['acronym'])
+            setattr(self, structure_data['acronym'], area)
+
+    def _update(self):
+        """Internal helper function, push data to Unity and update all values
+        """
+        self.loaded = True
+        client.sio.emit('UpdateAtlas', self.data.to_string())
 
     def load(self):
         """Load this atlas
@@ -43,7 +59,7 @@ class Atlas:
             print("(Warning) Atlas was already loaded, the renderer can have issues if you try to load an atlas twice.")
         
         self.loaded = True
-        client.sio.emit('LoadAtlas', self.atlas_name)
+        client.sio.emit('LoadAtlas', self.data.atlas_name)
 
     def clear(self):
         """Clear all visible areas
@@ -62,12 +78,8 @@ class Atlas:
         ----------
         reference_coord : list of float
         """
-        
-        data = {}
-        data['ID'] = self.atlas_name
-        data['Value'] = utils.formatted_vector3(utils.sanitize_vector3(reference_coord))
-
-        client.sio.emit('AtlasSetReferenceCoord', json.dumps(data))
+        self.data.reference_coord = utils.formatted_vector3(utils.sanitize_vector3(reference_coord))
+        self._update
 
     def get_areas(self, area_list):
         """Get the area objects given a list of area acronyms
@@ -112,16 +124,21 @@ class Atlas:
         """
         area_visibility = utils.sanitize_list(area_visibility, len(area_list))
 
-        # output dictionary should match JSON schema AreaData:
-        #{"acronym": ["a", "b", "c"], "side": [-1, 0, 1], "visible": [true, true, false]}
+        # set any values that are already in the list
+        not_present = []
+        for i, area in enumerate(self.data.acronyms):
+            if area in area_list:
+                self.data.visible[i] = area_visibility[i]
+                self.data.sides[i] = side
+            else:
+                not_present.append(i)
 
-        data = vbl_aquarium.urchin.AreaGroupData(
-            acronyms = [area.acronym for area in area_list],
-            visible = area_visibility,
-            side = [side.value] * len(area_list),
-        )
+        for i in not_present:
+            self.data.acronyms.append(area_list[i].acronym)
+            self.data.visible.append(area_visibility[i])
+            self.data.sides.append(side)
 
-        client.sio.emit('SetAreaVisibility', data.model_dump_json())
+        self._update()
 
     def set_colors(self, area_list, area_colors, sided="full"):
         """Set color of multiple areas at once.
@@ -136,15 +153,19 @@ class Atlas:
         >>> urchin.ccf25.set_visibilities(urchin.ccf25.get_areas(["root", "VISp"]), [255, 255, 255])
         """
         area_colors = utils.sanitize_list(area_colors, len(area_list))
-        for i in range(0,len(area_colors)):
-            area_colors[i] = utils.sanitize_color(area_colors[i])
+        
+        # set any values that are already in the list
+        not_present = []
+        for i, area in enumerate(self.data.acronyms):
+            if area in area_list:
+                self.data.colors[i] = utils.formatted_color(area_colors[i])
+            else:
+                not_present.append(i)
 
-        data_dict = {}
-        for i, area in enumerate(area_list):
-            area_name = utils.sanitize_side(area.acronym, sided)
-            data_dict[area_name] = area_colors[i]
+        for i in not_present:
+            print(f'Areas must be set to visible before setting color: {area_list[i].acronym}')
 
-        client.sio.emit('SetAreaColors', data_dict)
+        self._update()
         
     def set_colormap(self, colormap_name):
         """Set colormap used for mapping area *intensity* values to colors
@@ -163,7 +184,8 @@ class Atlas:
         colormap_name : string
             colormap name
         """
-        client.sio.emit('SetAreaColormap', colormap_name)
+        self.data.colormap = colormap_name
+        self._update()
 
     def set_color_intensity(self, area_list, area_intensities, sided="full"):
         """Set intensity values, colors will be set according to the active colormap
@@ -178,39 +200,19 @@ class Atlas:
         >>> urchin.ccf25.set_color_intensity(urchin.ccf25.get_areas(["root", "VISp"]), [0, 1])
         """
         area_intensities = utils.sanitize_list(area_intensities, len(area_list))
-        for i in range(0,len(area_intensities)):
-            area_intensities[i] = utils.sanitize_float(area_intensities[i])
 
-        data_dict = {}
-        for i, area in enumerate(area_list):
-            area_name = utils.sanitize_side(area.acronym, sided)
-            data_dict[area_name] = area_intensities[i]
+        # set any values that are already in the list
+        not_present = []
+        for i, area in enumerate(self.data.acronyms):
+            if area in area_list:
+                self.data.intensities[i] = area_intensities[i]
+            else:
+                not_present.append(i)
 
-        client.sio.emit('SetAreaIntensity', data_dict)
+        for i in not_present:
+            print(f'Areas must be set to visible before setting color: {area_list[i].acronym}')
 
-    def set_alphas(self, area_list, area_alphas, sided="full"):
-        """Set transparency of multiple areas at once. Requires a transparent material. 
-        
-        Parameters
-        ----------
-        area_alphas : list of float
-            Alpha ranges from 0->1
-
-        Examples
-        --------
-        >>> urchin.ccf25.set_alphas(urchin.ccf25.get_areas(["root", "VISp"]), [0.15, 0.15])
-        >>> urchin.ccf25.set_alphas(urchin.ccf25.get_areas(["root", "VISp"]), [0.5])
-        """
-        area_alphas = utils.sanitize_list(area_alphas, len(area_list))
-        for i in range(0,len(area_alphas)):
-            area_alphas[i] = utils.sanitize_float(area_alphas[i])
-
-        data_dict = {}
-        for i, area in enumerate(area_list):
-            area_name = utils.sanitize_side(area.acronym, sided)
-            data_dict[area_name] = area_alphas[i]
-        
-        client.sio.emit('SetAreaAlpha', data_dict)
+        self._update()
 
     def set_materials(self, area_list, area_materials, sided="full"):
         """Set material of multiple areas at once.
@@ -232,15 +234,19 @@ class Atlas:
         >>> urchin.ccf25.set_materials(urchin.ccf25.get_areas(["root", "VISp"]), ['transparent-lit])
         """
         area_materials = utils.sanitize_list(area_materials, len(area_list))
-        for i in range(0,len(area_materials)):
-            area_materials[i] = utils.sanitize_string(area_materials[i])
 
-        data_dict = {}
-        for i, area in enumerate(area_list):
-            area_name = utils.sanitize_side(area.acronym, sided)
-            data_dict[area_name] = area_materials[i]
+        # set any values that are already in the list
+        not_present = []
+        for i, area in enumerate(self.data.acronyms):
+            if area in area_list:
+                self.data.materials[i] = area_materials[i]
+            else:
+                not_present.append(i)
 
-        client.sio.emit('SetAreaMaterial', data_dict)
+        for i in not_present:
+            print(f'Areas must be set to visible before setting color: {area_list[i].acronym}')
+
+        self._update()
 
 class Structure:
     """Structure attributes can be accessed as
@@ -251,36 +257,36 @@ class Structure:
     >>> structure.rgb_triplet
     >>> structure.path
     """
-    def __init__(self, structure_data):
-        for key, value in structure_data.items():
-            setattr(self, key, value)
+    def __init__(self, name, acronym, atlas_id, color, update_callback):
+        self.data = StructureModel(
+            name = name,
+            acronym = acronym,
+            atlas_id = atlas_id,
+            color = utils.formatted_color(color)
+        )
 
-    def set_test(self):
-        print(self)
+        self.update_callback = update_callback
 
-    def set_visibility(self, visibility, sided = utils.Side.FULL):
+    def set_visibility(self, visibility, side = utils.Side.FULL):
         """Set area visibility
 
         Parameters
         ----------
         visibility : bool
-        sided : str, optional
-            "full" "left" or "right, by default "full"
+        side : utils.Side, optional
+            .FULL, .LEFT, or .RIGHT
 
         Examples
         --------
         >>> urchin.ccf25.root.set_visibility(True)
         >>> urchin.ccf25.root.set_visibility(True, urchin.utils.Side.LEFT)
         """
-        data_dict = {
-            'acronym':[self.acronym],
-            'side':[sided.value],
-            'visible':[visibility]
-        }
+        self.data.visible = visibility
+        self.data.side = side
 
-        client.sio.emit('SetAreaVisibility', json.dumps(data_dict))
+        self.update_callback()
 
-    def set_color(self, color, sided = "full"):
+    def set_color(self, color, sided = utils.Side.FULL):
         """Set area color.
 
         Parameters
@@ -292,11 +298,9 @@ class Structure:
         >>> urchin.ccf25.root.set_color('#ff0000')
         >>> urchin.ccf25.root.set_color([255, 0, 0], "left")
         """
-        color = utils.sanitize_color(color)
+        self.data.color = utils.formatted_color(utils.sanitize_color(color))
 
-        area_name = utils.sanitize_side(self.acronym, sided)
-
-        client.sio.emit('SetAreaColors', {area_name:color})
+        self.update_callback()
 
     def set_intensity(self, intensity, sided = "full"):
         """Set color based on the intensity value through the active colormap.
@@ -310,28 +314,9 @@ class Structure:
         --------
         >>> urn.set_intensity(0.5)
         """
-        intensity = utils.sanitize_float(intensity)
-        area_name = utils.sanitize_side(self.acronym, sided)
+        self.data.color_intensity = utils.sanitize_float(intensity)
 
-        client.sio.emit('SetAreaIntensity', {area_name:intensity})
-
-    def set_alpha(self, alpha, sided = "full"):
-        """Set transparency. 
-
-        Parameters
-        ----------
-        alpha : float
-
-        Examples
-        --------
-        >>> urchin.ccf25.root.set_alpha(0.15)
-        >>> urchin.ccf25.root.set_alpha(0.5, "left")
-        """
-        alpha = utils.sanitize_float(alpha)
-
-        area_name = utils.sanitize_side(self.acronym, sided)
-
-        client.sio.emit('SetAreaAlpha', {area_name:alpha})
+        self.update_callback()
 
     def set_material(self, material, sided = "full"):
         """Set material.
@@ -350,11 +335,9 @@ class Structure:
         ----------
         >>> urchin.ccf25.root.set_material('transparent-lit')
         """
-        material = utils.sanitize_string(material)
+        self.data.material = utils.sanitize_string(material)
 
-        area_name = utils.sanitize_side(self.acronym, sided)
-
-        client.sio.emit('SetAreaMaterial', {area_name:material})
+        self.update_callback()
 
     # def set_data(area_data):
     #     """Set the data array for each CCF area model
