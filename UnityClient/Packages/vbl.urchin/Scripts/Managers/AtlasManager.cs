@@ -145,7 +145,7 @@ namespace Urchin.Managers
             }
 #endif
 
-            atlasTask = BrainAtlasManager.LoadAtlas(atlasName)
+            atlasTask = BrainAtlasManager.LoadAtlas(atlasName);
 
             await atlasTask;
 
