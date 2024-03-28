@@ -79,10 +79,10 @@ namespace Urchin.API
         }
 
         #region Socket setup by action group
-        public static Action<AtlasModel> UpdateAtlas;
-
-
+        public static Action<AtlasModel> AtlasUpdate;
         public static Action<string> AtlasLoad;
+        public static Action AtlasLoadDefaults;
+
         //public static Action<CustomAtlasData> AtlasCreateCustom;
         //public static Action<Vector3Data> AtlasSetReferenceCoord;
         //public static Action<AreaGroupData> AtlasSetAreaVisibility;
@@ -93,12 +93,12 @@ namespace Urchin.API
         public static Action<Dictionary<string, float>> AtlasSetAreaAlphas;
         public static Action<Dictionary<string, List<float>>> AtlasSetAreaData;
         public static Action<int> AtlasSetAreaDataIndex;
-        public static Action AtlasLoadAreaDefaults;
 
         private void Start_Atlas()
         {
-            manager.Socket.On<string>("UpdateAtlas", x => UpdateAtlas.Invoke(JsonUtility.FromJson<AtlasModel>(x)));
-            manager.Socket.On<string>("AtlasLoad", x => AtlasLoad.Invoke(x));
+            manager.Socket.On<string>("urchin-atlas-update", x => AtlasUpdate.Invoke(JsonUtility.FromJson<AtlasModel>(x)));
+            manager.Socket.On<string>("urchin-atlas-load", x => AtlasLoad.Invoke(x));
+            manager.Socket.On<string>("urchin-atlas-defaults", x => AtlasLoadDefaults.Invoke());
 
 
             // CCF Areas

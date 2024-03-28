@@ -50,7 +50,7 @@ class Atlas:
     def _update(self):
         """Internal helper function, push data to Unity and update all values
         """
-        client.sio.emit('UpdateAtlas', self.data.to_string())
+        client.sio.emit('urchin-atlas-update', self.data.to_string())
 
     def load(self):
         """Load this atlas
@@ -68,8 +68,10 @@ class Atlas:
 
     def load_defaults(self):
         """Load the left and right areas
+
+        Note that this function is not stateful, if you save the scene it will not be reloaded.
         """
-        client.sio.emit('AtlasLoadDefaults', "")
+        client.sio.emit('urchin-atlas-defaults', "")
 
     def set_reference_coord(self, reference_coord):
         """Set the reference coordinate for the atlas (Bregma by default)

@@ -40,6 +40,7 @@ namespace Urchin.Managers
         private int _areaDataIndex;
         private Dictionary<int, (bool full, bool left, bool right)> _areaSides;
 
+        private bool _colormapEnabled;
         private Colormap _localColormap;
         #endregion
 
@@ -70,13 +71,16 @@ namespace Urchin.Managers
 
         private void Start()
         {
+            _colormapEnabled = false;
             _localColormap = Colormaps.MainColormap;
 
-            Client_SocketIO.UpdateAtlas += UpdateData;
+            Client_SocketIO.AtlasUpdate += UpdateData;
 
             Client_SocketIO.ClearAreas += ClearAreas;
 
             Client_SocketIO.AtlasLoad += LoadAtlas;
+            Client_SocketIO.AtlasLoadDefaults += LoadDefaultAreasVoid;
+
             //Client_SocketIO.AtlasCreateCustom += CustomAtlas;
 
             //Client_SocketIO.AtlasSetAreaVisibility += SetAreaVisibility;
@@ -110,12 +114,21 @@ namespace Urchin.Managers
 
         public void UpdateData(AtlasModel data)
         {
+#if UNITY_EDITOR
+            Debug.Log("(AtlasManager) Area update called");
+#endif
             Data = data;
 
             if (BrainAtlasManager.ActiveReferenceAtlas.Name != _apiNameMapping[data.Name].name)
             {
                 Client_SocketIO.LogError($"Update failed. Atlas {BrainAtlasManager.ActiveReferenceAtlas.Name} is already loaded, re-start Urchin to change atlases.");
                 return;
+            }
+
+            // Check for colormap
+            if (data.Colormap != "")
+            {
+                SetAreaColormap(data.Colormap);
             }
 
             foreach (var structure in data.Areas)
@@ -178,11 +191,21 @@ namespace Urchin.Managers
                 }
 
                 node.SetVisibility(structureData.Visible, side);
-                node.SetColor(structureData.Color, side);
                 if (BrainAtlasManager.BrainRegionMaterials.ContainsKey(structureData.Material))
                     node.SetMaterial(BrainAtlasManager.BrainRegionMaterials[structureData.Material], side);
                 else
                     Client_SocketIO.LogWarning($"Material {structureData.Material} does not exist");
+
+                if (!_colormapEnabled)
+                {
+                    node.SetColor(structureData.Color, side);
+                }
+                else
+                {
+                    node.SetColor(_localColormap.Value(structureData.ColorIntensity));
+                }
+
+                node.SetShaderProperty("_Alpha", structureData.Color.a, side);
             }
             else
             {
@@ -240,8 +263,13 @@ namespace Urchin.Managers
         // Area colormaps
         public void SetAreaColormap(string colormapName)
         {
-            _localColormap = Colormaps.ColormapDict[colormapName];
-            UpdateAreaColorFromColormap();
+            if (colormapName != "" && Colormaps.ColormapDict.ContainsKey(colormapName))
+            {
+                _colormapEnabled = true;
+                _localColormap = Colormaps.ColormapDict[colormapName];
+            }
+            else
+                _colormapEnabled = false;
         }
 
 
@@ -271,51 +299,6 @@ namespace Urchin.Managers
             UpdateAreaDataIntensity();
         }
 
-        // Area intensity colormaps
-        public void SetAreaIntensity(Dictionary<string, float> areaIntensity)
-        {
-            foreach (KeyValuePair<string, float> kvp in areaIntensity)
-            {
-                Debug.Log((kvp.Key, kvp.Value));
-                (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
-                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(ID);
-
-                if (node != null)
-                {
-                    if (!_areaIntensity.ContainsKey(node))
-                        _areaIntensity.Add(node, (-1f, -1f, -1f));
-
-                    (float fullVal, float leftVal, float rightVal) = _areaIntensity[node];
-
-                    if (full)
-                        fullVal = kvp.Value;
-                    if (leftSide)
-                        leftVal = kvp.Value;
-                    if (rightSide)
-                        rightVal = kvp.Value;
-
-                    _areaIntensity[node] = (fullVal, leftVal, rightVal);
-                }
-                else
-                    Debug.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
-            }
-            UpdateAreaColorFromColormap();
-        }
-
-        public void UpdateAreaColorFromColormap()
-        {
-            foreach (var kvp in _areaIntensity)
-            {
-                OntologyNode node = kvp.Key;
-
-                if (node.FullLoaded.IsCompleted && kvp.Value.full >= 0)
-                    node.SetColor(_localColormap.Value(kvp.Value.full), OntologyNode.OntologyNodeSide.Full);
-                if (node.SideLoaded.IsCompleted && kvp.Value.left >= 0)
-                    node.SetColor(_localColormap.Value(kvp.Value.left), OntologyNode.OntologyNodeSide.Left);
-                if (node.SideLoaded.IsCompleted && kvp.Value.right >= 0)
-                    node.SetColor(_localColormap.Value(kvp.Value.right), OntologyNode.OntologyNodeSide.Right);
-            }
-        }
 
         // Auto-loaders
         public async void LoadDefaultAreasVoid()
