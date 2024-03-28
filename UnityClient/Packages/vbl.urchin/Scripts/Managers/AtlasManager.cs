@@ -15,7 +15,6 @@ namespace Urchin.Managers
         [SerializeField] private List<string> _apiNames;
         [SerializeField] private List<string> _atlasNames;
         [SerializeField] private List<bool> _availableOnWebGL;
-
         #endregion
 
         #region static
@@ -46,6 +45,7 @@ namespace Urchin.Managers
 
         #region Events
         public UnityEvent<OntologyNode> NodeVisibleEvent;
+        public UnityEvent<Converter<float, Color>, bool> ColormapChangedEvent;
         #endregion
 
         #region Unity
@@ -191,6 +191,9 @@ namespace Urchin.Managers
                 }
 
                 node.SetVisibility(structureData.Visible, side);
+                if (!VisibleNodes.Contains(node))
+                    VisibleNodes.Add(node);
+
                 if (BrainAtlasManager.BrainRegionMaterials.ContainsKey(structureData.Material))
                     node.SetMaterial(BrainAtlasManager.BrainRegionMaterials[structureData.Material], side);
                 else
@@ -229,7 +232,6 @@ namespace Urchin.Managers
             if (full && node.FullLoaded.IsCompleted)
             {
                 node.SetVisibility(visible, OntologyNode.OntologyNodeSide.Full);
-                VisibleNodes.Add(node);
                 set = true;
 #if UNITY_EDITOR
                 Debug.Log("Setting full model visibility to true");
@@ -238,7 +240,6 @@ namespace Urchin.Managers
             if (leftSide && node.SideLoaded.IsCompleted)
             {
                 node.SetVisibility(visible, OntologyNode.OntologyNodeSide.Left);
-                VisibleNodes.Add(node);
                 set = true;
 #if UNITY_EDITOR
                 Debug.Log("Setting left model visibility to true");
@@ -247,7 +248,6 @@ namespace Urchin.Managers
             if (rightSide && node.SideLoaded.IsCompleted)
             {
                 node.SetVisibility(visible, OntologyNode.OntologyNodeSide.Right);
-                VisibleNodes.Add(node);
                 set = true;
 #if UNITY_EDITOR
                 Debug.Log("Setting right model visibility to true");
@@ -270,6 +270,8 @@ namespace Urchin.Managers
             }
             else
                 _colormapEnabled = false;
+
+            ColormapChangedEvent.Invoke(_localColormap.Value, _colormapEnabled);
         }
 
 

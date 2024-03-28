@@ -37,14 +37,20 @@ class Atlas:
         for i, structure_data in enumerate(temp):
             # {"acronym": "root", "id": 997, "name": "root", "structure_id_path": [997], "rgb_triplet": [255, 255, 255]}
             rgb_normalized = [x/255 for x in structure_data['rgb_triplet']]
-            area = StructureModel(
-                index = i,
+            area_data = StructureModel(
                 name = structure_data['name'],
                 acronym = structure_data['acronym'],
                 atlas_id = structure_data['id'],
                 color= utils.formatted_color(rgb_normalized)
             )
-            self.data.areas.append(area)
+            self.data.areas.append(area_data)
+
+            area = Structure(
+                data=area_data,
+                index = i,
+                update_callback=self._update
+            )
+
             setattr(self, structure_data['acronym'], area)
 
     def _update(self):
@@ -59,11 +65,16 @@ class Atlas:
             print("(Warning) Atlas was already loaded, the renderer can have issues if you try to load an atlas twice.")
         
         self.loaded = True
-        client.sio.emit('AtlasLoad', self.data.name)
+        client.sio.emit('urchin-atlas-load', self.data.name)
 
     def clear(self):
         """Clear all visible areas
         """
+
+        # update all areas to be not visible
+        for area in self.data.areas:
+            area.visible = False
+
         client.sio.emit('Clear', 'area')
 
     def load_defaults(self):
@@ -245,17 +256,12 @@ class Structure:
     >>> structure.rgb_triplet
     >>> structure.path
     """
-    def __init__(self, name, acronym, atlas_id, color, update_callback):
-        self.data = StructureModel(
-            name = name,
-            acronym = acronym,
-            atlas_id = atlas_id,
-            color = utils.formatted_color(color)
-        )
-
+    def __init__(self, data, index, update_callback):
+        self.data = data
+        self.index = index
         self.update_callback = update_callback
 
-    def set_visibility(self, visibility, side = utils.Side.FULL):
+    def set_visibility(self, visibility, side = utils.Side.FULL, push = True):
         """Set area visibility
 
         Parameters
@@ -270,11 +276,12 @@ class Structure:
         >>> urchin.ccf25.root.set_visibility(True, urchin.utils.Side.LEFT)
         """
         self.data.visible = visibility
-        self.data.side = side
+        self.data.side = side.value
 
-        self.update_callback()
+        if push:
+            self.update_callback()
 
-    def set_color(self, color, sided = utils.Side.FULL):
+    def set_color(self, color, push = True):
         """Set area color.
 
         Parameters
@@ -288,9 +295,27 @@ class Structure:
         """
         self.data.color = utils.formatted_color(utils.sanitize_color(color))
 
-        self.update_callback()
+        if push:
+            self.update_callback()
 
-    def set_intensity(self, intensity, sided = "full"):
+    def set_alpha(self, alpha, push = True):
+        """Set area transparency.
+
+        Parameters
+        ----------
+        alpha: float
+
+        Examples
+        --------
+        >>> urchin.ccf25.root.set_alpha(0.5)
+        """
+        self.data.color.a = utils.sanitize_float(alpha)
+
+        if push:
+            self.update_callback()
+
+
+    def set_intensity(self, intensity, push = True):
         """Set color based on the intensity value through the active colormap.
 
         Parameters
@@ -304,9 +329,10 @@ class Structure:
         """
         self.data.color_intensity = utils.sanitize_float(intensity)
 
-        self.update_callback()
+        if push:
+            self.update_callback()
 
-    def set_material(self, material, sided = "full"):
+    def set_material(self, material, push = True):
         """Set material.
 
         Material options are
@@ -325,7 +351,8 @@ class Structure:
         """
         self.data.material = utils.sanitize_string(material)
 
-        self.update_callback()
+        if push:
+            self.update_callback()
 
     # def set_data(area_data):
     #     """Set the data array for each CCF area model

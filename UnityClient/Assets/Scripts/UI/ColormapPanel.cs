@@ -20,6 +20,12 @@ public class ColormapPanel : MonoBehaviour
         SetColormapVisibility(false);
     }
 
+    public void ColormapChanged(Converter<float, Color> func, bool state)
+    {
+        SetColormap(func);
+        SetColormapVisibility(state);
+    }
+
     public void SetColormap(Converter<float,Color> colormapFunc)
     {
         Debug.Log("Setting colormap");
