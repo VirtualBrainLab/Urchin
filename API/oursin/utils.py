@@ -9,6 +9,7 @@ class Side(Enum):
     LEFT = -1
     FULL = 0
     RIGHT = 1
+    ALL = 3
 
 ### SANITIZING FUNCTIONS
 

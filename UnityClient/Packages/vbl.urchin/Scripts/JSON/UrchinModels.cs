@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 
+[Serializable]
 public struct AtlasModel
 {
     public string Name;
@@ -177,6 +179,7 @@ public struct PrimitiveMeshModel
 }
 
 
+[Serializable]
 public struct StructureModel
 {
     public string Name;

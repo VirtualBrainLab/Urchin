@@ -34,22 +34,22 @@ class Atlas:
         with open(data_file_path,'r') as f:
             temp = json.load(f)
 
-        self.areas = []
-        for structure_data in temp:
+        for i, structure_data in enumerate(temp):
             # {"acronym": "root", "id": 997, "name": "root", "structure_id_path": [997], "rgb_triplet": [255, 255, 255]}
+            rgb_normalized = [x/255 for x in structure_data['rgb_triplet']]
             area = StructureModel(
+                index = i,
                 name = structure_data['name'],
                 acronym = structure_data['acronym'],
                 atlas_id = structure_data['id'],
-                color= utils.formatted_color(structure_data['rgb_triplet'])
+                color= utils.formatted_color(rgb_normalized)
             )
-            self.data.areas.append(structure_data['acronym'])
+            self.data.areas.append(area)
             setattr(self, structure_data['acronym'], area)
 
     def _update(self):
         """Internal helper function, push data to Unity and update all values
         """
-        self.loaded = True
         client.sio.emit('UpdateAtlas', self.data.to_string())
 
     def load(self):
@@ -59,7 +59,7 @@ class Atlas:
             print("(Warning) Atlas was already loaded, the renderer can have issues if you try to load an atlas twice.")
         
         self.loaded = True
-        client.sio.emit('LoadAtlas', self.data.atlas_name)
+        client.sio.emit('AtlasLoad', self.data.name)
 
     def clear(self):
         """Clear all visible areas
@@ -69,7 +69,7 @@ class Atlas:
     def load_defaults(self):
         """Load the left and right areas
         """
-        client.sio.emit('LoadDefaultAreas', "")
+        client.sio.emit('AtlasLoadDefaults', "")
 
     def set_reference_coord(self, reference_coord):
         """Set the reference coordinate for the atlas (Bregma by default)
@@ -91,7 +91,7 @@ class Atlas:
 
         Returns
         -------
-        list of areas
+        list of Structure
 
         Examples
         --------
@@ -106,16 +106,15 @@ class Atlas:
                 print(f'(Warning): Area {name} couldn''t be found in this atlas!')
         return areas
 
-    def set_visibilities(self, area_list, area_visibility, side = utils.Side.FULL):
+    def set_visibilities(self, area_list, area_visibility, side = utils.Side.FULL, push = True):
         """Set visibility of multiple areas at once
 
         Parameters
         ----------
-        area_list : list of string
-            List of acronyms
+        area_list : list of Structure
         area_visibility : list of bool
         sided : string, optional
-            Brain area side to control "full"/"left"/"right", default = "full"
+            Brain area side to load, default = FULL
 
         Examples
         --------
@@ -124,27 +123,19 @@ class Atlas:
         """
         area_visibility = utils.sanitize_list(area_visibility, len(area_list))
 
-        # set any values that are already in the list
-        not_present = []
-        for i, area in enumerate(self.data.acronyms):
-            if area in area_list:
-                self.data.visible[i] = area_visibility[i]
-                self.data.sides[i] = side
-            else:
-                not_present.append(i)
+        for i, area in enumerate(area_list):
+            self.data.areas[area.index].visible = area_visibility[i]
+            self.data.areas[area.index].side = side.value
 
-        for i in not_present:
-            self.data.acronyms.append(area_list[i].acronym)
-            self.data.visible.append(area_visibility[i])
-            self.data.sides.append(side)
+        if push:
+            self._update()
 
-        self._update()
-
-    def set_colors(self, area_list, area_colors, sided="full"):
+    def set_colors(self, area_list, area_colors, push = True):
         """Set color of multiple areas at once.
 
         Parameters
         ----------
+        area_list : list of Structure
         area_colors : list of colors (hex string or RGB triplet)
 
         Examples
@@ -154,18 +145,11 @@ class Atlas:
         """
         area_colors = utils.sanitize_list(area_colors, len(area_list))
         
-        # set any values that are already in the list
-        not_present = []
-        for i, area in enumerate(self.data.acronyms):
-            if area in area_list:
-                self.data.colors[i] = utils.formatted_color(area_colors[i])
-            else:
-                not_present.append(i)
+        for i, area in enumerate(area_list):
+            self.data.areas[area.index].color = utils.formatted_color(area_colors[i])
 
-        for i in not_present:
-            print(f'Areas must be set to visible before setting color: {area_list[i].acronym}')
-
-        self._update()
+        if push:
+            self._update()
         
     def set_colormap(self, colormap_name):
         """Set colormap used for mapping area *intensity* values to colors
@@ -187,7 +171,7 @@ class Atlas:
         self.data.colormap = colormap_name
         self._update()
 
-    def set_color_intensity(self, area_list, area_intensities, sided="full"):
+    def set_color_intensity(self, area_list, area_intensities, push = True):
         """Set intensity values, colors will be set according to the active colormap
 
         Parameters
@@ -201,20 +185,29 @@ class Atlas:
         """
         area_intensities = utils.sanitize_list(area_intensities, len(area_list))
 
-        # set any values that are already in the list
-        not_present = []
-        for i, area in enumerate(self.data.acronyms):
-            if area in area_list:
-                self.data.intensities[i] = area_intensities[i]
-            else:
-                not_present.append(i)
+        for i, area in enumerate(area_list):
+            self.data.areas[area.index].color_intensity = area_intensities[i]
 
-        for i in not_present:
-            print(f'Areas must be set to visible before setting color: {area_list[i].acronym}')
+        if push:
+            self._update()
 
-        self._update()
+    def set_alphas(self, area_list, area_alphas, push = True):
+        """Set alpha values, without changing colors
 
-    def set_materials(self, area_list, area_materials, sided="full"):
+        Parameters
+        ----------
+        area_list : list of Structure
+        area_alphas : list of float
+        """
+        area_alphas = utils.sanitize_list(area_alphas, len(area_list))
+
+        for i, area in enumerate(area_list):
+            self.data.areas[area.index].color.a = area_alphas[i]
+
+        if push:
+            self._update()
+
+    def set_materials(self, area_list, area_materials, push = True):
         """Set material of multiple areas at once.
 
         Material options are
@@ -235,18 +228,11 @@ class Atlas:
         """
         area_materials = utils.sanitize_list(area_materials, len(area_list))
 
-        # set any values that are already in the list
-        not_present = []
-        for i, area in enumerate(self.data.acronyms):
-            if area in area_list:
-                self.data.materials[i] = area_materials[i]
-            else:
-                not_present.append(i)
+        for i, area in enumerate(area_list):
+            self.data.areas[area.index].material = area_materials[i]
 
-        for i in not_present:
-            print(f'Areas must be set to visible before setting color: {area_list[i].acronym}')
-
-        self._update()
+        if push:
+            self._update()
 
 class Structure:
     """Structure attributes can be accessed as

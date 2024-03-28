@@ -80,14 +80,14 @@ namespace Urchin.Managers
             //Client_SocketIO.AtlasCreateCustom += CustomAtlas;
 
             //Client_SocketIO.AtlasSetAreaVisibility += SetAreaVisibility;
-            Client_SocketIO.AtlasSetAreaColors += SetAreaColors;
-            Client_SocketIO.AtlasSetAreaIntensities += SetAreaIntensity;
-            Client_SocketIO.AtlasSetColormap += SetAreaColormap;
-            Client_SocketIO.AtlasSetAreaMaterials += SetAreaMaterial;
-            Client_SocketIO.AtlasSetAreaAlphas += SetAreaAlpha;
-            Client_SocketIO.AtlasSetAreaData += SetAreaData;
-            Client_SocketIO.AtlasSetAreaDataIndex += SetAreaIndex;
-            Client_SocketIO.AtlasLoadAreaDefaults += LoadDefaultAreasVoid;
+            //Client_SocketIO.AtlasSetAreaColors += SetAreaColors;
+            //Client_SocketIO.AtlasSetAreaIntensities += SetAreaIntensity;
+            //Client_SocketIO.AtlasSetColormap += SetAreaColormap;
+            //Client_SocketIO.AtlasSetAreaMaterials += SetAreaMaterial;
+            //Client_SocketIO.AtlasSetAreaAlphas += SetAreaAlpha;
+            //Client_SocketIO.AtlasSetAreaData += SetAreaData;
+            //Client_SocketIO.AtlasSetAreaDataIndex += SetAreaIndex;
+            //Client_SocketIO.AtlasLoadAreaDefaults += LoadDefaultAreasVoid;
         }
         #endregion
 
@@ -112,17 +112,16 @@ namespace Urchin.Managers
         {
             Data = data;
 
-            if (BrainAtlasManager.ActiveReferenceAtlas == null)
-            {
-                // Loading a new atlas
-                LoadAtlas(Data.Name);
-            }
-            else if (BrainAtlasManager.ActiveReferenceAtlas.Name != _apiNameMapping[data.Name].name)
+            if (BrainAtlasManager.ActiveReferenceAtlas.Name != _apiNameMapping[data.Name].name)
             {
                 Client_SocketIO.LogError($"Update failed. Atlas {BrainAtlasManager.ActiveReferenceAtlas.Name} is already loaded, re-start Urchin to change atlases.");
                 return;
             }
 
+            foreach (var structure in data.Areas)
+            {
+                UpdateArea(structure);
+            }
         }
 
         public async void LoadAtlas(string apiName)
@@ -155,146 +154,87 @@ namespace Urchin.Managers
 #endif
         }
 
-        //public void CustomAtlas(CustomAtlasData data)
-        //{
-        //    Vector3 dims = new Vector3(data.dimensions[0], data.dimensions[1], data.dimensions[2]);
-        //    Vector3 res = new Vector3(data.resolution[0], data.resolution[1], data.resolution[2]);
-        //    BrainAtlasManager.CustomAtlas(data.name, dims, res);
-        //}
-
-        private void _SetVisibility()
+        public async void UpdateArea(StructureModel structureData)
         {
+            int atlasID = structureData.AtlasId;
 
-        }
-
-        public void SetAreaVisibility()
-        {
-//            for (int i = 0; i < data.Acronyms.Length; i++)
-//            {
-//                int areaID = BrainAtlasManager.ActiveReferenceAtlas.Ontology.Acronym2ID(data.Acronyms[i]);
-
-//                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(areaID);
-//                OntologyNode.OntologyNodeSide side = (OntologyNode.OntologyNodeSide)data.Side[i];
-
-//                if (node == null)
-//                    return;
-
-//                bool set = false;
-
-//                bool full = side == OntologyNode.OntologyNodeSide.Full;
-//                bool leftSide = side == OntologyNode.OntologyNodeSide.Left;
-//                bool rightSide = side == OntologyNode.OntologyNodeSide.Right;
-
-//                if (full && node.FullLoaded.IsCompleted)
-//                {
-//                    node.SetVisibility(data.Visible[i], OntologyNode.OntologyNodeSide.Full);
-//                    VisibleNodes.Add(node);
-//                    set = true;
-//#if UNITY_EDITOR
-//                    Debug.Log("Setting full model visibility to true");
-//#endif
-//                }
-//                if (leftSide && node.SideLoaded.IsCompleted)
-//                {
-//                    node.SetVisibility(data.Visible[i], OntologyNode.OntologyNodeSide.Left);
-//                    VisibleNodes.Add(node);
-//                    set = true;
-//#if UNITY_EDITOR
-//                    Debug.Log("Setting left model visibility to true");
-//#endif
-//                }
-//                if (rightSide && node.SideLoaded.IsCompleted)
-//                {
-//                    node.SetVisibility(data.Visible[i], OntologyNode.OntologyNodeSide.Right);
-//                    VisibleNodes.Add(node);
-//                    set = true;
-//#if UNITY_EDITOR
-//                    Debug.Log("Setting right model visibility to true");
-//#endif
-//                }
-
-//                if (set)
-//                    NodeVisibleEvent.Invoke(node);
-//                else
-//                    LoadIndividualArea(node, full, leftSide, rightSide, data.Visible[i]);
-//            }
-        }
-
-        public async void SetAreaColors(Dictionary<string, string> areaColor)
-        {
-            foreach (KeyValuePair<string, string> kvp in areaColor)
+            OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(atlasID);
+            if (node==null)
             {
-                (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
-                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(ID);
-
-                Color newColor;
-                if (node != null && ColorUtility.TryParseHtmlString(kvp.Value, out newColor))
-                {
-
-                    if (full)
-                    {
-                        await node.FullLoaded;
-                        node.SetColor(newColor, OntologyNode.OntologyNodeSide.Full);
-                    }
-                    else
-                    {
-                        await node.SideLoaded;
-                        if (leftSide)
-                            node.SetColor(newColor, OntologyNode.OntologyNodeSide.Left);
-                        if (rightSide)
-                            node.SetColor(newColor, OntologyNode.OntologyNodeSide.Right);
-                    }
-                }
-                else
-                    Debug.Log("Failed to set " + kvp.Key + " to " + kvp.Value);
+                Debug.LogWarning($"Can't find node {structureData.Acronym} with ID {atlasID}");
+                return;
             }
+
+            OntologyNode.OntologyNodeSide side = (OntologyNode.OntologyNodeSide)structureData.Side;
+
+            // If the structure isn't loaded and it needs to be visible, load it
+            if (structureData.Visible)
+            {
+                if (!(node.FullLoaded.IsCompleted || node.SideLoaded.IsCompleted))
+                {
+                    // Node needs to be loaded
+                    LoadArea(node, structureData.Visible, side);
+                    await (side == OntologyNode.OntologyNodeSide.Full ? node.FullLoaded : node.SideLoaded);
+                }
+
+                node.SetVisibility(structureData.Visible, side);
+                node.SetColor(structureData.Color, side);
+                if (BrainAtlasManager.BrainRegionMaterials.ContainsKey(structureData.Material))
+                    node.SetMaterial(BrainAtlasManager.BrainRegionMaterials[structureData.Material], side);
+                else
+                    Client_SocketIO.LogWarning($"Material {structureData.Material} does not exist");
+            }
+            else
+            {
+                if (node.FullGO != null || node.LeftGO != null)
+                    node.SetVisibility(structureData.Visible, side);
+            }
+
         }
 
-        public async void SetAreaMaterial(Dictionary<string, string> areaMaterial)
+        public void LoadArea(OntologyNode node, bool visible, OntologyNode.OntologyNodeSide side)
         {
-            foreach (KeyValuePair<string, string> kvp in areaMaterial)
+            if (node == null)
+                return;
+
+            bool set = false;
+
+            bool full = side == OntologyNode.OntologyNodeSide.Full;
+            bool leftSide = side == OntologyNode.OntologyNodeSide.Left;
+            bool rightSide = side == OntologyNode.OntologyNodeSide.Right;
+
+            if (full && node.FullLoaded.IsCompleted)
             {
-                (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
-
-                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(ID);
-                if (full)
-                {
-                    await node.FullLoaded;
-                    node.SetMaterial(BrainAtlasManager.BrainRegionMaterials[kvp.Value], OntologyNode.OntologyNodeSide.Full);
-                }
-                else
-                {
-                    await node.SideLoaded;
-                    if (leftSide)
-                        node.SetMaterial(BrainAtlasManager.BrainRegionMaterials[kvp.Value], OntologyNode.OntologyNodeSide.Left);
-                    if (rightSide)
-                        node.SetMaterial(BrainAtlasManager.BrainRegionMaterials[kvp.Value], OntologyNode.OntologyNodeSide.Right);
-                }
+                node.SetVisibility(visible, OntologyNode.OntologyNodeSide.Full);
+                VisibleNodes.Add(node);
+                set = true;
+#if UNITY_EDITOR
+                Debug.Log("Setting full model visibility to true");
+#endif
             }
-        }
-
-        public async void SetAreaAlpha(Dictionary<string, float> areaAlpha)
-        {
-            foreach (KeyValuePair<string, float> kvp in areaAlpha)
+            if (leftSide && node.SideLoaded.IsCompleted)
             {
-                (int ID, bool full, bool leftSide, bool rightSide) = GetID(kvp.Key);
-
-                OntologyNode node = BrainAtlasManager.ActiveReferenceAtlas.Ontology.ID2Node(ID);
-                if (full)
-                {
-                    await node.FullLoaded;
-                    node.SetShaderProperty("_Alpha", kvp.Value, OntologyNode.OntologyNodeSide.Full);
-                }
-                else
-                {
-                    await node.SideLoaded;
-                    if (leftSide)
-                        node.SetShaderProperty("_Alpha", kvp.Value, OntologyNode.OntologyNodeSide.Left);
-                    if (rightSide)
-                        node.SetShaderProperty("_Alpha", kvp.Value, OntologyNode.OntologyNodeSide.Right);
-                }
-
+                node.SetVisibility(visible, OntologyNode.OntologyNodeSide.Left);
+                VisibleNodes.Add(node);
+                set = true;
+#if UNITY_EDITOR
+                Debug.Log("Setting left model visibility to true");
+#endif
             }
+            if (rightSide && node.SideLoaded.IsCompleted)
+            {
+                node.SetVisibility(visible, OntologyNode.OntologyNodeSide.Right);
+                VisibleNodes.Add(node);
+                set = true;
+#if UNITY_EDITOR
+                Debug.Log("Setting right model visibility to true");
+#endif
+            }
+
+            if (set)
+                NodeVisibleEvent.Invoke(node);
+            else
+                LoadIndividualArea(node, full, leftSide, rightSide, visible);
         }
 
         // Area colormaps

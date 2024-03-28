@@ -98,6 +98,8 @@ namespace Urchin.API
         private void Start_Atlas()
         {
             manager.Socket.On<string>("UpdateAtlas", x => UpdateAtlas.Invoke(JsonUtility.FromJson<AtlasModel>(x)));
+            manager.Socket.On<string>("AtlasLoad", x => AtlasLoad.Invoke(x));
+
 
             // CCF Areas
             //manager.Socket.On<string>("LoadAtlas", x => AtlasLoad.Invoke(x));
