@@ -85,7 +85,7 @@ namespace Urchin.API
         public static Action<string> AtlasLoad;
         //public static Action<CustomAtlasData> AtlasCreateCustom;
         //public static Action<Vector3Data> AtlasSetReferenceCoord;
-        public static Action<AreaGroupData> AtlasSetAreaVisibility;
+        //public static Action<AreaGroupData> AtlasSetAreaVisibility;
         public static Action<Dictionary<string, string>> AtlasSetAreaColors;
         public static Action<Dictionary<string, float>> AtlasSetAreaIntensities;
         public static Action<string> AtlasSetColormap;
@@ -162,6 +162,11 @@ namespace Urchin.API
             manager.Socket.On<Dictionary<string, List<float>>>("SetProbeSize", x => SetProbeSize.Invoke(x));
         }
 
+        // New Camera
+        public static Action<CameraRotationModel> SetCameraLerpRotation;
+        public static Action<FloatData> SetCameraLerp;
+
+        // Old Camera
         public static Action<Dictionary<string, List<float>>> SetCameraTarget;
         public static Action<Dictionary<string, List<float>>> SetCameraRotation;
         public static Action<Dictionary<string, string>> SetCameraTargetArea;
@@ -177,6 +182,11 @@ namespace Urchin.API
 
         private void Start_Camera()
         {
+            //New
+            manager.Socket.On<string>("SetCameraLerpRotation", x => SetCameraLerpRotation.Invoke(JsonUtility.FromJson<CameraRotationModel>(x)));
+            manager.Socket.On<string>("SetCameraLerp", x => SetCameraLerp.Invoke(JsonUtility.FromJson<FloatData>(x)));
+
+            //Old
             manager.Socket.On<Dictionary<string, List<float>>>("SetCameraTarget", x => SetCameraTarget.Invoke(x));
             manager.Socket.On<Dictionary<string, List<float>>>("SetCameraRotation", x => SetCameraRotation.Invoke(x));
             manager.Socket.On<Dictionary<string, string>>("SetCameraTargetArea", x => SetCameraTargetArea.Invoke(x));
