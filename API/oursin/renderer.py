@@ -37,7 +37,7 @@ def setup(localhost = False, standalone = False, id = None):
 	if localhost:
 		client.sio.connect('http://localhost:5000')
 	else:
-		client.sio.connect('https://urchin-commserver.herokuapp.com/')
+		client.sio.connect('https://pinpoint.allenneuraldynamics-test.org:5000')
 
 	if not standalone:
 		#To open browser window:

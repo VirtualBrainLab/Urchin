@@ -7,11 +7,11 @@ name = "oursin"
 dynamic = ["version"]
 description = 'Urchin - Universal Renderer Creating Helpful Images for Neuroscience Python API'
 readme = "README.md"
-requires-python = ">=3.8, <3.13"
+requires-python = ">=3.10, <3.13"
 license = "MIT"
 keywords = ["virtualbrainlab", "neuroscience", "renderer"]
 authors = [
-  { name = "Daniel Birman", email = "dbirman@uw.edu" },
+  { name = "Daniel Birman", email = "daniel.birman@alleninstitute.org" },
 ]
 classifiers = [
   "Development Status :: 4 - Beta",

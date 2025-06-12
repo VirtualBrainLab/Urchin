@@ -47,9 +47,9 @@ namespace Urchin.API
         {
             // Only allow localhost when running in the editor
 #if UNITY_EDITOR
-        string url = localhost ? "http://localhost:5000" : "https://urchin-commserver.herokuapp.com/";
+        string url = localhost ? "http://localhost:5000" : "https://pinpoint.allenneuraldynamics-test.org:5000";
 #else
-            string url = "https://urchin-commserver.herokuapp.com/";
+            string url = "https://pinpoint.allenneuraldynamics-test.org/";
 #endif
             Debug.Log("Attempting to connect: " + url);
 
@@ -299,9 +299,9 @@ namespace Urchin.API
 
         public static void Emit(string header, string data)
         {
-#if UNITY_EDITOR
-            Debug.Log($"Sending event: {header} with data {data}");
-#endif
+//#if UNITY_EDITOR
+//            Debug.Log($"Sending event: {header} with data {data}");
+//#endif
             manager.Socket.Emit(header, data);
         }
 
