@@ -104,3 +104,4 @@ UnityClient/Assets/Packages/*
 UnityClient/Packages/*
 !UnityClient/Packages/vbl.urchin
 API/poetry.lock
+UnityClient/.vscode
