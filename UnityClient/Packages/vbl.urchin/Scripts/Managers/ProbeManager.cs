@@ -117,7 +117,7 @@ namespace Urchin.Managers
         {
             if (_probes.ContainsKey(data.ID))
             {
-                Destroy(_probes[data.ID]);
+                Destroy(_probes[data.ID].gameObject);
                 _probes.Remove(data.ID);
             }
         }

@@ -53,6 +53,20 @@ class Probe:
 		"""
 		client.sio.emit('urchin-probe-delete', IDData(id=self.data.id).to_json_string())
 		self.in_unity = False
+	
+	def __del__(self):
+		"""Delete probe objects when object is deleted
+
+		Parameters
+		----------
+		references probe being deleted
+
+		Examples
+		--------
+		>>> del p1
+		"""
+		if self.in_unity:
+			self.delete()
 
 	def set_color(self,color):
 		"""Set colors of probe objects
