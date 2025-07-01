@@ -1,6 +1,6 @@
 {
   "name": "vbl.urchin",
-  "version": "0.7.0",
+  "version": "1.0.0",
   "description": "Universal Renderer Creating Helpful Images for Neuroscience",
   "displayName": "Urchin",
   "unity": "6000.0",
