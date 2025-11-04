@@ -49,7 +49,7 @@ namespace Urchin.API
 #if UNITY_EDITOR
         string url = localhost ? "http://localhost:5000" : "https://pinpoint.allenneuraldynamics-test.org:5000";
 #else
-            string url = "https://pinpoint.allenneuraldynamics-test.org/";
+            string url = "https://pinpoint.allenneuraldynamics-test.org:5000";
 #endif
             Debug.Log("Attempting to connect: " + url);
 
