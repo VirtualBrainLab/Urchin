@@ -29,7 +29,7 @@ classifiers = [
 dependencies = [
   "pydantic>=2.7.0",
   "python-socketio[client]>=5.8",
-  "numpy>=1.23.3,
+  "numpy>=1.23.3",
   "Pillow>=10.4.0",
   "vbl-aquarium>=0.0.23",
 ]
